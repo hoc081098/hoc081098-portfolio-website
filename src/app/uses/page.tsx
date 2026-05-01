@@ -81,6 +81,15 @@ export default function Uses() {
           </Tool>
         </ToolsSection>
         <ToolsSection title="Productivity">
+          <Tool title="Notion" href="https://www.notion.so/">
+            I use Notion for personal notes, project planning, and keeping
+            track of ideas for open-source work and blog posts.
+          </Tool>
+          <Tool title="Medium" href="https://hoc081098.medium.com/">
+            Where I publish technical articles on Android, Flutter, iOS,
+            reactive programming, and clean architecture. Writing helps me
+            consolidate knowledge and share it with the community.
+          </Tool>
         </ToolsSection>
       </div>
     </SimpleLayout>
