@@ -5,22 +5,18 @@ import clsx from 'clsx'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
-import { BriefcaseIcon, BuildingOfficeIcon, CloudArrowDownIcon } from '@phosphor-icons/react/ssr'
+import { BriefcaseIcon, BuildingOfficeIcon, CloudArrowDownIcon, ArrowRightIcon } from '@phosphor-icons/react/ssr'
 import { getAllArticles, type ArticleWithSlug } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
 import { resumeUrl, socialData, workData, type WorkRole } from '@/data'
 import { socialIconsMap } from '@/components/icons'
 
-const PHOTO_SIZE = { width: 576, height: 640 }
+import landscape1 from '@/images/landscapes/IMG_20230115_060320.jpg'
+import landscape2 from '@/images/landscapes/IMG_20260214_172437.jpg'
+import landscape3 from '@/images/landscapes/20250430_224510-COLLAGE.jpg'
+import landscape4 from '@/images/landscapes/PXL_20250426_173919684.jpg'
 
-async function getPhotoUrls(count: number): Promise<string[]> {
-  const now = new Date()
-  const seed = `${String(now.getDate()).padStart(2, '0')}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getFullYear()).slice(-2)}`
-  return Array.from(
-    { length: count },
-    (_, i) => `https://picsum.photos/seed/${seed}-${i}/${PHOTO_SIZE.width}/${PHOTO_SIZE.height}`,
-  )
-}
+const landscapePhotos = [landscape1, landscape2, landscape3, landscape4]
 
 function Article({ article }: { article: ArticleWithSlug }) {
   return (
@@ -111,15 +107,18 @@ function Resume() {
   )
 }
 
-function Photos({ urls }: { urls: string[] }) {
-  let rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2']
+function Photos() {
+  let rotations = ['rotate-2', '-rotate-2', 'rotate-2', '-rotate-2']
 
   return (
     <div className="mt-16 sm:mt-20">
+      <div className="mb-4 text-center text-sm text-zinc-500 dark:text-zinc-400 italic">
+        A few snapshots from Hải Lăng, Quảng Trị — my hometown.
+      </div>
       <div className="-my-4 flex gap-5 overflow-x-auto overflow-y-hidden py-4 sm:gap-8 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-[max(0px,50%-11rem)] pr-[max(0px,50%-11rem)] sm:overflow-hidden sm:justify-center sm:snap-none sm:pl-0 sm:pr-0">
-        {urls.map((src, imageIndex) => (
+        {landscapePhotos.map((src, imageIndex) => (
           <div
-            key={src}
+            key={imageIndex}
             className={clsx(
               'relative aspect-9/10 w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:rounded-2xl dark:bg-zinc-800 snap-center sm:snap-align-none',
               rotations[imageIndex % rotations.length],
@@ -128,8 +127,6 @@ function Photos({ urls }: { urls: string[] }) {
             <Image
               src={src}
               alt=""
-              width={PHOTO_SIZE.width}
-              height={PHOTO_SIZE.height}
               sizes="(min-width: 640px) 18rem, 11rem"
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -142,35 +139,40 @@ function Photos({ urls }: { urls: string[] }) {
 
 export default async function Home() {
   let articles = (await getAllArticles()).slice(0, 4)
-  let photoUrls = await getPhotoUrls(5)
 
   return (
     <>
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-            An indie developer
+            Mobile Developer, Open-Source Enthusiast, Technical Writer.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I’m An (also call me Niko), a senior software engineer and indie
-            developer. I love programming, from designing system architecture to
-            diving deep into frameworks and problem-solving.
+            I'm Petrus Nguyễn Thái Học (hoc081098), a senior Android, Flutter,
+            and iOS developer based in Da Nang, Vietnam. I'm passionate about
+            reactive programming, clean architecture, and building high-quality
+            mobile apps — and I share what I learn through open-source
+            contributions and technical writing on Medium.
           </p>
           <div className="mt-6 flex gap-6">
-            {socialData
-              .filter((e) => !['playStore', 'appStore'].includes(e.key))
-              .map((e) => (
-                <SocialLink
-                  key={e.key}
-                  href={e.link}
-                  aria-label={e.value}
-                  icon={socialIconsMap[e.key]}
-                />
-              ))}
+            {socialData.map((e) => (
+              <SocialLink
+                key={e.key}
+                href={e.link}
+                aria-label={e.value}
+                icon={socialIconsMap[e.key]}
+              />
+            ))}
+          </div>
+          <div className="mt-8">
+            <Button href="/about" variant="primary" className="group gap-2 px-5 py-2.5 text-sm">
+              More about me
+              <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" weight="bold" />
+            </Button>
           </div>
         </div>
       </Container>
-      <Photos urls={photoUrls} />
+      <Photos />
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div className="flex flex-col gap-16">

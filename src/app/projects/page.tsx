@@ -9,14 +9,14 @@ import { projectData } from '@/data'
 export const metadata: Metadata = {
   title: 'Projects',
   description:
-    'Side projects and apps I’ve built as an indie developer — from tools to small products.',
+    'Side projects, apps, Open-source packages, libraries, and contributions from hoc081098 (Petrus Nguyễn Thái Học) — focused on Android, Flutter, iOS, and reactive programming.',
 }
 
 export default function Projects() {
   return (
     <SimpleLayout
       title="Projects I’ve built."
-      intro="A mix of side projects, open-source tools, and experiments. I build to learn and to solve real problems — have a look and reach out if you want to collaborate or contribute."
+      intro="A mix of side projects, open-source tools, and experiments — Flutter, Dart, and Android libraries I've built to learn and to solve real problems. Have a look and reach out if you want to collaborate or contribute."
     >
       <ul
         role="list"

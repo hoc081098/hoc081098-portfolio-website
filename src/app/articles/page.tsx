@@ -8,7 +8,7 @@ import { getAllArticles } from '@/lib/articles'
 export const metadata: Metadata = {
   title: 'Articles',
   description:
-    'Notes and essays on software development, indie projects, and what I’m learning along the way.',
+    'Technical articles on Android, Flutter, iOS, reactive programming, clean architecture, and mobile development.',
 }
 
 export default async function ArticlesIndex() {
@@ -16,8 +16,8 @@ export default async function ArticlesIndex() {
 
   return (
     <SimpleLayout
-      title="Writing on building software and shipping as an indie developer."
-      intro="Notes and essays on development, side projects, and what I’m learning along the way."
+      title="Writing on mobile development, reactive programming, and clean architecture."
+      intro="Notes, tutorials, and essays on Android, Flutter, iOS, Kotlin, Dart, and the things I learn along the way. Also published on Medium."
     >
       <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
         <div className="flex max-w-3xl flex-col space-y-16">

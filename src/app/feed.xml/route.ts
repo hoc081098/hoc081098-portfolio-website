@@ -10,13 +10,13 @@ export async function GET(req: Request) {
   }
 
   let author = {
-    name: 'Niko Nguyen',
-    email: 'contact@felixng.one',
+    name: 'Petrus Nguyễn Thái Học (hoc081098)',
+    email: 'hoc081098@gmail.com',
   }
 
   let feed = new Feed({
     title: author.name,
-    description: 'Your blog description',
+    description: 'Articles on Android, Flutter, iOS, reactive programming, and clean architecture.',
     author,
     id: siteUrl,
     link: siteUrl,
