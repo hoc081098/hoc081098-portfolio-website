@@ -44,7 +44,7 @@ export default function Projects() {
               )}
             </h2>
             <Card.Description>{project.description}</Card.Description>
-            <div className="relative z-10 mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
+            <div className="relative z-10 mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-zinc-400 transition group-hover:text-violet-500 dark:text-zinc-200">
               {project.links.map((link) => (
                 <a
                   key={link.href + link.label}

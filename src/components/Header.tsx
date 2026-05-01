@@ -93,13 +93,13 @@ function NavItem({
         className={clsx(
           'relative block px-3 py-2 transition',
           isActive
-            ? 'text-teal-500 dark:text-teal-400'
-            : 'hover:text-teal-500 dark:hover:text-teal-400',
+            ? 'text-violet-500 dark:text-violet-400'
+            : 'hover:text-violet-500 dark:hover:text-violet-400',
         )}
       >
         {children}
         {isActive && (
-          <span className="absolute inset-x-1 -bottom-px h-px bg-linear-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0" />
+          <span className="absolute inset-x-1 -bottom-px h-px bg-linear-to-r from-violet-500/0 via-violet-500/40 to-violet-500/0 dark:from-violet-400/0 dark:via-violet-400/40 dark:to-violet-400/0" />
         )}
       </Link>
     </li>
@@ -135,8 +135,8 @@ function ThemeToggle() {
       className="group rounded-full bg-white/90 px-3 py-2 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
       onClick={() => setTheme(otherTheme)}
     >
-      <SunIcon className="h-6 w-6 text-zinc-500 transition group-hover:text-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:text-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:text-teal-600" weight="duotone" />
-      <MoonIcon className="hidden h-6 w-6 text-zinc-500 transition dark:block [@media_not_(prefers-color-scheme:dark)]:text-teal-500 [@media(prefers-color-scheme:dark)]:group-hover:text-zinc-400" weight="duotone" />
+      <SunIcon className="h-6 w-6 text-zinc-500 transition group-hover:text-zinc-700 dark:hidden [@media(prefers-color-scheme:dark)]:text-violet-500 [@media(prefers-color-scheme:dark)]:group-hover:text-violet-600" weight="duotone" />
+      <MoonIcon className="hidden h-6 w-6 text-zinc-500 transition dark:block [@media_not_(prefers-color-scheme:dark)]:text-violet-500 [@media(prefers-color-scheme:dark)]:group-hover:text-zinc-400" weight="duotone" />
     </button>
   )
 }
