@@ -31,10 +31,10 @@ export default {
         css: {
           '--tw-prose-body': theme('colors.zinc.600'),
           '--tw-prose-headings': theme('colors.zinc.900'),
-          '--tw-prose-links': theme('colors.teal.500'),
-          '--tw-prose-links-hover': theme('colors.teal.600'),
-          '--tw-prose-underline': theme('colors.teal.500 / 0.2'),
-          '--tw-prose-underline-hover': theme('colors.teal.500'),
+          '--tw-prose-links': theme('colors.violet.600'),
+          '--tw-prose-links-hover': theme('colors.violet.700'),
+          '--tw-prose-underline': theme('colors.violet.500 / 0.2'),
+          '--tw-prose-underline-hover': theme('colors.violet.500'),
           '--tw-prose-bold': theme('colors.zinc.900'),
           '--tw-prose-counters': theme('colors.zinc.900'),
           '--tw-prose-bullets': theme('colors.zinc.900'),
@@ -43,18 +43,18 @@ export default {
           '--tw-prose-captions': theme('colors.zinc.400'),
           '--tw-prose-code': theme('colors.zinc.700'),
           '--tw-prose-code-bg': theme('colors.zinc.300 / 0.2'),
-          '--tw-prose-pre-code': theme('colors.zinc.100'),
-          '--tw-prose-pre-bg': theme('colors.zinc.900'),
-          '--tw-prose-pre-border': 'transparent',
+          '--tw-prose-pre-code': '#f8f8f2',
+          '--tw-prose-pre-bg': '#282a36',
+          '--tw-prose-pre-border': 'rgba(98,114,164,0.35)',
           '--tw-prose-th-borders': theme('colors.zinc.200'),
           '--tw-prose-td-borders': theme('colors.zinc.100'),
 
           '--tw-prose-invert-body': theme('colors.zinc.400'),
           '--tw-prose-invert-headings': theme('colors.zinc.200'),
-          '--tw-prose-invert-links': theme('colors.teal.400'),
-          '--tw-prose-invert-links-hover': theme('colors.teal.400'),
-          '--tw-prose-invert-underline': theme('colors.teal.400 / 0.3'),
-          '--tw-prose-invert-underline-hover': theme('colors.teal.400'),
+          '--tw-prose-invert-links': theme('colors.violet.400'),
+          '--tw-prose-invert-links-hover': theme('colors.violet.300'),
+          '--tw-prose-invert-underline': theme('colors.violet.400 / 0.3'),
+          '--tw-prose-invert-underline-hover': theme('colors.violet.400'),
           '--tw-prose-invert-bold': theme('colors.zinc.200'),
           '--tw-prose-invert-counters': theme('colors.zinc.200'),
           '--tw-prose-invert-bullets': theme('colors.zinc.200'),
@@ -63,22 +63,22 @@ export default {
           '--tw-prose-invert-captions': theme('colors.zinc.500'),
           '--tw-prose-invert-code': theme('colors.zinc.300'),
           '--tw-prose-invert-code-bg': theme('colors.zinc.200 / 0.05'),
-          '--tw-prose-invert-pre-code': theme('colors.zinc.100'),
-          '--tw-prose-invert-pre-bg': 'rgb(0 0 0 / 0.4)',
-          '--tw-prose-invert-pre-border': theme('colors.zinc.200 / 0.1'),
+          '--tw-prose-invert-pre-code': '#f8f8f2',
+          '--tw-prose-invert-pre-bg': '#282a36',
+          '--tw-prose-invert-pre-border': 'rgba(98,114,164,0.3)',
           '--tw-prose-invert-th-borders': theme('colors.zinc.700'),
           '--tw-prose-invert-td-borders': theme('colors.zinc.800'),
 
-          // Base
+          // Base — tighter rhythm
           color: 'var(--tw-prose-body)',
-          lineHeight: theme('lineHeight.7'),
+          lineHeight: '1.65',
           '> *': {
-            marginTop: theme('spacing.10'),
-            marginBottom: theme('spacing.10'),
+            marginTop: theme('spacing.6'),
+            marginBottom: theme('spacing.6'),
           },
           p: {
-            marginTop: theme('spacing.7'),
-            marginBottom: theme('spacing.7'),
+            marginTop: theme('spacing.5'),
+            marginBottom: theme('spacing.5'),
           },
 
           // Headings
@@ -89,14 +89,14 @@ export default {
           h2: {
             fontSize: theme('fontSize.xl')[0],
             lineHeight: theme('lineHeight.7'),
-            marginTop: theme('spacing.20'),
-            marginBottom: theme('spacing.4'),
+            marginTop: theme('spacing.12'),
+            marginBottom: theme('spacing.3'),
           },
           h3: {
             fontSize: theme('fontSize.base')[0],
             lineHeight: theme('lineHeight.7'),
-            marginTop: theme('spacing.16'),
-            marginBottom: theme('spacing.4'),
+            marginTop: theme('spacing.8'),
+            marginBottom: theme('spacing.3'),
           },
           ':is(h2, h3) + *': {
             marginTop: 0,
@@ -161,7 +161,7 @@ export default {
             margin: 0,
           },
 
-          // Lists
+          // Lists — tighter
           ul: {
             listStyleType: 'disc',
           },
@@ -172,8 +172,8 @@ export default {
             paddingLeft: theme('spacing.6'),
           },
           li: {
-            marginTop: theme('spacing.6'),
-            marginBottom: theme('spacing.6'),
+            marginTop: theme('spacing.3'),
+            marginBottom: theme('spacing.3'),
             paddingLeft: theme('spacing[3.5]'),
           },
           'li::marker': {
@@ -187,22 +187,25 @@ export default {
             color: 'var(--tw-prose-bullets)',
           },
           'li :is(ol, ul)': {
-            marginTop: theme('spacing.4'),
-            marginBottom: theme('spacing.4'),
-          },
-          'li :is(li, p)': {
             marginTop: theme('spacing.3'),
             marginBottom: theme('spacing.3'),
           },
+          'li :is(li, p)': {
+            marginTop: theme('spacing.2'),
+            marginBottom: theme('spacing.2'),
+          },
 
-          // Code blocks
+          // Code blocks — Dracula
           pre: {
             color: 'var(--tw-prose-pre-code)',
             fontSize: theme('fontSize.sm')[0],
             fontWeight: theme('fontWeight.medium'),
             backgroundColor: 'var(--tw-prose-pre-bg)',
-            borderRadius: theme('borderRadius.3xl'),
-            padding: theme('spacing.8'),
+            borderRadius: theme('borderRadius.xl'),
+            paddingTop: theme('spacing.5'),
+            paddingBottom: theme('spacing.5'),
+            paddingLeft: theme('spacing.6'),
+            paddingRight: theme('spacing.6'),
             overflowX: 'auto',
             border: '1px solid',
             borderColor: 'var(--tw-prose-pre-border)',
@@ -219,8 +222,8 @@ export default {
 
           // Horizontal rules
           hr: {
-            marginTop: theme('spacing.20'),
-            marginBottom: theme('spacing.20'),
+            marginTop: theme('spacing.12'),
+            marginBottom: theme('spacing.12'),
             borderTopWidth: '1px',
             borderColor: 'var(--tw-prose-hr)',
             '@screen lg': {

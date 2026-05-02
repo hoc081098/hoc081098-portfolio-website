@@ -1,47 +1,152 @@
-pre[class*='language-'] {
-  color: var(--color-zinc-100);
+/* ─── Dracula Prism Theme ───────────────────────────────────────────────── */
+
+/* Base — foreground text inside any code block */
+pre[class*='language-'],
+code[class*='language-'] {
+  color: #f8f8f2;
+  background: none;
+  text-shadow: none;
 }
 
-.token.tag,
-.token.class-name,
-.token.selector,
-.token.selector .class,
-.token.selector.class,
-.token.function {
-  color: var(--color-pink-400);
+/* Plain text / default tokens */
+.token.plain,
+.token.text {
+  color: #f8f8f2;
 }
 
-.token.attr-name,
-.token.keyword,
-.token.rule,
-.token.pseudo-class,
-.token.important {
-  color: var(--color-zinc-300);
-}
-
-.token.module {
-  color: var(--color-pink-400);
-}
-
-.token.attr-value,
-.token.class,
-.token.string,
-.token.property {
-  color: var(--color-violet-300);
-}
-
-.token.punctuation,
-.token.attr-equals {
-  color: var(--color-zinc-500);
-}
-
-.token.unit,
-.language-css .token.function {
-  color: var(--color-sky-200);
-}
-
+/* Comments — muted blue-grey */
 .token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6272a4;
+  font-style: italic;
+}
+
+/* Punctuation */
+.token.punctuation {
+  color: #f8f8f2;
+}
+
+/* Namespace */
+.token.namespace {
+  opacity: 0.7;
+}
+
+/* Keywords, control flow — pink */
+.token.keyword,
+.token.control,
+.token.rule,
+.token.module,
+.token.important,
+.token.pseudo-class,
+.token.pseudo-element,
+.token.selector .class,
+.token.selector.class {
+  color: #ff79c6;
+}
+
+/* Operators — pink */
 .token.operator,
-.token.combinator {
-  color: var(--color-zinc-400);
+.token.combinator,
+.token.attr-equals {
+  color: #ff79c6;
+}
+
+/* Tag names — green */
+.token.tag {
+  color: #50fa7b;
+}
+
+/* Functions — green */
+.token.function,
+.language-css .token.function {
+  color: #50fa7b;
+}
+
+/* Class names, types — cyan */
+.token.class-name,
+.token.builtin,
+.token.type-class-name {
+  color: #8be9fd;
+}
+
+/* Attribute names — cyan */
+.token.attr-name {
+  color: #8be9fd;
+}
+
+/* Attr values, strings — yellow */
+.token.attr-value,
+.token.string,
+.token.char,
+.token.regex,
+.token.url {
+  color: #f1fa8c;
+}
+
+/* Template literals / template punctuation */
+.token.template-string,
+.token.template-punctuation {
+  color: #f1fa8c;
+}
+
+/* Numbers, booleans, null — purple */
+.token.number,
+.token.boolean,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #bd93f9;
+}
+
+/* Properties — cyan-ish */
+.token.property {
+  color: #66d9e8;
+}
+
+/* Variables — orange */
+.token.variable,
+.token.parameter {
+  color: #ffb86c;
+}
+
+/* Units (CSS) — cyan */
+.token.unit {
+  color: #8be9fd;
+}
+
+/* Selectors (CSS) — green */
+.token.selector {
+  color: #50fa7b;
+}
+
+/* Inserted diff — green */
+.token.inserted {
+  color: #50fa7b;
+}
+
+/* Deleted diff — red */
+.token.deleted {
+  color: #ff5555;
+}
+
+/* Entity */
+.token.entity {
+  color: #f8f8f2;
+  cursor: help;
+}
+
+/* Bold / italic decorations inside tokens */
+.token.bold {
+  font-weight: 700;
+}
+.token.italic {
+  font-style: italic;
+}
+
+/* Line highlight (if plugin is used) */
+.line-highlight {
+  background: rgba(68, 71, 90, 0.4);
+  border-left: 2px solid #bd93f9;
 }
