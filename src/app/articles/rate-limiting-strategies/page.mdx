@@ -95,11 +95,11 @@ server {
 - Fixed Window: Đơn giản, giới hạn số requests trong 1 window cố định. Nhưng dễ bị spike ở window boundary.
 - Sliding Window: Cải tiến hơn Fixed Window. Giới hạn N request/X giây gần nhất bằng cách chia Window thành nhiều segment cố định, mỗi khi check sẽ đếm số request của segment hiện tại với các segment trước đó.
   Giảm spike tại window boundary. Nhưng tốn kém hơn về mặt memory vì phải lưu nhiều segment.
-  Đọc thêm tại https://www.facebook.com/hoc081098/posts/pfbid02XBGAAW7iu8SymptgHhxERbfwri4RQGNGJaJ4kR72vv4iUu6bGTtUJ6q3HPbQP2Wgl
+  Đọc thêm tại [bài viết trên Facebook](https://www.facebook.com/hoc081098/posts/pfbid02XBGAAW7iu8SymptgHhxERbfwri4RQGNGJaJ4kR72vv4iUu6bGTtUJ6q3HPbQP2Wgl)
 - Token Bucket: Mỗi request sẽ "rút" token từ bucket. Bucket được refill theo thời gian.
   Cho phép burst trong 1 thời gian ngắn & giữ tốc độ trung bình trong thời gian dài.
   Phù hợp với các hệ thống cần cho phép burst nhưng vẫn kiểm soát lưu lượng trung bình.
-  Đọc thêm tại https://www.facebook.com/hoc081098/posts/pfbid02s3RrBtD93FminminepcLM4GBhkADZ95bmjwz9GXWAsYMWDgXUc1uRnVYuwRwojRwl
+  Đọc thêm tại [bài viết trên Facebook](https://www.facebook.com/hoc081098/posts/pfbid02s3RrBtD93FminminepcLM4GBhkADZ95bmjwz9GXWAsYMWDgXUc1uRnVYuwRwojRwl)
 - Concurrency: Giới hạn số requests đang được xử lý đồng thời tại 1 thời điểm.
   Không giới hạn số request theo thời gian, mà giới hạn số request đang xử lý đồng thời.
   Phù hợp với các hệ thống có tài nguyên hạn chế hoặc cần đảm bảo hiệu suất ổn định.
@@ -150,7 +150,7 @@ File `appsettings.json` - Apply `customPolicy` rate limit policy cho route1:
 }
 ```
 
-Đọc thêm Microsoft docs: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/rate-limiting?view=aspnetcore-10.0
+Đọc thêm [Microsoft docs: Rate Limiting in YARP](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/rate-limiting?view=aspnetcore-10.0)
 
 ## Khi phân tầng đúng, chúng bổ trợ nhau
 
