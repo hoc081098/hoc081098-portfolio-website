@@ -57,8 +57,11 @@ function MobileNavigation(
         className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-zinc-900/5 duration-150 data-closed:scale-95 data-closed:opacity-0 data-enter:ease-out data-leave:ease-in dark:bg-zinc-900 dark:ring-zinc-800"
       >
         <div className="flex flex-row-reverse items-center justify-between">
-          <PopoverButton aria-label="Close menu" className="-m-1 p-1">
-            <XIcon className="h-6 w-6 text-zinc-500 dark:text-zinc-400" weight="duotone" />
+          <PopoverButton
+            aria-label="Close menu"
+            className="group flex h-9 w-9 items-center justify-center rounded-full outline-none ring-1 ring-zinc-900/10 transition-all duration-150 hover:bg-zinc-100/80 hover:ring-zinc-900/15 active:scale-95 dark:ring-white/10 dark:hover:bg-zinc-700/40 dark:hover:ring-white/15"
+          >
+            <XIcon className="h-4 w-4 text-zinc-400 transition-colors group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300" weight="bold" />
           </PopoverButton>
           <h2 className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
             Navigation
