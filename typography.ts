@@ -82,23 +82,31 @@ export default {
           },
 
           // Headings
-          'h2, h3': {
+          'h2, h3, h4': {
             color: 'var(--tw-prose-headings)',
-            fontWeight: theme('fontWeight.semibold'),
           },
           h2: {
-            fontSize: theme('fontSize.xl')[0],
-            lineHeight: theme('lineHeight.7'),
-            marginTop: theme('spacing.12'),
-            marginBottom: theme('spacing.3'),
+            fontSize: theme('fontSize.2xl')[0],
+            lineHeight: theme('lineHeight.8'),
+            fontWeight: theme('fontWeight.bold'),
+            marginTop: theme('spacing.14'),
+            marginBottom: theme('spacing.4'),
           },
           h3: {
-            fontSize: theme('fontSize.base')[0],
+            fontSize: theme('fontSize.xl')[0],
             lineHeight: theme('lineHeight.7'),
-            marginTop: theme('spacing.8'),
+            fontWeight: theme('fontWeight.bold'),
+            marginTop: theme('spacing.10'),
             marginBottom: theme('spacing.3'),
           },
-          ':is(h2, h3) + *': {
+          h4: {
+            fontSize: theme('fontSize.base')[0],
+            lineHeight: theme('lineHeight.7'),
+            fontWeight: theme('fontWeight.semibold'),
+            marginTop: theme('spacing.7'),
+            marginBottom: theme('spacing.2'),
+          },
+          ':is(h2, h3, h4) + *': {
             marginTop: 0,
           },
 
@@ -138,7 +146,7 @@ export default {
           'a code': {
             color: 'inherit',
           },
-          ':is(h2, h3) code': {
+          ':is(h2, h3, h4) code': {
             fontWeight: theme('fontWeight.bold'),
           },
 
