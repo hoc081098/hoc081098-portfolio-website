@@ -71,14 +71,14 @@ export default {
 
           // Base — tighter rhythm
           color: 'var(--tw-prose-body)',
-          lineHeight: '1.65',
+          lineHeight: '1.6',
           '> *': {
-            marginTop: theme('spacing.6'),
-            marginBottom: theme('spacing.6'),
+            marginTop: theme('spacing.4'),
+            marginBottom: theme('spacing.4'),
           },
           p: {
-            marginTop: theme('spacing.5'),
-            marginBottom: theme('spacing.5'),
+            marginTop: theme('spacing.4'),
+            marginBottom: theme('spacing.4'),
           },
 
           // Headings
@@ -89,22 +89,22 @@ export default {
             fontSize: theme('fontSize.2xl')[0],
             lineHeight: theme('lineHeight.8'),
             fontWeight: theme('fontWeight.bold'),
-            marginTop: theme('spacing.14'),
-            marginBottom: theme('spacing.4'),
+            marginTop: theme('spacing.10'),
+            marginBottom: theme('spacing.3'),
           },
           h3: {
             fontSize: theme('fontSize.xl')[0],
             lineHeight: theme('lineHeight.7'),
             fontWeight: theme('fontWeight.bold'),
-            marginTop: theme('spacing.10'),
-            marginBottom: theme('spacing.3'),
+            marginTop: theme('spacing.8'),
+            marginBottom: theme('spacing.2'),
           },
           h4: {
             fontSize: theme('fontSize.base')[0],
             lineHeight: theme('lineHeight.7'),
             fontWeight: theme('fontWeight.semibold'),
-            marginTop: theme('spacing.7'),
-            marginBottom: theme('spacing.2'),
+            marginTop: theme('spacing.6'),
+            marginBottom: theme('spacing.1'),
           },
           ':is(h2, h3, h4) + *': {
             marginTop: 0,
@@ -180,8 +180,8 @@ export default {
             paddingLeft: theme('spacing.6'),
           },
           li: {
-            marginTop: theme('spacing.3'),
-            marginBottom: theme('spacing.3'),
+            marginTop: theme('spacing.2'),
+            marginBottom: theme('spacing.2'),
             paddingLeft: theme('spacing[3.5]'),
           },
           'li::marker': {
@@ -195,12 +195,12 @@ export default {
             color: 'var(--tw-prose-bullets)',
           },
           'li :is(ol, ul)': {
-            marginTop: theme('spacing.3'),
-            marginBottom: theme('spacing.3'),
-          },
-          'li :is(li, p)': {
             marginTop: theme('spacing.2'),
             marginBottom: theme('spacing.2'),
+          },
+          'li :is(li, p)': {
+            marginTop: theme('spacing.1'),
+            marginBottom: theme('spacing.1'),
           },
 
           // Code blocks — Dracula
@@ -230,8 +230,8 @@ export default {
 
           // Horizontal rules
           hr: {
-            marginTop: theme('spacing.12'),
-            marginBottom: theme('spacing.12'),
+            marginTop: theme('spacing.8'),
+            marginBottom: theme('spacing.8'),
             borderTopWidth: '1px',
             borderColor: 'var(--tw-prose-hr)',
             '@screen lg': {
