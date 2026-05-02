@@ -23,10 +23,10 @@ function SocialLink({
     <li className={clsx(className, 'flex')}>
       <Link
         href={href}
-        className="group flex text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
+        className="group flex min-w-0 text-sm font-medium text-zinc-800 transition hover:text-violet-500 dark:text-zinc-200 dark:hover:text-violet-500"
       >
         <Icon className="h-6 w-6 flex-none fill-zinc-500 transition group-hover:fill-violet-500" weight="duotone" />
-        <span className="ml-4">{children}</span>
+        <span className="ml-4 break-all">{children}</span>
       </Link>
     </li>
   )
@@ -90,7 +90,7 @@ export default function About() {
           </div>
         </div>
         <div className="lg:pl-20">
-          <ul role="list" className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
             {socialData.map((e) => (
               <SocialLink
                 key={e.key}

@@ -47,7 +47,7 @@ export default function Uses() {
     >
       <div className="space-y-20">
         <ToolsSection title="Workstation">
-          <Tool title="MacBook Pro, Apple Silicon">
+          <Tool title="MacBook Pro, Apple Silicon" href="https://www.apple.com/macbook-pro/">
             My primary development machine. The performance improvements with
             Apple Silicon make running Android emulators, iOS simulators, and
             build tools significantly faster compared to older Intel machines.
@@ -67,7 +67,7 @@ export default function Uses() {
             Great lightweight editor for scripting, web work, and quick edits.
             The Flutter and Dart extensions are solid for smaller Flutter tasks.
           </Tool>
-          <Tool title="TablePlus">
+          <Tool title="TablePlus" href="https://tableplus.com/">
             Great software for working with databases. Has saved me from
             building about a thousand admin interfaces for my various projects
             over the years.
