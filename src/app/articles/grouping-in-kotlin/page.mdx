@@ -13,7 +13,7 @@ export const metadata = {
   description: article.description,
   openGraph: {
     images: [
-      `/api/og?type=article&title=${encodeURIComponent('Grouping trong Kotlin (Grouping in Kotlin)')}&description=${encodeURIComponent('So sánh groupBy, groupingBy và reduce trong Kotlin — phân tích time complexity, space complexity, và cơ chế lazy evaluation của Grouping.')}`,
+      `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],
   },
 }

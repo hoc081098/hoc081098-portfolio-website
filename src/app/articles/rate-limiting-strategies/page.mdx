@@ -13,7 +13,7 @@ export const metadata = {
   description: article.description,
   openGraph: {
     images: [
-      `/api/og?type=article&title=${encodeURIComponent('Rate limiting strategies for Nginx, API Gateway, and service layers')}&description=${encodeURIComponent('Rate limiting không nên đặt ở một tầng duy nhất. Phân tích chiến lược rate limiting tại Nginx (edge), API Gateway (YARP), và service layer trong ASP.NET Core.')}`,
+      `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],
   },
 }

@@ -19,7 +19,7 @@ export const metadata = {
   description: article.description,
   openGraph: {
     images: [
-      `/api/og?type=article&title=${encodeURIComponent('Looking at `Dp` class in Jetpack Compose')}&description=${encodeURIComponent('Why do @Composable functions in Jetpack Compose usually use Dp.Unspecified as default value? Why not use null? The optimization of Jetpack Compose under the hood.')}`,
+      `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],
   },
 }
