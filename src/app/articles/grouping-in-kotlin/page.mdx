@@ -11,6 +11,11 @@ export const article = {
 export const metadata = {
   title: article.title,
   description: article.description,
+  openGraph: {
+    images: [
+      `/api/og?type=article&title=${encodeURIComponent('Grouping trong Kotlin (Grouping in Kotlin)')}&description=${encodeURIComponent('So sánh groupBy, groupingBy và reduce trong Kotlin — phân tích time complexity, space complexity, và cơ chế lazy evaluation của Grouping.')}`,
+    ],
+  },
 }
 
 export default (props) => <ArticleLayout article={article} {...props} />

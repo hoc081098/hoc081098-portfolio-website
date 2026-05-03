@@ -21,6 +21,11 @@ export const article = {
 export const metadata = {
   title: article.title,
   description: article.description,
+  openGraph: {
+    images: [
+      `/api/og?type=article&title=${encodeURIComponent('RxSwift — Synchronizing Subjects (Behavior, Publish, Replay) in a multi-threaded environment')}&description=${encodeURIComponent('How to safely synchronize RxSwift Subjects across threads using serial schedulers, locks, and reactive patterns.')}`,
+    ],
+  },
 }
 
 export default (props) => <ArticleLayout article={article} {...props} />

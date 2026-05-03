@@ -11,6 +11,11 @@ export const article = {
 export const metadata = {
   title: article.title,
   description: article.description,
+  openGraph: {
+    images: [
+      `/api/og?type=article&title=${encodeURIComponent('Union Types trong C# — Discriminated Unions với OneOf')}&description=${encodeURIComponent('Cách mô hình hóa union types và discriminated unions trong C# bằng thư viện OneOf, với ví dụ thực tế cho error handling và domain modeling.')}`,
+    ],
+  },
 }
 
 export default (props) => <ArticleLayout article={article} {...props} />
