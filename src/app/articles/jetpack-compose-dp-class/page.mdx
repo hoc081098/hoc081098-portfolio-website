@@ -12,6 +12,9 @@ export const article = {
   title: 'Looking at `Dp` class in Jetpack Compose',
   description:
     'Why do @Composable functions in Jetpack Compose usually use `Dp.Unspecified` as default value? Why not use null? The optimization of Jetpack Compose under the hood.',
+  estimatedReadingTime: 5,
+  tags: ['hoc081098', 'rx_mobile_team', 'kotlindev', 'androiddev', 'rxandroid', 'jetpack_compose', 'value_class',
+      'kotlin', 'android', 'jetpack-compose', 'value-class', 'inline-class'],
 }
 
 export const metadata = {
@@ -26,9 +29,6 @@ export const metadata = {
 
 export default (props) => <ArticleLayout article={article} {...props} />
 
-> Estimated reading time: 5 minutes
-
-- _Tags_: #hoc081098, #rx_mobile_team, #kotlindev #androiddev, #rxandroid, #jetpack_compose, #value_class
 
 When using Jetpack Compose, we use `Dp` type to represent a dimension value representing device-independent
 pixels (dp).

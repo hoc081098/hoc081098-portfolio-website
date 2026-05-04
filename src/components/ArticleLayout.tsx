@@ -52,7 +52,7 @@ export function ArticleLayout({
                 <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
                 <span className="ml-3">{formatDate(article.date)}</span>
               </time>
-              {/* Author + hits badge */}
+              {/* Author + reading time + hits badge */}
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <a
                   href="https://github.com/hoc081098"
@@ -62,13 +62,30 @@ export function ArticleLayout({
                 >
                   Author: hoc081098
                 </a>
+                {article.estimatedReadingTime && (
+                  <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                    Estimated {article.estimatedReadingTime} min read
+                  </span>
+                )}
                 <a href={hitsLink} target="_blank" rel="noopener noreferrer">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={hitsUrl} alt="Hits" className="h-5" />
                 </a>
               </div>
+              {article.tags && article.tags.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {[...new Set(article.tags)].map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-block rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-500/10 dark:text-violet-400"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </header>
-            <Prose className="mt-8" data-mdx-content>
+            <Prose className="mt-12" data-mdx-content>
               {children}
             </Prose>
           </article>

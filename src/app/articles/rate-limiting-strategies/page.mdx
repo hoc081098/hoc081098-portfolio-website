@@ -6,6 +6,8 @@ export const article = {
   title: 'Rate limiting strategies for Nginx, API Gateway, and service layers',
   description:
     'Rate limiting không nên đặt ở một tầng duy nhất. Phân tích chiến lược rate limiting tại Nginx (edge), API Gateway (YARP), và service layer trong ASP.NET Core.',
+  estimatedReadingTime: 7,
+  tags: ['nginx', 'aspnet-core', 'rate-limiting', 'yarp', 'backend'],
 }
 
 export const metadata = {
@@ -20,7 +22,6 @@ export const metadata = {
 
 export default (props) => <ArticleLayout article={article} {...props} />
 
-> Estimated reading time: 7 minutes
 
 Rate limiting không nên được đặt ở một tầng duy nhất. Trong một hệ thống backend có phân tầng rõ ràng, rate limiting
 thường xuất hiện ở ba vị trí: Nginx (edge), API Gateway và từng service cụ thể. Mỗi tầng có mục tiêu khác nhau, và nếu

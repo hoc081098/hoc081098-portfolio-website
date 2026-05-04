@@ -1,10 +1,12 @@
 import glob from 'fast-glob'
 
-interface Article {
+export interface Article {
   title: string
   description: string
   author: string
   date: string
+  tags?: string[]
+  estimatedReadingTime?: number // in minutes
 }
 
 export interface ArticleWithSlug extends Article {
