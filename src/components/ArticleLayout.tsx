@@ -2,6 +2,7 @@
 
 import { useContext } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { ArrowLeftIcon } from '@phosphor-icons/react'
 
 import { AppContext } from '@/app/providers'
@@ -19,6 +20,11 @@ export function ArticleLayout({
 }) {
   let router = useRouter()
   let { previousPathname } = useContext(AppContext)
+  let pathname = usePathname()
+  let slug = pathname.split('/').pop() ?? ''
+
+  const hitsUrl = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}.svg`
+  const hitsLink = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}/`
 
   return (
     <Container className="mt-16 lg:mt-32">
@@ -46,6 +52,21 @@ export function ArticleLayout({
                 <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
                 <span className="ml-3">{formatDate(article.date)}</span>
               </time>
+              {/* Author + hits badge */}
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <a
+                  href="https://github.com/hoc081098"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-base font-semibold text-zinc-600 hover:text-violet-500 transition dark:text-zinc-300 dark:hover:text-violet-400"
+                >
+                  Author: hoc081098
+                </a>
+                <a href={hitsLink} target="_blank" rel="noopener noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={hitsUrl} alt="Hits" className="h-5" />
+                </a>
+              </div>
             </header>
             <Prose className="mt-8" data-mdx-content>
               {children}

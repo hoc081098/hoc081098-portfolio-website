@@ -26,13 +26,8 @@ export const metadata = {
 
 export default (props) => <ArticleLayout article={article} {...props} />
 
-[![Hits](https://hits.sh/portfolio.hoc081098.dev/articles/jetpack-compose-dp-class.svg)](https://hits.sh/portfolio.hoc081098.dev/articles/jetpack-compose-dp-class/)
+> Estimated reading time: 5 minutes
 
-## Why do @Composable functions in Jetpack Compose usually use `Dp.Unspecified` as default value? Why not use null? The optimization of Jetpack Compose under the hood
-
-- Author: [Petrus Nguyễn Thái Học](https://github.com/hoc081098)
-- _Published on Sep 16, 2023_
-- _5 minutes read so far_
 - _Tags_: #hoc081098, #rx_mobile_team, #kotlindev #androiddev, #rxandroid, #jetpack_compose, #value_class
 
 When using Jetpack Compose, we use `Dp` type to represent a dimension value representing device-independent
@@ -48,9 +43,9 @@ Do you have the same question as me 😇, when looking Jetpack Compose source co
 
 _Dp.Unspecified is usually used as default value in Jetpack Compose source code_
 
-### I. `Dp` class
+## I. `Dp` class
 
-#### I.1. `Dp` class declaration
+### I.1. `Dp` class declaration
 
 At the moment, `Dp` class is defined as follows:
 
@@ -99,7 +94,7 @@ That is the optimization of Jetpack Compose.
 
 > The inline class spec is [here](https://github.com/Kotlin/KEEP/blob/master/proposals/inline-classes.md).
 
-#### I.2. Example ✍️
+### I.2. Example ✍️
 
 Let's create a simple example to see how the compiler optimizes `Dp` class, I create a `@Composable fun MyComposable1`
 accepting a `Dp` as the first parameter.
@@ -132,7 +127,7 @@ called [mangling](https://kotlinlang.org/docs/inline-classes.html#mangling).
 > To mitigate such issues, functions using inline classes are mangled by adding some stable hashcode to the function
 > name.
 
-### II. Why do @Composable functions in Jetpack Compose usually use `Dp.Unspecified` as default value? Why not use null?
+## II. Why do @Composable functions in Jetpack Compose usually use `Dp.Unspecified` as default value? Why not use null?
 
 ### II.1. Why not use null?
 
@@ -166,7 +161,7 @@ Imagine we use `Dp?` types in many places (the worst case is in **a loop** or is
 it will cause a lot of heap allocation, affect the application performance ⚠️,
 especially a UI application, its performance is very important to the user experience.
 
-#### II.2. Demonstration example ✍️
+### II.2. Demonstration example ✍️
 
 Let's create a simple example using `Dp?` type, we create a `@Composable fun MyComposable2` accepting a `Dp?` as the
 first parameter.
@@ -196,7 +191,7 @@ _Dp type is not replaced with Float type and heap allocation is used_
 `Dp.Unspecified` is a better choice ✅, it wraps a `Float.NaN` value.
 Sometimes, we can use `Dp.Hairline` (aka `0.dp`) as default value, depending on your use case.
 
-#### II.3. Bonus ✅
+### II.3. Bonus ✅
 
 - How about elvis operator `?:`?
 - How about `== null`?
