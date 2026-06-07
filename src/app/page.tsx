@@ -185,6 +185,12 @@ export default async function Home() {
                 No articles yet.
               </p>
             )}
+            <div>
+              <Button href="/articles" variant="secondary" className="group gap-2">
+                Read more articles
+                <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" weight="bold" />
+              </Button>
+            </div>
           </div>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
             <Resume />
