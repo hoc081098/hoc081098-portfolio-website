@@ -40,28 +40,18 @@ export async function getAllArticles() {
 }
 
 export async function getAllArticleTags() {
-  let tagMap = new Map<string, { name: string; slug: string; count: number }>()
+  let tagMap = new Map<string, { name: string; slug: string }>()
   let articles = await getAllArticles()
 
   for (let article of articles) {
-    let articleTagSlugs = new Set<string>()
-
     for (let tag of new Set(article.tags ?? [])) {
       let slug = slugifyTag(tag)
 
-      if (!slug || articleTagSlugs.has(slug)) {
+      if (!slug || tagMap.has(slug)) {
         continue
       }
 
-      articleTagSlugs.add(slug)
-
-      let existingTag = tagMap.get(slug)
-
-      if (existingTag) {
-        existingTag.count += 1
-      } else {
-        tagMap.set(slug, { name: tag, slug, count: 1 })
-      }
+      tagMap.set(slug, { name: tag, slug })
     }
   }
 
