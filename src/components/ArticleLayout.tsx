@@ -1,6 +1,7 @@
 'use client'
 
 import { useContext } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { ArrowLeftIcon } from '@phosphor-icons/react'
@@ -10,6 +11,7 @@ import { Container } from '@/components/Container'
 import { Prose } from '@/components/Prose'
 import { type ArticleWithSlug } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
+import { slugifyTag } from '@/lib/tags'
 
 export function ArticleLayout({
   article,
@@ -35,9 +37,12 @@ export function ArticleLayout({
               type="button"
               onClick={() => router.back()}
               aria-label="Go back to articles"
-              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-zinc-800/5 ring-zinc-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md ring-1 shadow-zinc-800/5 ring-zinc-900/5 transition lg:absolute lg:-left-5 lg:-mt-2 lg:mb-0 xl:-top-1.5 xl:left-0 xl:mt-0 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
             >
-              <ArrowLeftIcon className="h-4 w-4 text-zinc-500 transition group-hover:text-zinc-700 dark:text-zinc-500 dark:group-hover:text-zinc-400" weight="duotone" />
+              <ArrowLeftIcon
+                className="h-4 w-4 text-zinc-500 transition group-hover:text-zinc-700 dark:text-zinc-500 dark:group-hover:text-zinc-400"
+                weight="duotone"
+              />
             </button>
           )}
           <article>
@@ -58,7 +63,7 @@ export function ArticleLayout({
                   href="https://github.com/hoc081098"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-base font-semibold text-zinc-600 hover:text-violet-500 transition dark:text-zinc-300 dark:hover:text-violet-400"
+                  className="text-base font-semibold text-zinc-600 transition hover:text-violet-500 dark:text-zinc-300 dark:hover:text-violet-400"
                 >
                   Author: hoc081098
                 </a>
@@ -75,12 +80,13 @@ export function ArticleLayout({
               {article.tags && article.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {[...new Set(article.tags)].map((tag) => (
-                    <span
+                    <Link
                       key={tag}
-                      className="inline-block rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-600 dark:bg-violet-500/10 dark:text-violet-400"
+                      href={`/tags/${slugifyTag(tag)}`}
+                      className="inline-block rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-600 transition hover:bg-violet-100 hover:text-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/20 dark:hover:text-violet-300 dark:focus:ring-offset-zinc-950"
                     >
                       {tag}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               )}
