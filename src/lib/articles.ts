@@ -1,4 +1,5 @@
 import glob from 'fast-glob'
+import { cache } from 'react'
 
 import { slugifyTag } from '@/lib/tags'
 
@@ -29,7 +30,7 @@ async function importArticle(
   }
 }
 
-export async function getAllArticles() {
+export const getAllArticles = cache(async function getAllArticles() {
   let articleFilenames = await glob('*/page.mdx', {
     cwd: './src/app/articles',
   })
@@ -37,9 +38,9 @@ export async function getAllArticles() {
   let articles = await Promise.all(articleFilenames.map(importArticle))
 
   return articles.sort((a, z) => +new Date(z.date) - +new Date(a.date))
-}
+})
 
-export async function getAllArticleTags() {
+export const getAllArticleTags = cache(async function getAllArticleTags() {
   let tagMap = new Map<string, { name: string; slug: string }>()
   let articles = await getAllArticles()
 
@@ -58,12 +59,14 @@ export async function getAllArticleTags() {
   return Array.from(tagMap.values()).sort((a, z) =>
     a.name.localeCompare(z.name),
   )
-}
+})
 
-export async function getArticlesByTag(tagSlug: string) {
+export const getArticlesByTag = cache(async function getArticlesByTag(
+  tagSlug: string,
+) {
   let articles = await getAllArticles()
 
   return articles.filter((article) =>
     article.tags?.some((tag) => slugifyTag(tag) === tagSlug),
   )
-}
+})
