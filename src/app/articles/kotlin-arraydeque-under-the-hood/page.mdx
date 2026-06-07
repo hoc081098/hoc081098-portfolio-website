@@ -476,12 +476,12 @@ nhưng ta chấp nhận phải copy nhiều hơn một chút.
 Hơn nữa, về mặt lý thuyết, việc chọn hệ số 1.5x thay vì 2x cũng có thể giúp tăng khả năng tái sử dụng bộ nhớ trong một số mô hình cấp phát.
 Vấn đề này có thể được chứng minh qua toán học khi xét ở lần cấp phát thứ `n`:
 
-- Trường hợp dùng 2x: Size của mảng mới cần cấp phát là $2^n$.
-  Tuy nhiên, con số này luôn **lớn hơn** 1 đơn vị so với tổng size của tất cả các mảng cũ đã bị vứt bỏ trước đó ($\sum_{i=0}^{n-1} 2^i = 2^n - 1$).
+- Trường hợp dùng 2x: Size của mảng mới cần cấp phát là `2^n`.
+  Tuy nhiên, con số này luôn **lớn hơn** 1 đơn vị so với tổng size của tất cả các mảng cũ đã bị vứt bỏ trước đó (`sum(2^i, i=0..n-1) = 2^n - 1`).
   Điều này làm giảm khả năng tái sử dụng trực tiếp các vùng nhớ cũ theo mô hình lý thuyết.
 
-- Trường hợp dùng 1.5x: Size của mảng mới là $1.5^n$.
-  Khác với hệ số 2, từ lần cấp phát thứ **2** trở đi, kích thước này sẽ **nhỏ hơn** tổng size của bộ nhớ cũ đã giải phóng ($\sum_{i=0}^{n-1} 1.5^i$).
+- Trường hợp dùng 1.5x: Size của mảng mới là `1.5^n`.
+  Khác với hệ số 2, từ lần cấp phát thứ **2** trở đi, kích thước này sẽ **nhỏ hơn** tổng size của bộ nhớ cũ đã giải phóng (`sum(1.5^i, i=0..n-1)`).
   Nhờ vậy, về mặt lý thuyết Memory Allocator có nhiều cơ hội hơn để tái sử dụng các vùng nhớ đã được giải phóng.
 
 Tất nhiên, trong thực tế chuyện allocator có tái sử dụng được vùng nhớ cũ hay không còn phụ thuộc vào runtime,
