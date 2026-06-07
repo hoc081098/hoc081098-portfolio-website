@@ -20,6 +20,7 @@ export const article = {
 export const metadata = {
   title: article.title,
   description: article.description,
+  keywords: article.tags,
   openGraph: {
     images: [
       `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
