@@ -1,0 +1,503 @@
+# Under the Hood of Kotlin ArrayDeque: Circular Buffer, Capacity Growth, and Complexity Analysis
+
+> Estimated reading time: 13 minutes
+
+## Overview
+
+Ngay tại thời điểm này, khi AI Agents đang được sử dụng rộng rãi trong Software Development, mình có cảm giác ngày càng ít người hứng thú với những thứ nằm phía sau framework, library hay API mà họ sử dụng hằng ngày. Nhiều người chỉ quan tâm tới việc ship feature nhanh nhất có thể, còn data structures, algorithms hay internal implementation dần bị xem là những chủ đề “không còn quá cần thiết nữa”.
+
+Nhưng với mình thì ngược lại. Mình vẫn dùng AI mỗi ngày để nghiên cứu, review và hỗ trợ viết code, nhưng càng như vậy mình càng thấy hứng thú với việc đọc source code, tìm hiểu implementation và hiểu rõ trade-offs đằng sau những abstraction mà chúng ta sử dụng, và phần nào giúp cho cái công việc gen/review code của Agent bớt nhàm chán hơn. 
+
+Tạm nói qua bối cảnh như vậy, hôm trước mình dùng Agent để gen code thì nó gen ra một đoạn code dùng Kotlin `ArrayDeque`, mình đọc vào tất nhiên sẽ hiểu logic và semantics của nó rồi,
+vì mình đã xài `ArrayDeque` từ thời Java,
+và bắt đầu xài Kotlin `ArrayDeque` ngay từ khi nó được giới thiệu trong Kotlin 1.4.
+
+Mình vẫn biết nó là "double-ended queue implementation backed by a resizable circular buffer",
+tức là một hàng đợi hai đầu, cho phép thêm/xóa ở cả đầu trước và đầu sau.
+Nếu nhìn dưới góc độ amortized analysis, các thao tác thêm/xóa ở hai đầu là O(1).
+Nó có thể được dùng như là `Stack` (`addLast`/`removeLast`) hoặc `Queue` (`addLast`/`removeFirst`) tùy vào mục đích sử dụng.
+
+Ngày xưa, mình hay dùng nó khi cần duyệt graph, ví dụ `BFS` với queue semantics (`addLast`/`removeFirst`) hoặc `DFS` với stack semantics (`addLast`/`removeLast`).
+Các bạn có thể xem PR https://github.com/InsertKoinIO/koin/pull/1801 - PR mình contribute vô `Koin` repository để refactor một hàm đệ quy sang `DFS`, hàm này flatten các `Koin` modules.
+Nhưng trước giờ mình cũng chỉ nhớ mang máng nó là _resizable circular buffer_ chứ cũng không tìm hiểu rõ internal implementation của nó như nào. Hôm trước được dịp Agent gen code xong, thì mình cũng tranh thủ vô đọc Kotlin `ArrayDeque` luôn cho biết.
+Nên hôm nay, mình sẽ chia sẻ lại những gì mình đã tìm hiểu được về `ArrayDeque` implementation, hy vọng sẽ giúp các bạn có thêm kiến thức về một data structure rất hay và hữu ích này.
+
+-----
+
+## I. Data structure
+
+```kotlin
+@SinceKotlin("1.4")
+public class ArrayDeque<E> : AbstractMutableList<E> {
+  private var head: Int = 0
+  private var elementData: Array<Any?>
+
+  override var size: Int = 0
+    private set
+}
+```
+
+Phần data của nó thực sự là:
+- `elementData: Array<Any?>`: growable, nghĩa là khi cần thêm capacity thì nó sẽ được mở rộng lên. Đây chính là nơi lưu trữ data thực sự của `ArrayDeque`.
+- `head`: index thực sự của phần tử head, nó là _physical index_ trong `elementData` chứ không phải _logical index_ (logical index của head luôn là 0).
+- `size`: số phần tử hiện có trong `ArrayDeque`.
+
+### I.1. Physical vs Logical index
+
+Trong `ArrayDeque`, có 2 khái niệm về index:
+
+- **Physical index**: index thực sự trong `elementData` array. Ví dụ là `head`, nó có thể được dùng để truy cập phần tử head thực sự, cơ bản là `elementData[head]`.
+
+- **Logical index**: index mà phía bên ngoài nhìn vào. Đây là cái mà developer chúng ta thường dùng để access element trong ArrayDeque. Ví dụ `ArrayDeque.get(0)` sẽ trả về phần tử head, `ArrayDeque.get(size-1)` sẽ trả về phần tử cuối cùng.
+
+### I.2. Derived tail
+
+Về mặt khái niệm, `tail` là physical index ngay sau phần tử cuối cùng (exclusive).
+Và `tail` có thể được derived dễ dàng từ `head` và `size`:
+
+```kotlin
+private fun positiveMod(index: Int): Int = if (index >= elementData.size) index - elementData.size else index
+
+@kotlin.internal.InlineOnly
+private inline fun internalIndex(index: Int): Int = positiveMod(head + index)
+
+val tail = internalIndex(size)
+```
+
+`internalIndex` là method để convert _logical index_ (0-based) sang _physical index_ trong `elementData`.
+Logical index của head luôn là 0, tail thì có logical index là `size`.
+`positiveMod` là method để wrap-around qua 0 khi index vượt quá capacity của `elementData`.
+
+Về mặt khái niệm có thể hiểu gần như modulo,
+nhưng implementation thực tế chỉ cần subtract một lần vì input đã nằm trong khoảng có thể wrap tối đa một vòng.
+
+```
+positiveMod(x) = x mod elementData.size
+tail = (head + size) mod elementData.size
+```
+
+Tại sao không lưu `tail` như một field riêng biệt mà lại derived như vậy?
+Vì `tail` được derived như vậy để tiết kiệm 1 field, đồng thời đảm bảo **invariant** "tail = head + size" không thể bị drift (vì nó luôn được derived từ `head` và `size`).
+
+### I.3. Internal layout
+
+Trong phần lớn thời gian, ArrayDeque sẽ ở một trong hai trạng thái:
+
+- `head` nhỏ hơn `tail` (contiguous): các phần tử nằm liên tiếp trong `elementData` từ `head` đến `tail-1`.
+
+```
+[##, ##, e1, e2, e3, ##]
+     ↑               ↑
+    head            tail
+```
+
+- `head` lớn hơn `tail` (wrapped): sau khi `tail` vượt quá cuối array và vòng về 0, các phần tử sẽ nằm ở 2 đầu của `elementData`.
+
+```
+[e3, ##, ##, ##, e1, e2]
+     ↑           ↑
+    tail       head
+```
+
+Với 2 ví dụ trên thì nếu nhìn từ bên ngoài vào thì cả 2 đều có data giống nhau `[e1, e2, e3]`.
+
+-----
+
+## II. Operations
+
+Ta thử tìm hiểu 4 methods chính của `ArrayDeque`: `addLast`, `addFirst`, `removeFirst`, `removeLast`
+để xem `head`, `tail` và backing array thay đổi như thế nào khi add/remove ở hai đầu.
+
+### II.1. addLast
+
+```kotlin
+class ArrayDeque<E> : AbstractMutableList<E> {
+  /**
+   * Appends the specified [element] to this deque.
+   */
+  public fun addLast(element: E) {
+    registerModification()
+    ensureCapacity(size + 1)
+
+    elementData[internalIndex(size)] = element
+    size += 1
+  }
+
+  /**
+   * Ensures that the capacity of this deque is at least equal to the specified [minCapacity].
+   *
+   * If the current capacity is less than the [minCapacity], a new backing storage is allocated with greater capacity.
+   * Otherwise, this method takes no action and simply returns.
+   */
+  private fun ensureCapacity(minCapacity: Int) { ... }
+}
+```
+
+- Đầu tiên, nó sẽ đảm bảo `elementData.size >= size + 1` bằng cách gọi `ensureCapacity`,
+nghĩa là `elementData` có đủ chỗ trống để thêm 1 phần tử vào đuôi.
+Nếu capacity hiện tại không đủ thì sẽ được mở rộng lên (ta sẽ tìm hiểu việc mở rộng này ở phần sau).
+
+- `internalIndex(size)` để lấy _physical index_ của `size` (_logical index_ của tail), sau đó gán `element` vào đó.
+
+- Sau cùng tăng `size` lên 1, lúc này chỗ nào dùng `tail` thì cũng sẽ reflect value mới, vì `tail` được derived từ `size` và `head`.
+
+Chỗ đặc biệt là `internalIndex` nó có cơ chế wrap-around qua 0 khi index vượt quá capacity của `elementData`, nên khi `tail` vượt quá cuối array thì nó sẽ tự động vòng về 0 để tiếp tục add phần tử vào đầu array.
+Đây chính là circular buffer semantics. Lấy ví dụ:
+
+```
+[##, ##, e1, e2, e3]
+         ↑
+        head
+# size = 3, head = 2, tail = 0, capacity = 5
+
+-------- addLast(e4) --------
+
+[e4, ##, e1, e2, e3]
+     ↑   ↑
+    tail head
+# size = 4, head = 2, tail = 1, capacity = 5
+```
+
+### II.2. addFirst
+
+```kotlin
+class ArrayDeque<E> : AbstractMutableList<E> {
+  private fun decremented(index: Int): Int = if (index == 0) elementData.lastIndex else index - 1
+
+  /**
+   * Prepends the specified [element] to this deque.
+   */
+  public fun addFirst(element: E) {
+    registerModification()
+    ensureCapacity(size + 1)
+
+    head = decremented(head)
+    elementData[head] = element
+    size += 1
+  }
+}
+```
+
+- Tương tự như `addLast`, nó cũng sẽ đảm bảo capacity đủ để thêm phần tử mới.
+
+- Cái hay ở chỗ là `head` bây giờ phải lùi về trước, thông qua `head = decremented(head)`. Ta có thể hiểu theo kiểu logical index là `head = head-1`, nhưng vì `head` là physical index nên nó phải được `decrement` với wrap-around qua 0, nghĩa là nếu `head` đang ở 0 thì nó sẽ lùi về cuối array (`elementData.lastIndex`). Ta thấy nó đi theo chiều ngược lại so với `addLast`, nhưng vẫn đảm bảo được circular buffer semantics.
+
+- Gán `element` vào `elementData[head]` sau khi đã lùi `head` về trước, rồi tăng `size` lên 1.
+
+Lấy ví dụ circular buffer semantics, khi head đã ở vị trí 0 và ta `addFirst` thêm 1 phần tử nữa thì head sẽ lùi về cuối array:
+
+```
+[e1, e2, e3, ##, ##]
+ ↑
+head
+# size = 3, head = 0, tail = 3, capacity = 5
+
+-------- addFirst(e0) --------
+
+[e1, e2, e3, ##, e0]
+             ↑   ↑
+            tail head
+# size = 4, head = 4, tail = 3, capacity = 5
+```
+
+### II.3. removeFirst
+
+```kotlin
+class ArrayDeque<E> : AbstractMutableList<E> {
+  private fun incremented(index: Int): Int = if (index == elementData.lastIndex) 0 else index + 1
+
+  /**
+   * Removes the first element from this deque and returns that removed element, or throws [NoSuchElementException] if this deque is empty.
+   */
+  @IgnorableReturnValue
+  public fun removeFirst(): E {
+    if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+    registerModification()
+
+    val element = internalGet(head)
+    elementData[head] = null
+    head = incremented(head)
+    size -= 1
+    return element
+  }
+}
+```
+
+- Đầu tiên, nó sẽ check nếu `ArrayDeque` đang rỗng thì sẽ throw `NoSuchElementException`.
+
+- Tiếp theo, lấy phần tử head thực sự thông qua `internalGet(head)` (để return cho caller).
+  Sau đó, gán `null` vào vị trí head trong `elementData` để clear reference (để GC có thể thu hồi nếu cần).
+
+- Tiếp đến, quan trọng nhất, đó chính là việc đẩy `head` về sau một vị trí, hiểu theo nghĩa logical index là `head = head + 1`.
+  Tương tự như `addFirst` có `decremented`, thì `removeFirst` có `incremented` để `+1` nhưng wrap-around.
+`incremented` chính là dual của `decremented`, cũng có cơ chế wrap-around qua 0 nếu `head` đang ở cuối array.
+
+- Tiếp theo, giảm `size` đi 1 để reflect việc đã remove 1 phần tử.
+
+- Sau cùng, đơn giản chỉ return phần tử đã remove.
+
+Ta lấy ví dụ `head` ở cuối array và ta thực hiện `removeFirst` thì `head` sẽ wrap về đầu array:
+
+```
+[e1, e2, ##, ##, e0]
+         ↑       ↑
+        tail    head
+# size = 3, head = 4, tail = 2, capacity = 5
+
+-------- removeFirst() --------
+
+[e1, e2, ##, ##, ##]
+ ↑       ↑ 
+head    tail
+# size = 2, head = 0, tail = 2, capacity = 5
+```
+
+### II.4. removeLast
+
+```kotlin
+class ArrayDeque<E> : AbstractMutableList<E> {
+  /**
+   * Removes the last element from this deque and returns that removed element, or throws [NoSuchElementException] if this deque is empty.
+   */
+  @IgnorableReturnValue
+  public fun removeLast(): E {
+    if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+    registerModification()
+
+    val internalLastIndex = internalIndex(lastIndex)
+    val element = internalGet(internalLastIndex)
+    elementData[internalLastIndex] = null
+    size -= 1
+    return element
+  }
+}
+```
+
+- Tương tự như `removeFirst`, nó sẽ check nếu `ArrayDeque` đang rỗng thì sẽ throw `NoSuchElementException`.
+
+- Lấy _physical index_ của phần tử cuối `lastIndex` - logical index, thông qua `internalLastIndex = internalIndex(lastIndex)`. Sau đó, lấy phần tử cuối thực sự thông qua `element = internalGet(internalLastIndex)` (để return cho caller).
+
+- Gán `null` vào `internalLastIndex` trong `elementData` để clear reference (để GC có thể thu hồi nếu cần).
+
+- Giảm `size` đi 1 để reflect việc đã remove 1 phần tử.
+
+- Sau cùng, đơn giản chỉ return phần tử đã remove.
+
+Ta thử lấy ví dụ phần tử cuối ở đầu array và ta thực hiện `removeLast`:
+
+```
+[e1, ##, ##, ##, e0]
+     ↑           ↑
+    tail        head
+# size = 2, head = 4, tail = 1, capacity = 5
+
+-------- removeLast() --------
+
+[##, ##, ##, ##, e0]
+ ↑               ↑
+tail            head
+# size = 1, head = 4, tail = 0, capacity = 5
+```
+
+-----
+
+## III. Capacity expansion
+
+### III.1. ensureCapacity và copyElements
+
+Method `ensureCapacity` sẽ đảm nhận nhiệm vụ mở rộng capacity của `elementData` khi cần thiết, cụ thể là khi `addFirst` hoặc `addLast` được gọi mà `size + 1 > elementData.size` (tức là capacity hiện tại không đủ để chứa phần tử mới).
+
+```kotlin
+class ArrayDeque<E> : AbstractMutableList<E> {
+  /**
+   * Constructs an empty deque with specified [initialCapacity], or throws [IllegalArgumentException] if [initialCapacity] is negative.
+   */
+  public constructor(initialCapacity: Int) {
+    elementData = when {
+      initialCapacity == 0 -> emptyElementData
+      initialCapacity > 0 -> arrayOfNulls(initialCapacity)
+      else -> throw IllegalArgumentException("Illegal Capacity: $initialCapacity")
+    }
+  }
+
+  /**
+   * Constructs an empty deque.
+   */
+  public constructor() {
+    elementData = emptyElementData
+  }
+
+  /**
+   * Ensures that the capacity of this deque is at least equal to the specified [minCapacity].
+   *
+   * If the current capacity is less than the [minCapacity], a new backing storage is allocated with greater capacity.
+   * Otherwise, this method takes no action and simply returns.
+   */
+  private fun ensureCapacity(minCapacity: Int) {
+    if (minCapacity < 0) throw IllegalStateException("Deque is too big.")    // overflow
+    if (minCapacity <= elementData.size) return
+    if (elementData === emptyElementData) {
+      elementData = arrayOfNulls(minCapacity.coerceAtLeast(defaultMinCapacity))
+      return
+    }
+
+    // fun newCapacity(oldCapacity: Int, minCapacity: Int): Int
+    val newCapacity = AbstractList.newCapacity(elementData.size, minCapacity)
+    copyElements(newCapacity)
+  }
+
+  /**
+   * Creates a new array with the specified [newCapacity] size and copies elements in the [elementData] array to it.
+   */
+  private fun copyElements(newCapacity: Int) {
+    val newElements = arrayOfNulls<Any?>(newCapacity)
+    // fun Array<out T>.copyInto(destination: Array<T>, destinationOffset: Int = 0, startIndex: Int = 0, endIndex: Int = size): Array<T>
+    elementData.copyInto(newElements, 0, head, elementData.size)
+    elementData.copyInto(newElements, elementData.size - head, 0, head)
+    head = 0
+    elementData = newElements
+  }
+
+  internal companion object {
+    private val emptyElementData = emptyArray<Any?>()
+    private const val defaultMinCapacity = 10
+  }
+}
+```
+
+- Nếu `minCapacity < 0` tức là minCapacity đã vượt quá biên trên `Int.MAX_VALUE` nên value nó bị thành âm (overflow), lúc này sẽ throw `IllegalStateException` với message "Deque is too big.".
+
+- Nếu `minCapacity <= elementData.size` tức là capacity hiện tại đã đủ lớn để chứa phần tử mới, thì method sẽ không làm gì cả và return luôn.
+
+- Nếu `elementData === emptyElementData` - ở đây `emptyElementData` là một **sentinel value** để đại diện cho một `ArrayDeque` mới khởi tạo mà chưa có capacity nào được allocated (`constructor()`) - thì sẽ tạo một array mới với capacity là max của `minCapacity` và `defaultMinCapacity` (mặc định là 10).
+
+- Trường hợp cuối cùng, ta phải alloc một array mới với new capacity `AbstractList.newCapacity`, rồi gọi `copyElements`.
+`copyElements` có nhiệm vụ alloc một array với length=`newCapacity`, sau đó copy phần tử từ `elementData` sang `newElements` theo nguyên tắc sau: đầu tiên là các items từ `head` đến `elementData.size-1`, rồi tiếp theo là các items từ `0` đến `head-1`. Sau khi copy xong thì `head` sẽ được reset về 0, và `elementData` sẽ trỏ sang `newElements` mới.
+Điểm nổi bật là sau khi ta "rải" các items từ array cũ sang `newElements` thì layout của `ArrayDeque` sẽ được reset về contiguous layout, nghĩa là `head` sẽ ở vị trí 0 và `tail` sẽ ở vị trí `size`, điều này giúp cho trạng thái buffer sạch hơn.
+
+> Resize không chỉ tăng capacity, mà còn “duỗi thẳng” circular layout về lại linear layout.
+
+### III.2. Tại sao lại tăng capacity lên 1.5x?
+
+Ta thử tìm hiểu tiếp xem new capacity được tính như nào thông qua `AbstractList.newCapacity`:
+
+```kotlin
+public abstract class AbstractList<out E> protected constructor() : AbstractCollection<E>(), List<E> {
+  internal companion object {
+    /** [oldCapacity] and [minCapacity] must be non-negative. */
+    internal fun newCapacity(oldCapacity: Int, minCapacity: Int): Int {
+      // overflow-conscious
+      var newCapacity = oldCapacity + (oldCapacity shr 1)
+      if (newCapacity - minCapacity < 0)
+        newCapacity = minCapacity
+      if (newCapacity - maxArraySize > 0)
+        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
+      return newCapacity
+    }
+  }
+}
+```
+
+Ta focus vào dòng `var newCapacity = oldCapacity + (oldCapacity shr 1)`,
+ở đây có thể hiểu là `newCapacity = oldCapacity + oldCapacity/2` (sử dụng "shift right" để chia cho 2),
+nên `newCapacity = oldCapacity * 1.5`.
+Đây là một chiến lược phổ biến để tăng capacity của các data structure dạng array,
+vì nó giúp cân bằng giữa việc **giảm số lần mở rộng** (vì mỗi lần mở rộng sẽ tăng capacity lên 50%)
+và **tránh lãng phí quá nhiều memory** (so với việc tăng gấp đôi capacity).
+
+Câu hỏi đặt ra là:
+"Tại sao không sử dụng 2x mà lại là 1.5x"?
+2x, thường thấy trong `std::vector` của trình biên dịch GCC - C++, sẽ đỡ phải copy nhiều hơn, nhưng nó cũng sẽ lãng phí nhiều memory hơn,
+đặc biệt là khi `oldCapacity` đã lớn,
+có thể lãng phí đến gần 50% bộ nhớ ở lần cấp phát cuối cùng.
+
+Còn 1.5x (dùng trong Java `ArrayList`, Kotlin `ArrayDeque`, hoặc `std::vector` của MSVC) là "điểm ngọt" (sweet spot),
+không lãng phí quá nhiều memory,
+giữ cho lượng RAM lãng phí ở mức tối đa chỉ khoảng 33%,
+nhưng ta chấp nhận phải copy nhiều hơn một chút.
+Đây chính là một trade-off giữa **performance** và **memory efficiency**.
+
+Hơn nữa, về mặt lý thuyết, việc chọn hệ số 1.5x thay vì 2x cũng có thể giúp tăng khả năng tái sử dụng bộ nhớ trong một số mô hình cấp phát.
+Vấn đề này có thể được chứng minh qua toán học khi xét ở lần cấp phát thứ `n`:
+
+- Trường hợp dùng 2x: Size của mảng mới cần cấp phát là $2^n$.
+  Tuy nhiên, con số này luôn **lớn hơn** 1 đơn vị so với tổng size của tất cả các mảng cũ đã bị vứt bỏ trước đó ($\sum_{i=0}^{n-1} 2^i = 2^n - 1$).
+  Điều này làm giảm khả năng tái sử dụng trực tiếp các vùng nhớ cũ theo mô hình lý thuyết.
+
+- Trường hợp dùng 1.5x: Size của mảng mới là $1.5^n$.
+  Khác với hệ số 2, từ lần cấp phát thứ **2** trở đi, kích thước này sẽ **nhỏ hơn** tổng size của bộ nhớ cũ đã giải phóng ($\sum_{i=0}^{n-1} 1.5^i$).
+  Nhờ vậy, về mặt lý thuyết Memory Allocator có nhiều cơ hội hơn để tái sử dụng các vùng nhớ đã được giải phóng.
+
+Tất nhiên, trong thực tế chuyện allocator có tái sử dụng được vùng nhớ cũ hay không còn phụ thuộc vào runtime,
+GC, allocator và platform cụ thể. Vì vậy, nên xem đây là một intuition về trade-off, không phải một guarantee tuyệt đối.
+
+-----
+
+## IV. Complexity Analysis
+
+### IV.1. Get operations
+
+Vì `ArrayDeque` vẫn map _logical index_ sang _physical index_ bằng `internalIndex(index)`,
+nên `get(index)` vẫn là O(1).
+
+Tuy nhiên, các thao tác insert/remove ở giữa deque không còn O(1),
+vì lúc đó phải dịch chuyển elements ở một phía để giữ layout hợp lệ.
+
+### IV.2. Remove first/last operations
+
+Các method remove phần tử như `removeFirst` và `removeLast` đều có complexity là O(1), 
+vì chúng chỉ clear slot tương ứng, cập nhật `head`/`size`, và không cần loop hay copy elements.
+
+### IV.3. Add first/last operations
+
+Các method add phần tử như `addFirst` và `addLast` có complexity amortized O(1).
+
+Trong phần lớn trường hợp, chúng chỉ cần ghi phần tử vào vị trí tương ứng trong backing array rồi cập nhật `head`/`size`.
+Rõ ràng, đây chính là O(1) cho mỗi lần insert.
+
+Tuy nhiên, khi capacity không đủ, `ArrayDeque` phải allocate array mới và copy toàn bộ elements sang array mới, lúc này chi phí là O(N).
+Dù vậy, vì mỗi lần mở rộng capacity tăng theo hệ số cố định khoảng 1.5x,
+resize **không xảy ra ở mọi lần insert** mà chỉ diễn ra khi capacity hiện tại đã đầy.
+
+Tổng chi phí copy qua N lần insert tạo thành một chuỗi hình học và vẫn bị chặn bởi O(N).
+Cụ thể, giả sử capacity bắt đầu là `c` và mỗi lần resize tăng theo hệ số `r = 1.5`, thì các lần resize sẽ phải copy số phần tử xấp xỉ:
+
+```text
+c + cr + cr² + cr³ + ... + crᵏ
+```
+
+Đây là một chuỗi hình học - là dãy số mà mỗi số sau bằng số trước nhân với một hằng số.
+
+Sau lần resize cuối, capacity `crᵏ` vừa đủ để chứa N phần tử nên chắc chắn `N <= crᵏ`.
+Nhưng nó cũng không thể quá lớn hơn N nhiều, vì trước lần resize đó, capacity cũ là `crᵏ⁻¹` và capacity cũ chưa đủ chứa N, nên `crᵏ⁻¹ < N` tương đương `crᵏ < rN`. Do đó, ta suy ra số hạng cuối `crᵏ` cũng cùng bậc với N:
+
+```text
+N <= crᵏ < rN
+```
+
+Dựa theo công thức tính tổng cấp số nhân, vì `r > 1` là hằng số, nên tổng của chuỗi hình học luôn cùng bậc với số hạng lớn nhất:
+
+```text
+c + cr + cr² + ... + crᵏ
+ = c(rᵏ⁺¹ - 1) / (r - 1)
+ = O(crᵏ)
+ = O(N)
+```
+
+Nói cách khác, dù một vài lần insert phải trả giá đắt vì resize/copy, tổng chi phí copy sau N lần insert vẫn chỉ tăng tuyến tính theo N.
+Vì vậy, khi chia đều chi phí đó cho N lần insert, mỗi lần insert có chi phí trung bình là amortized O(1).
+
+-----
+
+## V. Takeaways
+
+- ArrayDeque được implement bằng _resizable circular buffer_.
+    - Chỉ cần 3 state chính: `elementData`, `head` và `size`.
+    - `tail` không được lưu trữ mà được derived từ `head` và `size`.
+    - Capacity tăng khoảng 1.5x để cân bằng giữa performance và memory efficiency.
+    - Khi resize, layout sẽ được normalize về contiguous form với `head` = 0.
+
+- `removeFirst` và `removeLast` là O(1).
+- `addFirst` và `addLast` là amortized O(1).
+
+> Nói ngắn gọn: ArrayDeque nhanh không phải vì nó “ma thuật”, mà vì nó né được việc shift elements bằng cách xoay index thay vì xoay data.
