@@ -16,10 +16,7 @@ export const article = {
     'circular-buffer',
     'complexity-analysis',
     'amortized-analysis',
-    'jvm',
-    'functional-programming',
     'hoc081098',
-    'rx_mobile_team',
     'kotlindev',
     'androiddev',
     'deque',
@@ -81,7 +78,7 @@ Nên hôm nay, mình sẽ chia sẻ lại những gì mình đã tìm hiểu đ�
 
 ---
 
-## I. Data structure
+## I. Internal state
 
 ```kotlin
 @SinceKotlin("1.4")
@@ -94,7 +91,7 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
 }
 ```
 
-Phần data của nó thực sự là:
+State cốt lõi của nó thực sự chỉ gồm:
 - `elementData: Array<Any?>`: growable, nghĩa là khi cần thêm capacity thì nó sẽ được mở rộng lên. Đây chính là nơi lưu trữ data thực sự của `ArrayDeque`.
 - `head`: index thực sự của phần tử head, nó là _physical index_ trong `elementData` chứ không phải _logical index_ (logical index của head luôn là 0).
 - `size`: số phần tử hiện có trong `ArrayDeque`.
@@ -105,7 +102,8 @@ Trong `ArrayDeque`, có 2 khái niệm về index:
 
 - **Physical index**: index thực sự trong `elementData` array. Ví dụ là `head`, nó có thể được dùng để truy cập phần tử head thực sự, cơ bản là `elementData[head]`.
 
-- **Logical index**: index mà phía bên ngoài nhìn vào. Đây là cái mà developer chúng ta thường dùng để access element trong ArrayDeque. Ví dụ `ArrayDeque.get(0)` sẽ trả về phần tử head, `ArrayDeque.get(size-1)` sẽ trả về phần tử cuối cùng.
+- **Logical index**: index mà phía bên ngoài nhìn vào. Đây là cái index mà developer chúng ta thường dùng để access element trong ArrayDeque.
+  Ví dụ `ArrayDeque.get(0)` sẽ trả về phần tử head, `ArrayDeque.get(size - 1)` sẽ trả về phần tử cuối cùng.
 
 ### I.2. Derived tail
 
@@ -144,8 +142,8 @@ Trong phần lớn thời gian, ArrayDeque sẽ ở một trong hai trạng thá
 
 ```
 [##, ##, e1, e2, e3, ##]
-         ↑               ↑
-        head            tail
+         ↑           ↑
+        head        tail
 ```
 
 - `head` lớn hơn `tail` (wrapped): sau khi `tail` vượt quá cuối array và vòng về 0, các phần tử sẽ nằm ở 2 đầu của `elementData`.
@@ -432,7 +430,7 @@ class ArrayDeque<E> : AbstractMutableList<E> {
   Method `copyElements` có nhiệm vụ alloc một array với `length = newCapacity`, sau đó copy phần tử từ `elementData` sang `newElements` theo nguyên tắc sau:
   - đầu tiên là các items từ `head` đến `elementData.size - 1`
   - rồi tiếp theo là các items từ `0` đến `head - 1`.
-  Sau khi copy xong thì `head` sẽ được reset về 0, và `elementData` sẽ trỏ sang  array mới `newElements`.
+  Sau khi copy xong thì `head` sẽ được reset về 0, và `elementData` sẽ trỏ sang array mới `newElements`.
 
 Điểm nổi bật là sau khi ta "rải" các items từ array cũ sang `newElements` thì layout của `ArrayDeque` sẽ được reset về contiguous layout,
 nghĩa là `head` sẽ ở vị trí 0 và `tail` sẽ ở vị trí `size`, điều này giúp cho trạng thái buffer sạch hơn.
