@@ -192,7 +192,7 @@ class ArrayDeque<E> : AbstractMutableList<E> {
 nghĩa là `elementData` có đủ chỗ trống để thêm 1 phần tử vào đuôi.
 Nếu capacity hiện tại không đủ thì sẽ được mở rộng lên (ta sẽ tìm hiểu việc mở rộng này ở phần sau).
 
-- `internalIndex(size)` để lấy _physical index_ của `size` (_logical index_ của tail), sau đó gán `element` vào đó.
+- `internalIndex(size)` để lấy _physical index_ của `size` (size chính là _logical index_ của tail), sau đó gán `element` vào đó.
 
 - Sau cùng tăng `size` lên 1, lúc này chỗ nào dùng `tail` thì cũng sẽ reflect value mới, vì `tail` được derived từ `size` và `head`.
 
