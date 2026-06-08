@@ -426,11 +426,16 @@ class ArrayDeque<E> : AbstractMutableList<E> {
 
 - Nếu `minCapacity <= elementData.size` tức là capacity hiện tại đã đủ lớn để chứa phần tử mới, thì method sẽ không làm gì cả và return luôn.
 
-- Nếu `elementData === emptyElementData` - ở đây `emptyElementData` là một **sentinel value** để đại diện cho một `ArrayDeque` mới khởi tạo mà chưa có capacity nào được allocated (`constructor()`) - thì sẽ tạo một array mới với capacity là max của `minCapacity` và `defaultMinCapacity` (mặc định là 10).
+- Nếu `elementData === emptyElementData` - ở đây `emptyElementData` là một **sentinel value** để đại diện cho một `ArrayDeque` mới khởi tạo mà chưa có capacity nào được allocated (via `constructor()`) - thì sẽ tạo một array mới với capacity là max của `minCapacity` và `defaultMinCapacity = 10`.
 
-- Trường hợp cuối cùng, ta phải alloc một array mới với new capacity `AbstractList.newCapacity`, rồi gọi `copyElements`.
-`copyElements` có nhiệm vụ alloc một array với length=`newCapacity`, sau đó copy phần tử từ `elementData` sang `newElements` theo nguyên tắc sau: đầu tiên là các items từ `head` đến `elementData.size-1`, rồi tiếp theo là các items từ `0` đến `head-1`. Sau khi copy xong thì `head` sẽ được reset về 0, và `elementData` sẽ trỏ sang `newElements` mới.
-Điểm nổi bật là sau khi ta "rải" các items từ array cũ sang `newElements` thì layout của `ArrayDeque` sẽ được reset về contiguous layout, nghĩa là `head` sẽ ở vị trí 0 và `tail` sẽ ở vị trí `size`, điều này giúp cho trạng thái buffer sạch hơn.
+- Trường hợp cuối cùng, ta phải alloc một array mới với `newCapacity = AbstractList.newCapacity` thông qua `copyElements`.
+  Method `copyElements` có nhiệm vụ alloc một array với `length = newCapacity`, sau đó copy phần tử từ `elementData` sang `newElements` theo nguyên tắc sau:
+  - đầu tiên là các items từ `head` đến `elementData.size - 1`
+  - rồi tiếp theo là các items từ `0` đến `head - 1`.
+  Sau khi copy xong thì `head` sẽ được reset về 0, và `elementData` sẽ trỏ sang  array mới `newElements`.
+
+Điểm nổi bật là sau khi ta "rải" các items từ array cũ sang `newElements` thì layout của `ArrayDeque` sẽ được reset về contiguous layout,
+nghĩa là `head` sẽ ở vị trí 0 và `tail` sẽ ở vị trí `size`, điều này giúp cho trạng thái buffer sạch hơn.
 
 > Resize không chỉ tăng capacity, mà còn "duỗi thẳng" circular layout về lại linear layout.
 
