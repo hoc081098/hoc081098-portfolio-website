@@ -58,7 +58,7 @@ export default (props) => <ArticleLayout article={article} {...props} />
 
 ## Overview
 
-Ngay tại thời điểm này, khi AI Agents đang được sử dụng rộng rãi trong Software Development, mình có cảm giác ngày càng ít người hứng thú với những thứ nằm phía sau framework, library hay API mà họ sử dụng hằng ngày. Nhiều người chỉ quan tâm tới việc ship feature nhanh nhất có thể, còn data structures, algorithms hay internal implementation dần bị xem là những chủ đề "không còn quá cần thiết nữa".
+Ngay tại thời điểm này, khi AI Agents đang được sử dụng rộng rãi trong Software Development, mình có cảm giác ngày càng ít người hứng thú với những thứ nằm phía sau framework, library hay API mà họ sử dụng hằng ngày. Nhiều người chỉ quan tâm tới việc ship feature nhanh nhất có thể, còn data structures, algorithms hay internal implementation dần bị xem là những chủ đề “không còn quá cần thiết nữa”.
 
 Nhưng với mình thì ngược lại. Mình vẫn dùng AI mỗi ngày để nghiên cứu, review và hỗ trợ viết code, nhưng càng như vậy mình càng thấy hứng thú với việc đọc source code, tìm hiểu implementation và hiểu rõ trade-offs đằng sau những abstraction mà chúng ta sử dụng, và phần nào giúp cho cái công việc gen/review code của Agent bớt nhàm chán hơn.
 
@@ -66,7 +66,7 @@ Tạm nói qua bối cảnh như vậy, hôm trước mình dùng Agent để ge
 vì mình đã xài `ArrayDeque` từ thời Java,
 và bắt đầu xài Kotlin `ArrayDeque` ngay từ khi nó được giới thiệu trong Kotlin 1.4.
 
-Mình vẫn biết nó là "double-ended queue implementation backed by a resizable circular buffer",
+Mình vẫn biết nó là “double-ended queue implementation backed by a resizable circular buffer”,
 tức là một hàng đợi hai đầu, cho phép thêm/xóa ở cả đầu trước và đầu sau.
 Nếu nhìn dưới góc độ amortized analysis, các thao tác thêm/xóa ở hai đầu là O(1).
 Nó có thể được dùng như là `Stack` (`addLast`/`removeLast`) hoặc `Queue` (`addLast`/`removeFirst`) tùy vào mục đích sử dụng.
@@ -132,7 +132,7 @@ tail = (head + size) mod elementData.size
 ```
 
 Tại sao không lưu `tail` như một field riêng biệt mà lại derived như vậy?
-Vì `tail` được derived như vậy để tiết kiệm 1 field, đồng thời đảm bảo **invariant** "tail = head + size" không thể bị drift (vì nó luôn được derived từ `head` và `size`).
+Vì `tail` được derived như vậy để tiết kiệm 1 field, đồng thời đảm bảo **invariant** “tail = head + size” không thể bị drift (vì nó luôn được derived từ `head` và `size`).
 
 ### I.3. Internal layout
 
@@ -424,7 +424,9 @@ class ArrayDeque<E> : AbstractMutableList<E> {
 
 - Nếu `minCapacity <= elementData.size` tức là capacity hiện tại đã đủ lớn để chứa phần tử mới, thì method sẽ không làm gì cả và return luôn.
 
-- Nếu `elementData === emptyElementData` - ở đây `emptyElementData` là một **sentinel value** để đại diện cho một `ArrayDeque` mới khởi tạo mà chưa có capacity nào được allocated (via `constructor()`) - thì sẽ tạo một array mới với capacity là max của `minCapacity` và `defaultMinCapacity = 10`.
+- Nếu `elementData === emptyElementData` — ở đây `emptyElementData` là một **sentinel value** dùng để biểu diễn trạng thái backing storage chưa được allocate thực sự,
+  thường xảy ra khi `ArrayDeque` được tạo bằng `constructor()` rỗng — thì sẽ tạo một array mới với capacity là `max(minCapacity, defaultMinCapacity = 10)`,
+  tức là ít nhất 10 phần tử trong lần cấp phát đầu tiên.
 
 - Trường hợp cuối cùng, ta phải alloc một array mới với `newCapacity = AbstractList.newCapacity` thông qua `copyElements`.
   Method `copyElements` có nhiệm vụ alloc một array với `length = newCapacity`, sau đó copy phần tử từ `elementData` sang `newElements` theo nguyên tắc sau:
@@ -432,10 +434,10 @@ class ArrayDeque<E> : AbstractMutableList<E> {
   - rồi tiếp theo là các items từ `0` đến `head - 1`.
   Sau khi copy xong thì `head` sẽ được reset về 0, và `elementData` sẽ trỏ sang array mới `newElements`.
 
-Điểm nổi bật là sau khi ta "rải" các items từ array cũ sang `newElements` thì layout của `ArrayDeque` sẽ được reset về contiguous layout,
+Điểm nổi bật là sau khi ta “rải” các items từ array cũ sang `newElements` thì layout của `ArrayDeque` sẽ được reset về contiguous layout,
 nghĩa là `head` sẽ ở vị trí 0 và `tail` sẽ ở vị trí `size`, điều này giúp cho trạng thái buffer sạch hơn.
 
-> Resize không chỉ tăng capacity, mà còn "duỗi thẳng" circular layout về lại linear layout.
+> Resize không chỉ tăng capacity, mà còn “duỗi thẳng” circular layout về lại linear layout.
 
 ### III.2. Tại sao lại tăng capacity lên 1.5x?
 
@@ -459,19 +461,19 @@ public abstract class AbstractList<out E> protected constructor() : AbstractColl
 ```
 
 Ta focus vào dòng `var newCapacity = oldCapacity + (oldCapacity shr 1)`,
-ở đây có thể hiểu là `newCapacity = oldCapacity + oldCapacity/2` (sử dụng "shift right" để chia cho 2),
+ở đây có thể hiểu là `newCapacity = oldCapacity + oldCapacity/2` (sử dụng “shift right” để chia cho 2),
 nên `newCapacity = oldCapacity * 1.5`.
 Đây là một chiến lược phổ biến để tăng capacity của các data structure dạng array,
 vì nó giúp cân bằng giữa việc **giảm số lần mở rộng** (vì mỗi lần mở rộng sẽ tăng capacity lên 50%)
 và **tránh lãng phí quá nhiều memory** (so với việc tăng gấp đôi capacity).
 
 Câu hỏi đặt ra là:
-"Tại sao không sử dụng 2x mà lại là 1.5x"?
+“Tại sao không sử dụng 2x mà lại là 1.5x”?
 2x, thường thấy trong `std::vector` của trình biên dịch GCC - C++, sẽ đỡ phải copy nhiều hơn, nhưng nó cũng sẽ lãng phí nhiều memory hơn,
 đặc biệt là khi `oldCapacity` đã lớn,
 có thể lãng phí đến gần 50% bộ nhớ ở lần cấp phát cuối cùng.
 
-Còn 1.5x (dùng trong Java `ArrayList`, Kotlin `ArrayDeque`, hoặc `std::vector` của MSVC) là "điểm ngọt" (sweet spot),
+Còn 1.5x (dùng trong Java `ArrayList`, Kotlin `ArrayDeque`, hoặc `std::vector` của MSVC) là “điểm ngọt” (sweet spot),
 không lãng phí quá nhiều memory,
 giữ cho lượng RAM lãng phí ở mức tối đa chỉ khoảng 33%,
 nhưng ta chấp nhận phải copy nhiều hơn một chút.
@@ -560,5 +562,4 @@ Vì vậy, khi chia đều chi phí đó cho N lần insert, mỗi lần insert 
 - `removeFirst` và `removeLast` là O(1).
 - `addFirst` và `addLast` là amortized O(1).
 
-> Nói ngắn gọn: ArrayDeque nhanh không phải vì nó "ma thuật", mà vì nó né được việc shift elements bằng cách xoay index thay vì xoay data.
-
+> Nói ngắn gọn: ArrayDeque nhanh không phải vì nó “ma thuật”, mà vì nó né được việc shift elements bằng cách xoay index thay vì xoay data.
