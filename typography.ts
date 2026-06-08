@@ -137,7 +137,7 @@ export default {
             display: 'inline-block',
             color: 'var(--tw-prose-code)',
             fontSize: theme('fontSize.sm')[0],
-            fontWeight: theme('fontWeight.semibold'),
+            fontWeight: theme('fontWeight.medium'),
             backgroundColor: 'var(--tw-prose-code-bg)',
             borderRadius: theme('borderRadius.lg'),
             paddingLeft: theme('spacing.1'),
