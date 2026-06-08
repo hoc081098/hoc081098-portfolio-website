@@ -6,19 +6,19 @@ export type WorkRole = {
   /**
    * Used to sort the roles in descending order. Higher values will be displayed first.
    */
-  sortOrder: number;
-  company: string;
-  title: string;
-  logo?: ImageProps['src'];
-  start: string | { label: string; dateTime: string };
-  end: string | { label: string; dateTime: string };
+  sortOrder: number
+  company: string
+  title: string
+  logo?: ImageProps['src']
+  start: string | { label: string; dateTime: string }
+  end: string | { label: string; dateTime: string }
 }
 
 export const workData: WorkRole[] = [
   {
     sortOrder: 1,
     company: 'Full-time developer & Freelance / Open Source',
-    title: 'Senior Mobile Developer',
+    title: 'Senior Mobile & Backend Developer',
     start: '2018',
     end: {
       label: 'Present',
@@ -33,4 +33,4 @@ export const workData: WorkRole[] = [
     start: '2020',
     end: '2021',
   },
-].toSorted((a, b) => b.sortOrder - a.sortOrder);
+].toSorted((a, b) => b.sortOrder - a.sortOrder)

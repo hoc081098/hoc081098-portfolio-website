@@ -7,7 +7,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
   const title = searchParams.get('title') ?? 'hoc081098 Portfolio'
   const description =
-    searchParams.get('description') ?? 'Mobile Developer — Android, Flutter, iOS'
+    searchParams.get('description') ??
+    'Software Engineer — mobile apps, backend services, open-source tools'
   const isArticle = searchParams.get('type') === 'article'
 
   const truncatedDesc =
@@ -124,4 +125,3 @@ export async function GET(request: NextRequest) {
     { width: 1200, height: 630 },
   )
 }
-

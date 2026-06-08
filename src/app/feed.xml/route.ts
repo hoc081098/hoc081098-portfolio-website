@@ -16,7 +16,8 @@ export async function GET(req: Request) {
 
   let feed = new Feed({
     title: author.name,
-    description: 'Articles on Android, Flutter, iOS, reactive programming, and clean architecture.',
+    description:
+      'Articles on mobile development, backend services, reactive programming, and clean architecture.',
     author,
     id: siteUrl,
     link: siteUrl,

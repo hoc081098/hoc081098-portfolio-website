@@ -9,14 +9,14 @@ import { projectData } from '@/data'
 export const metadata: Metadata = {
   title: 'Projects',
   description:
-    'Side projects, apps, Open-source packages, libraries, and contributions from hoc081098 (Petrus Nguyễn Thái Học) — focused on Android, Flutter, iOS, and reactive programming.',
+    'Side projects, apps, open-source packages, libraries, and contributions from hoc081098 (Petrus Nguyễn Thái Học) — focused on mobile apps, backend services, and reactive programming.',
 }
 
 export default function Projects() {
   return (
     <SimpleLayout
       title="Projects I’ve built."
-      intro="A mix of side projects, open-source tools, and experiments — Flutter, Dart, and Android libraries I've built to learn and to solve real problems. Have a look and reach out if you want to collaborate or contribute."
+      intro="A mix of side projects, open-source tools, and experiments — mobile apps, backend services, and libraries I've built to learn and to solve real problems. Have a look and reach out if you want to collaborate or contribute."
     >
       <ul
         role="list"
@@ -25,7 +25,7 @@ export default function Projects() {
         {projectData.map((project) => (
           <Card as="li" key={project.name}>
             {project.logo && (
-              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white ring-1 shadow-md shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md ring-1 shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                 <Image
                   src={project.logo}
                   alt=""
@@ -34,9 +34,15 @@ export default function Projects() {
                 />
               </div>
             )}
-            <h2 className={`text-base font-semibold text-zinc-800 dark:text-zinc-100 ${project.logo ? 'mt-6' : ''}`}>
+            <h2
+              className={`text-base font-semibold text-zinc-800 dark:text-zinc-100 ${project.logo ? 'mt-6' : ''}`}
+            >
               {project.links.length > 0 ? (
-                <Card.Link href={project.links[0].href} target="_blank" rel="noopener noreferrer">
+                <Card.Link
+                  href={project.links[0].href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {project.name}
                 </Card.Link>
               ) : (

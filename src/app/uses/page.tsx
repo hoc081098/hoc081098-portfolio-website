@@ -43,18 +43,24 @@ export default function Uses() {
   return (
     <SimpleLayout
       title="Software I use, gadgets I love, and other things I recommend."
-      intro="Here's an overview of the tools and software I use day-to-day as a mobile developer. This is a living list — I update it as my setup evolves."
+      intro="Here's an overview of the tools and software I use day-to-day as a software engineer working across mobile apps, backend services, and open-source tools. This is a living list — I update it as my setup evolves."
     >
       <div className="space-y-20">
         <ToolsSection title="Workstation">
-          <Tool title="MacBook Pro, Apple Silicon" href="https://www.apple.com/macbook-pro/">
+          <Tool
+            title="MacBook Pro, Apple Silicon"
+            href="https://www.apple.com/macbook-pro/"
+          >
             My primary development machine. The performance improvements with
             Apple Silicon make running Android emulators, iOS simulators, and
             build tools significantly faster compared to older Intel machines.
           </Tool>
         </ToolsSection>
         <ToolsSection title="Development tools">
-          <Tool title="Android Studio" href="https://developer.android.com/studio">
+          <Tool
+            title="Android Studio"
+            href="https://developer.android.com/studio"
+          >
             My primary IDE for Android and Flutter development. The built-in
             emulator, profiler, and excellent Kotlin/Dart support make it
             indispensable for mobile work.
@@ -63,7 +69,10 @@ export default function Uses() {
             Used for iOS/Swift development and running the iOS simulator. Also
             required for building and deploying Flutter apps to the App Store.
           </Tool>
-          <Tool title="Visual Studio Code" href="https://code.visualstudio.com/">
+          <Tool
+            title="Visual Studio Code"
+            href="https://code.visualstudio.com/"
+          >
             Great lightweight editor for scripting, web work, and quick edits.
             The Flutter and Dart extensions are solid for smaller Flutter tasks.
           </Tool>
@@ -82,13 +91,13 @@ export default function Uses() {
         </ToolsSection>
         <ToolsSection title="Productivity">
           <Tool title="Notion" href="https://www.notion.so/">
-            I use Notion for personal notes, project planning, and keeping
-            track of ideas for open-source work and blog posts.
+            I use Notion for personal notes, project planning, and keeping track
+            of ideas for open-source work and blog posts.
           </Tool>
           <Tool title="Medium" href="https://hoc081098.medium.com/">
-            Where I publish technical articles on Android, Flutter, iOS,
-            reactive programming, and clean architecture. Writing helps me
-            consolidate knowledge and share it with the community.
+            Where I publish technical articles on Android, Flutter, iOS, backend
+            services, reactive programming, and clean architecture. Writing
+            helps me consolidate knowledge and share it with the community.
           </Tool>
         </ToolsSection>
       </div>

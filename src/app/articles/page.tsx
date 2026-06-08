@@ -8,7 +8,7 @@ import { getAllArticles } from '@/lib/articles'
 export const metadata: Metadata = {
   title: 'Articles',
   description:
-    'Technical articles on Android, Flutter, iOS, reactive programming, clean architecture, and mobile development.',
+    'Technical articles on mobile development, backend services, reactive programming, clean architecture, Kotlin, Flutter, iOS, and ASP.NET Core.',
 }
 
 export default async function ArticlesIndex() {
@@ -16,8 +16,8 @@ export default async function ArticlesIndex() {
 
   return (
     <SimpleLayout
-      title="Writing on mobile development, reactive programming, and clean architecture."
-      intro="Notes, tutorials, and essays on Android, Flutter, iOS, Kotlin, Dart, and the things I learn along the way. Also published on Medium."
+      title="Writing on mobile development, backend services, reactive programming, and clean architecture."
+      intro="Notes, tutorials, and essays on Android, Flutter, iOS, Kotlin, Dart, ASP.NET Core, and the things I learn along the way. Also published on Medium."
     >
       <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
         <div className="flex max-w-3xl flex-col space-y-16">
@@ -27,7 +27,9 @@ export default async function ArticlesIndex() {
                 <Card.Eyebrow as="time" dateTime={article.date} decorate>
                   {formatDate(article.date)}
                 </Card.Eyebrow>
-                <Card.Title href={`/articles/${article.slug}`}>{article.title}</Card.Title>
+                <Card.Title href={`/articles/${article.slug}`}>
+                  {article.title}
+                </Card.Title>
                 <Card.Description>{article.description}</Card.Description>
                 <Card.Cta>Read article</Card.Cta>
               </Card>

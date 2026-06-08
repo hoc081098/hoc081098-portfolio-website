@@ -70,7 +70,7 @@ export default async function Image() {
             lineHeight: '1.5',
           }}
         >
-          Senior Android · Flutter · iOS Developer
+          Senior Mobile & Backend Developer
         </div>
 
         {/* Bottom domain */}
@@ -90,4 +90,3 @@ export default async function Image() {
     { width: 1200, height: 630 },
   )
 }
-

@@ -5,7 +5,12 @@ import clsx from 'clsx'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
-import { BriefcaseIcon, BuildingOfficeIcon, CloudArrowDownIcon, ArrowRightIcon } from '@phosphor-icons/react/ssr'
+import {
+  BriefcaseIcon,
+  BuildingOfficeIcon,
+  CloudArrowDownIcon,
+  ArrowRightIcon,
+} from '@phosphor-icons/react/ssr'
 import { getAllArticles, type ArticleWithSlug } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
 import { resumeUrl, socialData, workData, type WorkRole } from '@/data'
@@ -41,7 +46,10 @@ function SocialLink({
 }) {
   return (
     <Link className="group -m-1 p-1" target="_blank" {...props}>
-      <Icon className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300" weight="duotone" />
+      <Icon
+        className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300"
+        weight="duotone"
+      />
     </Link>
   )
 }
@@ -59,9 +67,18 @@ function Role({ role }: { role: WorkRole }) {
     <li className="flex gap-4">
       <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-full shadow-md ring-1 shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
         {role.logo ? (
-          <Image src={role.logo} alt="" className="h-full w-full object-cover" width={40} height={40} />
+          <Image
+            src={role.logo}
+            alt=""
+            className="h-full w-full object-cover"
+            width={40}
+            height={40}
+          />
         ) : (
-          <BuildingOfficeIcon className="h-5 w-5 text-zinc-500 dark:text-zinc-400" weight="duotone" />
+          <BuildingOfficeIcon
+            className="h-5 w-5 text-zinc-500 dark:text-zinc-400"
+            weight="duotone"
+          />
         )}
       </div>
       <dl className="flex flex-auto flex-wrap gap-x-2">
@@ -99,9 +116,17 @@ function Resume() {
           <Role key={roleIndex} role={role} />
         ))}
       </ol>
-      <Button href={resumeUrl} target="_blank" variant="secondary" className="group mt-6 w-full">
+      <Button
+        href={resumeUrl}
+        target="_blank"
+        variant="secondary"
+        className="group mt-6 w-full"
+      >
         Download CV
-        <CloudArrowDownIcon className="h-5 w-5 text-zinc-400 transition group-active:text-zinc-600 dark:group-hover:text-zinc-50 dark:group-active:text-zinc-50" weight="duotone" />
+        <CloudArrowDownIcon
+          className="h-5 w-5 text-zinc-400 transition group-active:text-zinc-600 dark:group-hover:text-zinc-50 dark:group-active:text-zinc-50"
+          weight="duotone"
+        />
       </Button>
     </div>
   )
@@ -112,15 +137,15 @@ function Photos() {
 
   return (
     <div className="mt-16 sm:mt-20">
-      <div className="mb-4 text-center text-sm text-zinc-500 dark:text-zinc-400 italic">
+      <div className="mb-4 text-center text-sm text-zinc-500 italic dark:text-zinc-400">
         A few snapshots from Hải Lăng, Quảng Trị — my hometown.
       </div>
-      <div className="-my-4 flex gap-5 overflow-x-auto overflow-y-hidden py-4 sm:gap-8 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-[max(0px,50%-11rem)] pr-[max(0px,50%-11rem)] sm:overflow-hidden sm:justify-center sm:snap-none sm:pl-0 sm:pr-0">
+      <div className="-my-4 flex snap-x snap-mandatory gap-5 overflow-x-auto overflow-y-hidden scroll-smooth py-4 pr-[max(0px,50%-11rem)] pl-[max(0px,50%-11rem)] [scrollbar-width:none] sm:snap-none sm:justify-center sm:gap-8 sm:overflow-hidden sm:pr-0 sm:pl-0 [&::-webkit-scrollbar]:hidden">
         {landscapePhotos.map((src, imageIndex) => (
           <div
             key={imageIndex}
             className={clsx(
-              'relative aspect-9/10 w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:rounded-2xl dark:bg-zinc-800 snap-center sm:snap-align-none',
+              'relative aspect-9/10 w-44 flex-none snap-center overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:snap-align-none sm:rounded-2xl dark:bg-zinc-800',
               rotations[imageIndex % rotations.length],
             )}
           >
@@ -145,14 +170,15 @@ export default async function Home() {
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-            Mobile Developer, Open-Source Enthusiast, Technical Writer.
+            Software Engineer building mobile apps, backend services, and
+            open-source tools.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I'm Petrus Nguyễn Thái Học (hoc081098), a senior Android, Flutter,
-            and iOS developer based in Da Nang, Vietnam. I'm passionate about
-            reactive programming, clean architecture, and building high-quality
-            mobile apps — and I share what I learn through open-source
-            contributions and technical writing on Medium.
+            I'm Petrus Nguyễn Thái Học (hoc081098), a software engineer based in
+            Da Nang, Vietnam. I build mobile apps, backend services, and
+            open-source tools with a focus on clean architecture and reactive
+            systems — and I share what I learn through open-source contributions
+            and technical writing on Medium.
           </p>
           <div className="mt-6 flex gap-6">
             {socialData.map((e) => (
@@ -165,9 +191,16 @@ export default async function Home() {
             ))}
           </div>
           <div className="mt-8">
-            <Button href="/about" variant="primary" className="group gap-2 px-5 py-2.5 text-sm">
+            <Button
+              href="/about"
+              variant="primary"
+              className="group gap-2 px-5 py-2.5 text-sm"
+            >
               More about me
-              <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" weight="bold" />
+              <ArrowRightIcon
+                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                weight="bold"
+              />
             </Button>
           </div>
         </div>
@@ -186,9 +219,16 @@ export default async function Home() {
               </p>
             )}
             <div>
-              <Button href="/articles" variant="secondary" className="group gap-2">
+              <Button
+                href="/articles"
+                variant="secondary"
+                className="group gap-2"
+              >
                 Read more articles
-                <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" weight="bold" />
+                <ArrowRightIcon
+                  className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                  weight="bold"
+                />
               </Button>
             </div>
           </div>
