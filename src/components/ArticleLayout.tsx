@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ArrowLeftIcon, TranslateIcon } from '@phosphor-icons/react'
@@ -25,12 +25,16 @@ export function ArticleLayout({
   let slug = pathname.split('/').filter(Boolean).pop() ?? ''
 
   let language = article.language ?? 'en'
-  // window.location.origin is safe here: ArticleLayout is a client component ('use client'),
-  // so this code only runs in the browser — never during SSR. window is always defined.
-  let translateToEnglishUrl =
-    language !== 'en'
-      ? `https://translate.google.com/translate?sl=${encodeURIComponent(language)}&tl=en&u=${encodeURIComponent(`${window.location.origin}/articles/${slug}`)}`
-      : null
+  // useState + useEffect ensures window is only accessed after hydration on the client.
+  // During SSR prerender, window does not exist — this pattern avoids ReferenceError.
+  const [translateToEnglishUrl, setTranslateToEnglishUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (language === 'en') return
+    const articleUrl = `${window.location.origin}/articles/${slug}`
+    setTranslateToEnglishUrl(
+      `https://translate.google.com/translate?sl=${encodeURIComponent(language)}&tl=en&u=${encodeURIComponent(articleUrl)}`,
+    )
+  }, [language, slug])
 
   const hitsUrl = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}.svg`
   const hitsLink = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}/`
