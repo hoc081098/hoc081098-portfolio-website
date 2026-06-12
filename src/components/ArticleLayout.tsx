@@ -2,9 +2,8 @@
 
 import { useContext } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { usePathname } from 'next/navigation'
-import { ArrowLeftIcon } from '@phosphor-icons/react'
+import { usePathname, useRouter } from 'next/navigation'
+import { ArrowLeftIcon, TranslateIcon } from '@phosphor-icons/react'
 
 import { AppContext } from '@/app/providers'
 import { Container } from '@/components/Container'
@@ -23,7 +22,15 @@ export function ArticleLayout({
   let router = useRouter()
   let { previousPathname } = useContext(AppContext)
   let pathname = usePathname()
-  let slug = pathname.split('/').pop() ?? ''
+  let slug = pathname.split('/').filter(Boolean).pop() ?? ''
+
+  let language = article.language ?? 'en'
+  // window.location.origin is safe here: ArticleLayout is a client component ('use client'),
+  // so this code only runs in the browser — never during SSR. window is always defined.
+  let translateToEnglishUrl =
+    language !== 'en'
+      ? `https://translate.google.com/translate?sl=${encodeURIComponent(language)}&tl=en&u=${encodeURIComponent(`${window.location.origin}/articles/${slug}`)}`
+      : null
 
   const hitsUrl = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}.svg`
   const hitsLink = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}/`
@@ -45,7 +52,7 @@ export function ArticleLayout({
               />
             </button>
           )}
-          <article>
+          <article lang={language}>
             <header className="flex flex-col">
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
                 {article.title}
@@ -76,6 +83,18 @@ export function ArticleLayout({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={hitsUrl} alt="Hits" className="h-5" />
                 </a>
+                {language !== 'en' && translateToEnglishUrl && (
+                  <a
+                    href={translateToEnglishUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Translate this article to English (opens in new tab)"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-violet-500 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-violet-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-600 hover:shadow-lg hover:shadow-violet-500/40 active:translate-y-0 active:shadow-sm dark:bg-violet-500 dark:text-white dark:shadow-violet-500/20 dark:hover:bg-violet-400 dark:hover:shadow-violet-400/30"
+                  >
+                    <TranslateIcon aria-hidden="true" className="h-3.5 w-3.5" weight="duotone" />
+                    Translate to English
+                  </a>
+                )}
               </div>
               {article.tags && article.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -83,7 +102,8 @@ export function ArticleLayout({
                     <Link
                       key={tag}
                       href={`/tags/${slugifyTag(tag)}`}
-                      className="inline-block rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-600 transition hover:bg-violet-100 hover:text-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/20 dark:hover:text-violet-300 dark:focus:ring-offset-zinc-950"
+                      translate="no"
+                      className="notranslate inline-block rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-600 transition hover:bg-violet-100 hover:text-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/20 dark:hover:text-violet-300 dark:focus:ring-offset-zinc-950"
                     >
                       {tag}
                     </Link>
@@ -91,7 +111,7 @@ export function ArticleLayout({
                 </div>
               )}
             </header>
-            <Prose className="mt-12" data-mdx-content>
+            <Prose className="mt-12" lang={language} data-mdx-content>
               {children}
             </Prose>
           </article>

@@ -69,10 +69,23 @@ export default async function TagPage({ params }: TagPageProps) {
 
   return (
     <SimpleLayout
-      title={`Articles tagged ${tag.name}`}
-      intro={`${articles.length} article${
-        articles.length === 1 ? '' : 's'
-      } about ${tag.name}.`}
+      title={
+        <>
+          Articles tagged{' '}
+          <span className="notranslate" translate="no">
+            {tag.name}
+          </span>
+        </>
+      }
+      intro={
+        <>
+          {articles.length} article{articles.length === 1 ? '' : 's'} about{' '}
+          <span className="notranslate" translate="no">
+            {tag.name}
+          </span>
+          .
+        </>
+      }
     >
       <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
         <div className="flex max-w-3xl flex-col space-y-16">
