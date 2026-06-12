@@ -8,6 +8,7 @@ export interface Article {
   description: string
   author: string
   date: string
+  language?: string
   tags?: string[]
   estimatedReadingTime?: number // in minutes
 }
