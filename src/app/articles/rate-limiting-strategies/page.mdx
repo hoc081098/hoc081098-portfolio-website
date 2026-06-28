@@ -8,7 +8,15 @@ export const article = {
     'Rate limiting không nên đặt ở một tầng duy nhất. Phân tích chiến lược rate limiting tại Nginx (edge), API Gateway (YARP), và service layer trong ASP.NET Core.',
   estimatedReadingTime: 7,
   language: 'vi',
-  tags: ['nginx', 'aspnet-core', 'rate-limiting', 'yarp', 'backend'],
+  tags: [
+    'csharp',
+    'dotnet',
+    'aspnet-core',
+    'nginx',
+    'yarp',
+    'rate-limiting',
+    'backend',
+  ],
 }
 
 export const metadata = {
@@ -171,4 +179,3 @@ khi tới gateway hoặc service, khiến các tầng phía dưới không còn 
 Hoặc nếu cùng một logic rate limiting bị định nghĩa trùng nhau ở cả Nginx và Gateway, hệ thống sẽ trở nên rối rắm và khó kiểm soát.
 Rate limiting, nếu nhìn đúng bản chất, không phải một cấu hình duy nhất. Nó là một chiến lược phân tầng.
 Và sự rõ ràng trong phân tầng mới là thứ quyết định hệ thống có gọn gàng hay trở thành spaghetti policy.
-

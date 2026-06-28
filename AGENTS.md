@@ -45,6 +45,8 @@ export const article = {
   date: 'YYYY-MM-DD',
   title: 'Article Title',
   description: 'Short description.',
+  language: 'vi', // Omit for English articles.
+  tags: ['kotlin', 'android', 'jetpack-compose', 'state-management'],
 }
 
 export const metadata = {
@@ -58,6 +60,14 @@ Article body here...
 ```
 
 3. Images go in `src/images/articles/<slug>/` and are imported directly in MDX using the `<Image>` component (provided via `mdx-components.tsx`).
+
+## Article Tagging
+
+- Keep tags useful for filtering, not attribution. Do not use author/team/social tags such as `hoc081098`, `rx_mobile_team`, `rx-mobile-team`, `kotlindev`, `androiddev`, or `iosdev`.
+- Prefer a compact taxonomy: programming language, platform/framework/library, then the core technical subjects.
+- Use kebab-case tag names (`jetpack-compose`, `value-class`, `reactive-programming`) and avoid duplicate aliases such as underscore variants.
+- Keep each article focused, usually around 4-9 tags. Avoid one-off implementation-detail tags unless they are likely to become a reusable topic page.
+- For article series, use one shared series tag across every article in the series. That is a good fit for the existing `/tags/[tag]` filtered pages.
 
 ## Conventions & Patterns
 
@@ -79,4 +89,3 @@ Article body here...
 | `src/components/ArticleLayout.tsx` | Wraps every MDX article page |
 | `mdx-components.tsx` | Global MDX component overrides (adds `<Image>`) |
 | `src/app/providers.tsx` | Theme + navigation context providers |
-
