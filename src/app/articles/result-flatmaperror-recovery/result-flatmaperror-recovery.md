@@ -1,0 +1,283 @@
+# Result — `flatMapError`, `recover` và `recoverWith`
+> Estimated reading time: 10 minutes
+
+## Overview
+
+Khi chain computation với `Result<A, E>` hoặc `Either<E, A>`, ta có thể xem `Success`/`Right` là nhánh chính, còn `Failure`/`Left` là nhánh **short-circuit**. Một implementation của `Either` mà `map` và `flatMap` mặc định vận hành trên `Right` được gọi là **right-biased**; với `Result`, ta có thể mô tả tương tự là **success-biased**. Chú ý rằng đây là một lựa chọn thiết kế của implementation, không phải thuộc tính bắt buộc của mọi `Result`/`Either`.
+
+Vì vậy, callback truyền vào các success-side combinator như `map` và `flatMap` chỉ được gọi trên `Success`/`Right`; nếu là `Failure`/`Left`, callback sẽ không được gọi và giá trị `Failure`/`Left` đó sẽ được trả về.
+
+Còn trường hợp muốn xử lý nhánh `Failure`/`Left` thì sao? Để map phía error thì ta có `mapError`, còn để tiếp tục computation phía error thì ta có `flatMapError`. Hai combinator này đối xứng với `map` và `flatMap`.
+
+Bài viết này tổng hợp tên gọi và semantics của `flatMapError`/`recover`/`recoverWith` trong một số ngôn ngữ và thư viện phổ biến, đồng thời rút ra một mental model cốt lõi để thiết kế API cho custom `Result`/`Either` type.
+
+## I. Mental model cốt lõi
+
+Với kiểu:
+
+```kotlin
+Result<A, E>
+```
+
+Trong đó `A` là type của success value, còn `E` là type của error value. Nếu chỉ nhìn vào type của callback mà mỗi combinator nhận, ta có bốn phép biến đổi đối xứng tự nhiên:
+
+```text
+map          : (A) -> B
+flatMap      : (A) -> Result<B, E>
+
+mapError     : (E) -> F
+flatMapError : (E) -> Result<A, F>
+```
+
+Có thể hiểu ngắn gọn:
+
+```text
+map          = biến đổi success value, giữ nguyên error type
+flatMap      = tiếp tục success computation, giữ nguyên error type
+
+mapError     = biến đổi error value, giữ nguyên success type
+flatMapError = tiếp tục error computation, giữ nguyên success type
+```
+
+Ta thấy rằng `mapError` và `flatMapError` là đối xứng với `map` và `flatMap`. Cả bốn combinator đều giữ nguyên một channel (success hoặc error) và chỉ biến đổi channel còn lại.
+
+---
+
+## II. Kotlin
+
+Một implementation tối giản với `sealed interface`:
+
+```kotlin
+sealed interface Result<out A, out E> {
+    data class Ok<out A>(val value: A) : Result<A, Nothing>
+
+    data class Err<out E>(val error: E) : Result<Nothing, E>
+}
+
+/**
+ * Maps the success value of this Result to a new value.
+ */
+inline fun <A, E, B> Result<A, E>.map(
+    transform: (value: A) -> B,
+): Result<B, E> =
+    when (this) {
+        is Result.Ok -> Result.Ok(transform(value))
+        is Result.Err -> this
+    }
+
+/**
+ * Continues the computation with a new Result on the success value,
+ * keeping the error type unchanged.
+ */
+inline fun <A, E, B> Result<A, E>.flatMap(
+    transform: (value: A) -> Result<B, E>,
+): Result<B, E> =
+    when (this) {
+        is Result.Ok -> transform(value)
+        is Result.Err -> this
+    }
+
+/**
+ * Transforms the error value of this Result to a new value.
+ */
+inline fun <A, E, F> Result<A, E>.mapError(
+    transform: (error: E) -> F,
+): Result<A, F> =
+    when (this) {
+        is Result.Ok -> this
+        is Result.Err -> Result.Err(transform(error))
+    }
+
+/**
+ * Continues the computation with a new Result on the error value,
+ * keeping the success type unchanged.
+ */
+inline fun <A, E, F> Result<A, E>.flatMapError(
+    transform: (error: E) -> Result<A, F>,
+): Result<A, F> =
+    when (this) {
+        is Result.Ok -> this
+        is Result.Err -> transform(error)
+    }
+```
+
+`recover` có thể được dễ dàng xây dựng dựa trên `flatMapError`:
+
+```kotlin
+inline fun <A, E> Result<A, E>.recover(
+    transform: (error: E) -> A,
+): Result<A, Nothing> =
+    flatMapError { error -> Result.Ok(transform(error)) }
+```
+
+`recover` có kiểu trả về `Result<A, Nothing>` diễn đạt rằng toàn bộ typed error `E` đã được xử lý. Điều này chỉ nói về error channel của `Result`; `transform` vẫn có thể ném exception. Implementation ở trên không catch exception đó, và Kotlin xem mọi exception đều là _unchecked_.
+
+Tới đây, ta thấy thêm một điều là `recover` và `map` đều có thể diễn đạt bằng `flatMapError` và `flatMap`, cụ thể:
+
+```text
+recover(f) = flatMapError { error -> Result.Ok(f(error)) }
+map(f)     = flatMap { value -> Result.Ok(f(value)) }
+```
+
+Với custom typed `Result<A, E>`, nếu ưu tiên symmetry giữa hai channel thì một bộ tên nhất quán và dễ nhớ là: `map`, `flatMap`, `mapError`, `flatMapError`. Còn `recover` là một convenience operation.
+
+---
+
+Sơ đồ dưới đây tóm tắt cách 5 operation trên vận hành giữa "success channel" và "error channel".
+
+![Mental model của map, mapError, flatMap, flatMapError và recover trên hai channel Success/Right và Failure/Left](./result-flatmaperror-recovery.png)
+
+*Điểm bắt đầu của các arrow cho biết channel nào kích hoạt callback; các arrowhead cho biết `Result` mới có thể kết thúc ở channel nào. `recover` ở đây là operation của custom `Result` ở trên và xử lý mọi error value `E`.*
+
+---
+
+## III. Scala
+
+Scala thường dùng cặp:
+
+```scala
+recover
+recoverWith
+```
+
+Với `Try` data type, ta có hai ví dụ sau:
+
+```scala
+val recovered: Try[Int] =
+  attempt.recover {
+    case _: IOException => 0
+  }
+
+val recoveredWith: Try[Int] =
+  attempt.recoverWith {
+    case _: IOException => loadFromFallback()
+  }
+```
+
+Lược bỏ các _capture-set annotations_ đang xuất hiện trong Scala 3 source code (xem [Try.scala#L138-L143](https://github.com/scala/scala3/blob/7d4833b619d31ea9acac97fccf1e74b42b89c49f/library/src/scala/util/Try.scala#L138-L143)), ta có sơ lược như sau:
+
+```scala
+sealed abstract class Try[+T] extends Product with Serializable { self: Try[T] =>
+  /** Applies the given function `f` if this is a `Failure`, otherwise returns this if this is a `Success`.
+   *  This is like `flatMap` for the exception.
+   */
+  def recoverWith[U >: T](pf: PartialFunction[Throwable, Try[U]]): Try[U]
+
+  /** Applies the given function `f` if this is a `Failure`, otherwise returns this if this is a `Success`.
+   *  This is like map for the exception.
+   */
+  def recover[U >: T](pf: PartialFunction[Throwable, U]): Try[U]
+}
+```
+
+Trong đó, `U >: T` cho phép success type được widen. Cả hai method chỉ áp dụng `PartialFunction` khi `Try` là `Failure` và exception nằm trong domain của `PartialFunction`. Nếu `PartialFunction` không được định nghĩa cho exception đó thì `Failure` ban đầu được giữ nguyên.
+
+Về mặt API, [PartialFunction#isDefinedAt](https://www.scala-lang.org/api/current/scala/PartialFunction.html#isDefinedAt-4ad) cho biết một input có nằm trong domain hay không. Tuy nhiên, implementation của `Try` dùng [`applyOrElse`](https://github.com/scala/scala3/blob/7d4833b619d31ea9acac97fccf1e74b42b89c49f/library/src/scala/util/Try.scala#L221-L233) để apply handler hoặc chọn fallback trong một bước.
+
+Về mặt semantics, `recover` có thể được diễn đạt thông qua `recoverWith` tương tự ví dụ bằng Kotlin ở trên:
+
+```text
+recover(pf) =
+  recoverWith(pf.andThen(value => Success(value)))
+```
+
+Ở đây, `pf` biến đổi `Throwable` thành `U`; [PartialFunction#andThen](https://www.scala-lang.org/api/current/scala/PartialFunction.html#andThen-f71) tiếp tục biến đổi output `U` thành `Success[U]`. Vì function truyền vào `andThen` (`value => Success(value)`) là một total function, nên `PartialFunction` kết quả giữ nguyên domain của `pf`.
+
+Ta thấy rõ `recoverWith` chính là error-side `flatMap` cho `Try`, nhưng chỉ trên những exception mà `PartialFunction` định nghĩa. Như docs của `Try` cũng nói rõ, các combinator của `Try` chỉ bắt non-fatal exceptions; serious system errors vẫn luôn được ném ra ngoài.
+
+Với `Either`, `flatMapError` có thể được định nghĩa dựa trên `fold` như sau:
+
+```scala
+def flatMapError[A, E, F](result: Either[E, A])(transform: E => Either[F, A]): Either[F, A] =
+  result.fold(
+    transform,
+    Right(_)
+  )
+```
+
+Tới đây, ta thấy naming convention trong cặp API này: hậu tố `With` cho biết handler tự trả về một `Try[U]`. Nếu không có `With`, handler trả về một unwrapped value `U`, rồi `recover` bọc value đó trong `Success`.
+
+Nếu ta thiết kế một API `Result`/`Either` tổng quát và ưu tiên symmetry trực tiếp với `flatMap`, thì tên `flatMapError` rõ ràng và phù hợp hơn.
+
+---
+
+## IV. Haskell
+
+Haskell thường không dùng tên `recoverWith`.
+Operation có semantics gần nhất là `catchError`, nhưng nó chỉ tương đương với `flatMapError` khi error type được giữ nguyên, bởi vì `catchError` không cho phép đổi error type.
+Cụ thể, `MonadError` typeclass và các method của nó được khai báo như sau:
+
+```haskell
+class (Monad m) => MonadError e m | m -> e where
+  throwError :: e -> m a
+  catchError :: m a -> (e -> m a) -> m a
+```
+
+Nếu bạn nào chưa quen Haskell, thì có thể đọc hiểu declaration này như sau:
+
+- `MonadError e m` là constraint cho biết type constructor `m` vừa có instance của `Monad`, vừa hỗ trợ error type `e` thông qua `MonadError`.
+
+- `throwError :: e -> m a` tạo một failing computation trong context `m` từ error value `e`. Chú ý rằng "throw" ở đây không nhất thiết là ném runtime exception, semantics cụ thể phụ thuộc vào `MonadError` instance. Ví dụ, với `Either e`, ta có `m = Either e` và `throwError error = Left error`.
+
+- `m a` là một computation trong context `m`, có thể thành công với success value `a` hoặc thất bại với error value `e`. Không nên hiểu tổng quát rằng `m a` luôn là một container chứa sẵn `a` hoặc `e`.
+
+- Parameter `e -> m a` là handler nhận error value `e` và trả về một computation mới trong cùng context `m`. Handler có thể recover bằng một success value hoặc tiếp tục fail, nhưng vẫn cùng error type `e`.
+
+- Với `catchError action handler`, nếu `action` thất bại theo semantics của `MonadError e m` thì `catchError` sẽ gọi handler. Nếu `action` thành công thì `catchError` bỏ qua handler và trả về kết quả đó.
+- Điểm quan trọng là `e` và `m` ở input, handler và output đều giống nhau. Functional dependency `m -> e` trong `MonadError e m | m -> e` cho biết `m` xác định error type `e`, nên `catchError` không thể đổi `e` thành một type khác.
+
+Một `recover` trả plain value có thể được xây bằng `pure` tương tự như `recover` trong Kotlin:
+
+```haskell
+recover
+  :: MonadError e m
+  => m a
+  -> (e -> a)
+  -> m a
+recover action transform =
+  catchError action (pure . transform)
+```
+
+Ở đây, `pure . transform` tương đương với `\error -> pure (transform error)`: `transform` tạo plain value `a`, sau đó `pure` lift value đó vào context `m a`.
+
+Với concrete type `Either`, ta có thể viết một `flatMapError` tổng quát hơn và cho phép đổi error type:
+
+```haskell
+flatMapError
+  :: (e -> Either f a)
+  -> Either e a
+  -> Either f a
+flatMapError transform =
+  either transform Right
+```
+
+`either :: (a -> c) -> (b -> c) -> Either a b -> c` đóng vai trò tương tự `Either.fold` trong ví dụ Scala ở trên.
+
+Cuối cùng, ta thấy mental model vẫn giống nhau:
+
+```text
+catchError   = error-side flatMap, nhưng giữ nguyên error type e
+flatMapError = error-side flatMap tổng quát, có thể đổi error type e thành f
+recover      = handler trả a rồi được nâng bằng pure
+```
+
+---
+
+## V. Kết luận
+
+- Nếu ưu tiên symmetry trực tiếp với `flatMap`, `flatMapError` là một lựa chọn phù hợp cho custom Kotlin `Result<A, E>` vì nó:
+
+  - đối xứng trực tiếp với `flatMap`, và mô tả đúng việc callback trả về một `Result` mới khi có error, nên nó dễ nhớ và dễ hiểu.
+  - không giới hạn operation vào riêng hành vi recovery, vì nó có thể làm nhiều hơn là chỉ recovery.
+  - không phụ thuộc vào convention của Scala như hậu tố `With`.
+
+- Bộ API cuối cùng: `map`, `flatMap`, `mapError`, `flatMapError`. Còn `recover` chỉ là convenience operation:
+  `recover(f) = flatMapError { e -> Result.Ok(f(e)) }`.
+
+---
+
+## Tài liệu tham khảo
+
+- [Scala `Try`](https://www.scala-lang.org/api/current/scala/util/Try.html)
+- [Scala `PartialFunction`](https://www.scala-lang.org/api/current/scala/PartialFunction.html)
+- [Haskell `Control.Monad.Except`](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Except.html)
