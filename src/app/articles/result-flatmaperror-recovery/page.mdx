@@ -299,13 +299,15 @@ Ta thấy rõ `recoverWith` chính là error-side `flatMap` cho `Try`, nhưng ch
 Với `Either` data type, `flatMapError` có thể được định nghĩa dựa trên `fold` như sau:
 
 ```scala
-def flatMapError[A, E, F]
-  (either: Either[E, A])
-  (transform: E => Either[F, A]): Either[F, A] =
-    either.fold(
-      transform,
-      Right(_)
-    )
+def flatMapError[A, E, F](
+  either: Either[E, A]
+)(
+  transform: E => Either[F, A]
+): Either[F, A] =
+  either.fold(
+    transform,
+    Right(_)
+  )
 ```
 
 Tới đây, ta thấy naming convention trong cặp API này: hậu tố `With` cho biết handler tự trả về một `Try[U]`. Nếu không có `With`, handler trả về một unwrapped value `U`, rồi `recover` bọc value đó trong `Success`.
@@ -348,6 +350,7 @@ Nếu bạn nào chưa quen Haskell, thì có thể đọc hiểu declaration n�
 ---
 
 Một `recover` trả plain value có thể được xây bằng `pure` tương tự như `recover` trong Kotlin:
+
 ```haskell
 recover
   :: MonadError e m
@@ -361,6 +364,7 @@ recover action transform =
 Ở đây, `pure . transform` tương đương với `\error -> pure (transform error)`: `transform` tạo plain value `a`, sau đó `pure` lift value đó vào context `m a`.
 
 Với concrete type `Either`, ta có thể viết một `flatMapError` tổng quát hơn và cho phép đổi error type:
+
 ```haskell
 flatMapError
   :: (e -> Either f a)
@@ -369,6 +373,7 @@ flatMapError
 flatMapError transform =
   either transform Right
 ```
+
 Chú ý rằng `either :: (a -> c) -> (b -> c) -> Either a b -> c` đóng vai trò tương tự `Either.fold` trong ví dụ Scala ở trên.
 
 ---
