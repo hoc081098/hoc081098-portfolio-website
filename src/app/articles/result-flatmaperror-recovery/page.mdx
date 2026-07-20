@@ -40,7 +40,7 @@ export default (props) => <ArticleLayout article={article} {...props} />
 
 ## Overview
 
-Khi chain computation với `Result<A, E>` hoặc `Either<E, A>`, ta có thể xem `Success`/`Right` là nhánh chính, còn `Failure`/`Left` là nhánh **short-circuit**. Một implementation của `Either` mà `map` và `flatMap` mặc định vận hành trên `Right` được gọi là **right-biased**; với `Result`, ta có thể mô tả tương tự là **success-biased**. Chú ý rằng đây là một lựa chọn thiết kế của implementation, không phải thuộc tính bắt buộc của mọi `Result`/`Either`.
+Khi chain computation với `Result<A, E>` hoặc `Either<E, A>`, ta có thể xem `Success`/`Right` là nhánh chính, còn `Failure`/`Left` là nhánh **short-circuit**. Một implementation của `Either` mà `map` và `flatMap` mặc định vận hành trên `Right` được gọi là **right-biased**; với `Result`, ta cũng có thể mô tả tương tự là **success-biased**. Chú ý rằng đây chỉ là một lựa chọn thiết kế của implementation, chứ không phải một thuộc tính bắt buộc của mọi `Result`/`Either`.
 
 Vì vậy, callback truyền vào các success-side combinator như `map` và `flatMap` chỉ được gọi trên `Success`/`Right`; nếu là `Failure`/`Left`, callback sẽ không được gọi và giá trị `Failure`/`Left` đó sẽ được trả về.
 
@@ -50,9 +50,9 @@ Bài viết này tổng hợp tên gọi và semantics của `flatMapError`/`rec
 
 ### Một use case thực tế: `API → cache → UI`
 
-Trước khi đi vào type signature, ta hãy xem một flow load user.
-API có thể fail vì mất mạng, hết session hoặc lỗi bất ngờ.
-Nếu mất mạng, ta thử đọc cache, nếu vẫn không có dữ liệu ở cache, thì error còn lại được chuyển thành một UI state phù hợp.
+Trước khi đi vào type signature, ta hãy xem một flow load user điển hình trong một ứng dụng mobile, ở đây ta dùng Kotlin để minh họa.
+API có thể fail vì mất mạng, hết session hoặc một lỗi không mong muốn.
+Nếu mất mạng, ta thử fallback sang cache, nếu vẫn không có dữ liệu ở cache, thì error còn lại được chuyển thành một UI state phù hợp.
 
 Ví dụ dưới đây lược bỏ implementation của `userApi`, `userCache` và các UI model để tập trung vào pipeline:
 
@@ -108,7 +108,7 @@ Flow trên cho thấy vai trò khác nhau của từng operation:
 - `flatMapError` chỉ chạy khi API fail.
   Handler có thể đưa pipeline trở lại success channel bằng cached `User`,
   hoặc tiếp tục error channel bằng error ban đầu hay một `LoadUserError` mới từ cache.
-- `map` đổi `User` thành content UI model khi pipeline thành công.
+- `map` đổi `User` thành `UserUiModel.Content` khi pipeline thành công.
 - `recover` biến error cuối cùng thành một `UserUiModel`, nên typed error channel của kết quả trở thành `Nothing`.
 
 Use case này cũng cho thấy `flatMapError` không chỉ có nghĩa là “trả một fallback value”.
@@ -294,18 +294,21 @@ recover(pf) =
 
 Ta thấy rõ `recoverWith` chính là error-side `flatMap` cho `Try`, nhưng chỉ trên những exception mà `PartialFunction` định nghĩa. Như docs của `Try` cũng nói rõ, các combinator của `Try` chỉ bắt non-fatal exceptions; serious system errors vẫn luôn được ném ra ngoài.
 
-Với `Either`, `flatMapError` có thể được định nghĩa dựa trên `fold` như sau:
+---
+
+Với `Either` data type, `flatMapError` có thể được định nghĩa dựa trên `fold` như sau:
 
 ```scala
-def flatMapError[A, E, F](result: Either[E, A])(transform: E => Either[F, A]): Either[F, A] =
-  result.fold(
-    transform,
-    Right(_)
-  )
+def flatMapError[A, E, F]
+  (either: Either[E, A])
+  (transform: E => Either[F, A]): Either[F, A] =
+    either.fold(
+      transform,
+      Right(_)
+    )
 ```
 
 Tới đây, ta thấy naming convention trong cặp API này: hậu tố `With` cho biết handler tự trả về một `Try[U]`. Nếu không có `With`, handler trả về một unwrapped value `U`, rồi `recover` bọc value đó trong `Success`.
-
 Nếu ta thiết kế một API `Result`/`Either` tổng quát và ưu tiên symmetry trực tiếp với `flatMap`, thì tên `flatMapError` rõ ràng và phù hợp hơn.
 
 ---
@@ -325,18 +328,26 @@ class (Monad m) => MonadError e m | m -> e where
 Nếu bạn nào chưa quen Haskell, thì có thể đọc hiểu declaration này như sau:
 
 - `MonadError e m` là constraint cho biết type constructor `m` vừa có instance của `Monad`, vừa hỗ trợ error type `e` thông qua `MonadError`.
+  Một điểm quan trọng là `e` và `m` ở các input, các handler và các output đều giống nhau.
+  Điều đó bị ràng buộc bởi **Functional dependency** `m -> e` trong `MonadError e m | m -> e`,
+  có ý nghĩa như sau: nếu ta biết type constructor `m` thì ta xác định chính xác một error type `e`,
+  nên `catchError` cũng như `throwError` không thể đổi `e` thành một error type khác.
 
-- `throwError :: e -> m a` tạo một failing computation trong context `m` từ error value `e`. Chú ý rằng “throw” ở đây không nhất thiết là ném runtime exception, semantics cụ thể phụ thuộc vào `MonadError` instance. Ví dụ, với `Either e`, ta có `m = Either e` và `throwError error = Left error`.
+- `m a` là một computation trong context `m`, có thể thành công với success value `a` hoặc thất bại với error value `e`.
+  Không nên hiểu một cách tổng quát rằng `m a` luôn là một _container chứa sẵn_ `a` hoặc `e`.
 
-- `m a` là một computation trong context `m`, có thể thành công với success value `a` hoặc thất bại với error value `e`. Không nên hiểu tổng quát rằng `m a` luôn là một container chứa sẵn `a` hoặc `e`.
+- `throwError :: e -> m a` tạo một failing computation trong context `m` từ error value `e`.
+  Chú ý rằng “throw” ở đây không nhất thiết là ném runtime exception, vì semantics cụ thể phụ thuộc vào từng `MonadError` instance.
+  Ví dụ với `Either e`, ta có `m = Either e` và `throwError error = Left error`.
 
-- Parameter `e -> m a` là handler nhận error value `e` và trả về một computation mới trong cùng context `m`. Handler có thể recover bằng một success value hoặc tiếp tục fail, nhưng vẫn cùng error type `e`.
+- Với `catchError :: m a -> (e -> m a) -> m a`, parameter `e -> m a` là 1 handler nhận error value `e` và trả về một computation mới trong cùng context `m`.
+  Handler có thể recover bằng một success value hoặc tiếp tục fail, nhưng vẫn cùng error type `e`.
+  Nhìn rõ hơn dưới dạng `catchError action handler`, nếu `action` thất bại theo semantics của `MonadError e m` thì `catchError` sẽ gọi handler.
+  Nếu `action` thành công thì `catchError` bỏ qua handler và trả về kết quả đó.
 
-- Với `catchError action handler`, nếu `action` thất bại theo semantics của `MonadError e m` thì `catchError` sẽ gọi handler. Nếu `action` thành công thì `catchError` bỏ qua handler và trả về kết quả đó.
-- Điểm quan trọng là `e` và `m` ở input, handler và output đều giống nhau. Functional dependency `m -> e` trong `MonadError e m | m -> e` cho biết `m` xác định error type `e`, nên `catchError` không thể đổi `e` thành một type khác.
+---
 
 Một `recover` trả plain value có thể được xây bằng `pure` tương tự như `recover` trong Kotlin:
-
 ```haskell
 recover
   :: MonadError e m
@@ -350,7 +361,6 @@ recover action transform =
 Ở đây, `pure . transform` tương đương với `\error -> pure (transform error)`: `transform` tạo plain value `a`, sau đó `pure` lift value đó vào context `m a`.
 
 Với concrete type `Either`, ta có thể viết một `flatMapError` tổng quát hơn và cho phép đổi error type:
-
 ```haskell
 flatMapError
   :: (e -> Either f a)
@@ -359,8 +369,9 @@ flatMapError
 flatMapError transform =
   either transform Right
 ```
+Chú ý rằng `either :: (a -> c) -> (b -> c) -> Either a b -> c` đóng vai trò tương tự `Either.fold` trong ví dụ Scala ở trên.
 
-`either :: (a -> c) -> (b -> c) -> Either a b -> c` đóng vai trò tương tự `Either.fold` trong ví dụ Scala ở trên.
+---
 
 Cuối cùng, ta thấy mental model vẫn giống nhau:
 
