@@ -312,7 +312,7 @@ class ArrayDeque<E> : AbstractMutableList<E> {
 
 - Tương tự như `removeFirst`, nó sẽ check nếu `ArrayDeque` đang rỗng thì sẽ throw `NoSuchElementException`.
 
-- Lấy _physical index_ của phần tử cuối `lastIndex` - logical index, thông qua `internalLastIndex = internalIndex(lastIndex)`. Sau đó, lấy phần tử cuối thực sự thông qua `element = internalGet(internalLastIndex)` (để return cho caller).
+- `lastIndex` là logical index của phần tử cuối. Gọi `internalIndex(lastIndex)` để convert sang _physical index_ tương ứng trong backing array, lưu vào `internalLastIndex`. Sau đó, dùng `internalGet(internalLastIndex)` để đọc giá trị phần tử tại vị trí đó, lưu vào `element` để trả về cho caller.
 
 - Gán `null` vào `internalLastIndex` trong `elementData` để clear reference (để GC có thể thu hồi nếu cần).
 
