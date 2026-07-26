@@ -1,6 +1,7 @@
 import { type Metadata } from 'next'
 
 import { Card } from '@/components/Card'
+import { SeriesCard } from '@/components/SeriesCard'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import { getAllArticleSeries } from '@/lib/articles'
 
@@ -21,7 +22,7 @@ export default async function SeriesIndex() {
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex max-w-3xl flex-col space-y-16">
             {series.map((item) => (
-              <Card as="article" key={item.slug}>
+              <SeriesCard series={item} key={item.slug}>
                 <Card.Eyebrow>
                   {item.articleSlugs.length} article
                   {item.articleSlugs.length === 1 ? '' : 's'}
@@ -31,7 +32,7 @@ export default async function SeriesIndex() {
                 </Card.Title>
                 <Card.Description>{item.description}</Card.Description>
                 <Card.Cta>View series</Card.Cta>
-              </Card>
+              </SeriesCard>
             ))}
           </div>
         </div>

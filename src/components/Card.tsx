@@ -6,6 +6,7 @@ export function Card<T extends React.ElementType = 'div'>({
   as,
   className,
   children,
+  ...props
 }: Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'className'> & {
   as?: T
   className?: string
@@ -14,7 +15,11 @@ export function Card<T extends React.ElementType = 'div'>({
 
   return (
     <Component
-      className={clsx(className, 'group relative flex flex-col items-start px-4 sm:px-0')}
+      {...props}
+      className={clsx(
+        className,
+        'group relative flex flex-col items-start px-4 sm:px-0',
+      )}
     >
       {children}
     </Component>
@@ -27,7 +32,7 @@ Card.Link = function CardLink({
 }: React.ComponentPropsWithoutRef<typeof Link>) {
   return (
     <>
-      <div className="absolute inset-x-0 -inset-y-6 z-0 rounded-xl bg-white ring-1 ring-zinc-200/70 shadow-sm transition-all duration-300 ease-out sm:-inset-x-6 sm:rounded-2xl group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-zinc-300/90 dark:bg-zinc-800/30 dark:ring-zinc-700/30 dark:shadow-zinc-900/20 dark:group-hover:bg-zinc-800/50 dark:group-hover:ring-zinc-600/50" />
+      <div className="absolute inset-x-0 -inset-y-6 z-0 rounded-xl bg-white shadow-sm ring-1 ring-zinc-200/70 transition-all duration-300 ease-out group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:ring-zinc-300/90 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/30 dark:shadow-zinc-900/20 dark:ring-zinc-700/30 dark:group-hover:bg-zinc-800/50 dark:group-hover:ring-zinc-600/50" />
       <Link {...props}>
         <span className="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl" />
         <span className="relative z-10">{children}</span>
@@ -59,7 +64,7 @@ Card.Description = function CardDescription({
   children: React.ReactNode
 }) {
   return (
-    <p className="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400 flex-1">
+    <p className="relative z-10 mt-2 flex-1 text-sm text-zinc-600 dark:text-zinc-400">
       {children}
     </p>
   )
@@ -72,7 +77,10 @@ Card.Cta = function CardCta({ children }: { children: React.ReactNode }) {
       className="relative z-10 mt-4 flex items-center text-sm font-medium text-violet-500"
     >
       {children}
-      <CaretRightIcon className="ml-1 h-4 w-4 stroke-current" weight="duotone" />
+      <CaretRightIcon
+        className="ml-1 h-4 w-4 stroke-current"
+        weight="duotone"
+      />
     </div>
   )
 }

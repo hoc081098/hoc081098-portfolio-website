@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import { AppContext } from '@/app/providers'
 import { Container } from '@/components/Container'
 import { Prose } from '@/components/Prose'
+import { SeriesFlag } from '@/components/SeriesFlag'
 import { type Article } from '@/lib/articles'
 import { formatDate, formatInstant } from '@/lib/formatDate'
 import { getArticleSeriesContext } from '@/lib/series'
@@ -133,12 +134,13 @@ export function ArticleLayout({
 
               {/* Display series context */}
               {seriesContext && (
-                <div className="my-6 flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <div className="my-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400">
                   <Link
                     href={`/series/${seriesContext.series.slug}`}
-                    className="font-semibold text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                    className="inline-flex max-w-full min-w-0 items-center gap-2 font-semibold text-zinc-600 transition hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-zinc-100"
                   >
-                    Series: {seriesContext.series.title}
+                    <SeriesFlag series={seriesContext.series} />
+                    <span>Series: {seriesContext.series.title}</span>
                   </Link>
                   <span aria-hidden="true">·</span>
                   <span className="font-medium text-zinc-600 dark:text-zinc-300">

@@ -25,6 +25,7 @@ export interface ArticleWithSlug extends Article {
 const DATE_ONLY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
 const INSTANT_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$/
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const HEX_COLOR_PATTERN = /^#[\da-f]{6}$/i
 
 function isValidDateOnly(value: string): value is DateOnly {
   let match = DATE_ONLY_PATTERN.exec(value)
@@ -160,6 +161,22 @@ function validateArticleSeries(articles: ArticleWithSlug[]) {
       throw new Error(
         `Invalid article series "${series.slug}": title and description must be non-empty`,
       )
+    }
+
+    let theme = (
+      series as {
+        theme?: Partial<ArticleSeries['theme']>
+      }
+    ).theme
+
+    for (let field of ['from', 'via', 'to'] as const) {
+      let color = theme?.[field]
+
+      if (typeof color !== 'string' || !HEX_COLOR_PATTERN.test(color)) {
+        throw new Error(
+          `Invalid article series "${series.slug}": theme.${field} must be a #RRGGBB color`,
+        )
+      }
     }
 
     if (series.articleSlugs.length === 0) {

@@ -2,6 +2,8 @@ import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { Card } from '@/components/Card'
+import { SeriesCard } from '@/components/SeriesCard'
+import { SeriesHeaderAccent } from '@/components/SeriesHeaderAccent'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import { getAllArticleSeries, getArticlesBySeries } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
@@ -46,11 +48,17 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
   let articles = await getArticlesBySeries(series.slug)
 
   return (
-    <SimpleLayout title={series.title} intro={series.description}>
+    <SimpleLayout
+      title={series.title}
+      intro={series.description}
+      eyebrow={
+        <SeriesHeaderAccent series={series} articleCount={articles.length} />
+      }
+    >
       <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
         <div className="flex max-w-3xl flex-col space-y-16">
           {articles.map((article, articleIndex) => (
-            <Card as="article" key={article.slug}>
+            <SeriesCard series={series} variant="article" key={article.slug}>
               <Card.Eyebrow as="time" dateTime={article.createdAt} decorate>
                 Part {articleIndex + 1} of {articles.length} ·{' '}
                 {formatDate(article.createdAt)}
@@ -60,7 +68,7 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
               </Card.Title>
               <Card.Description>{article.description}</Card.Description>
               <Card.Cta>Read article</Card.Cta>
-            </Card>
+            </SeriesCard>
           ))}
         </div>
       </div>
