@@ -43,11 +43,14 @@ export async function GET(req: Request) {
     let publicUrl = `${siteUrl}/articles/${id}`
     let article = $('article').first()
     let title = article.find('h1').first().text()
-    let date = article.find('time').first().attr('datetime')
+    let createdAt = article
+      .find('time[data-created-at]')
+      .first()
+      .attr('datetime')
     let content = article.find('[data-mdx-content]').first().html()
 
     assert(typeof title === 'string')
-    assert(typeof date === 'string')
+    assert(typeof createdAt === 'string')
     assert(typeof content === 'string')
 
     feed.addItem({
@@ -57,7 +60,7 @@ export async function GET(req: Request) {
       content,
       author: [author],
       contributor: [author],
-      date: new Date(date),
+      date: new Date(`${createdAt}T00:00:00Z`),
     })
   }
 

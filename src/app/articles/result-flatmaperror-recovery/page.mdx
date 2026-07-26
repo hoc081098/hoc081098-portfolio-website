@@ -3,7 +3,8 @@ import resultFlatMapErrorRecoveryImage from './result-flatmaperror-recovery.png'
 
 export const article = {
   author: 'hoc081098',
-  date: '2026-07-19',
+  createdAt: '2026-07-19',
+  lastUpdatedAt: '2026-07-20T09:53:02Z',
   title: 'Result — flatMapError, recover và recoverWith',
   description:
     'Mental model và semantics của flatMapError, recover, recoverWith qua custom Kotlin Result, Scala Try và Haskell MonadError.',
@@ -25,6 +26,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       {
         url: resultFlatMapErrorRecoveryImage.src,

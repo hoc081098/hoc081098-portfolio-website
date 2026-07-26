@@ -2,7 +2,8 @@ import { ArticleLayout } from '@/components/ArticleLayout'
 
 export const article = {
   author: 'hoc081098',
-  date: '2026-02-14',
+  createdAt: '2026-02-14',
+  lastUpdatedAt: '2026-06-28T09:15:39Z',
   title: 'Rate limiting strategies for Nginx, API Gateway, and service layers',
   description:
     'Rate limiting không nên đặt ở một tầng duy nhất. Phân tích chiến lược rate limiting tại Nginx (edge), API Gateway (YARP), và service layer trong ASP.NET Core.',
@@ -24,6 +25,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],

@@ -8,7 +8,8 @@ import imgDp5 from '@/images/articles/jetpack-compose-dp-class/img_5.png'
 
 export const article = {
   author: 'hoc081098',
-  date: '2023-09-16',
+  createdAt: '2023-09-16',
+  lastUpdatedAt: '2026-06-28T09:15:39Z',
   title: 'Looking at `Dp` class in Jetpack Compose',
   description:
     'Why do @Composable functions in Jetpack Compose usually use `Dp.Unspecified` as default value? Why not use null? The optimization of Jetpack Compose under the hood.',
@@ -21,6 +22,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],

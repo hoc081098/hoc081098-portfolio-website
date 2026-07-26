@@ -3,20 +3,26 @@
 import { useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { ArrowLeftIcon, TranslateIcon } from '@phosphor-icons/react'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  TranslateIcon,
+} from '@phosphor-icons/react'
+import clsx from 'clsx'
 
 import { AppContext } from '@/app/providers'
 import { Container } from '@/components/Container'
 import { Prose } from '@/components/Prose'
-import { type ArticleWithSlug } from '@/lib/articles'
-import { formatDate } from '@/lib/formatDate'
+import { type Article } from '@/lib/articles'
+import { formatDate, formatInstant } from '@/lib/formatDate'
+import { getArticleSeriesContext } from '@/lib/series'
 import { slugifyTag } from '@/lib/tags'
 
 export function ArticleLayout({
   article,
   children,
 }: {
-  article: ArticleWithSlug
+  article: Article
   children: React.ReactNode
 }) {
   let router = useRouter()
@@ -27,7 +33,9 @@ export function ArticleLayout({
   let language = article.language ?? 'en'
   // useState + useEffect ensures window is only accessed after hydration on the client.
   // During SSR prerender, window does not exist — this pattern avoids ReferenceError.
-  const [translateToEnglishUrl, setTranslateToEnglishUrl] = useState<string | null>(null)
+  const [translateToEnglishUrl, setTranslateToEnglishUrl] = useState<
+    string | null
+  >(null)
   useEffect(() => {
     if (language === 'en') return
     const articleUrl = `${window.location.origin}/articles/${slug}`
@@ -38,6 +46,8 @@ export function ArticleLayout({
 
   const hitsUrl = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}.svg`
   const hitsLink = `https://hits.sh/portfolio.hoc081098.dev/articles/${slug}/`
+
+  const seriesContext = getArticleSeriesContext(slug)
 
   return (
     <Container className="mt-16 lg:mt-32">
@@ -58,17 +68,33 @@ export function ArticleLayout({
           )}
           <article lang={language}>
             <header className="flex flex-col">
+              {/* Display title */}
               <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
                 {article.title}
               </h1>
-              <time
-                dateTime={article.date}
-                className="order-first flex items-center text-base text-zinc-400 dark:text-zinc-500"
-              >
-                <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
-                <span className="ml-3">{formatDate(article.date)}</span>
-              </time>
-              {/* Author + reading time + hits badge */}
+
+              {/* Display createdAt, lastUpdatedAt */}
+              <div className="order-first space-y-1 text-sm text-zinc-400 dark:text-zinc-500">
+                <time
+                  dateTime={article.createdAt}
+                  data-created-at=""
+                  className="flex items-center"
+                >
+                  <span className="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500" />
+                  <span className="ml-3">
+                    Published {formatDate(article.createdAt)}
+                  </span>
+                </time>
+                <time
+                  dateTime={article.lastUpdatedAt}
+                  data-last-updated-at=""
+                  className="flex items-center pl-3.5"
+                >
+                  Last updated {formatInstant(article.lastUpdatedAt)}
+                </time>
+              </div>
+
+              {/* Author + reading time + hits badge + translate to English button */}
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <a
                   href="https://github.com/hoc081098"
@@ -95,13 +121,42 @@ export function ArticleLayout({
                     aria-label="Translate this article to English (opens in new tab)"
                     className="inline-flex items-center gap-1.5 rounded-full bg-violet-500 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-violet-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-violet-600 hover:shadow-lg hover:shadow-violet-500/40 active:translate-y-0 active:shadow-sm dark:bg-violet-500 dark:text-white dark:shadow-violet-500/20 dark:hover:bg-violet-400 dark:hover:shadow-violet-400/30"
                   >
-                    <TranslateIcon aria-hidden="true" className="h-3.5 w-3.5" weight="duotone" />
+                    <TranslateIcon
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5"
+                      weight="duotone"
+                    />
                     Translate to English
                   </a>
                 )}
               </div>
+
+              {/* Display series context */}
+              {seriesContext && (
+                <div className="my-6 flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                  <Link
+                    href={`/series/${seriesContext.series.slug}`}
+                    className="font-semibold text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                  >
+                    Series: {seriesContext.series.title}
+                  </Link>
+                  <span aria-hidden="true">·</span>
+                  <span className="font-medium text-zinc-600 dark:text-zinc-300">
+                    Part {seriesContext.position} of {seriesContext.total}
+                  </span>
+                </div>
+              )}
+
+              {/* Display tags */}
               {article.tags && article.tags.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div
+                  className={clsx(
+                    'flex flex-wrap gap-2',
+                    // if seriesContext is defined, the series navigation will already have margin-top,
+                    // so we don't need to add extra margin-top to the tags.
+                    !seriesContext && 'mt-3',
+                  )}
+                >
                   {[...new Set(article.tags)].map((tag) => (
                     <Link
                       key={tag}
@@ -115,9 +170,49 @@ export function ArticleLayout({
                 </div>
               )}
             </header>
+
+            {/* Display the article content */}
             <Prose className="mt-12" lang={language} data-mdx-content>
               {children}
             </Prose>
+
+            {/* Display series navigation */}
+            {seriesContext &&
+              (seriesContext.previousSlug || seriesContext.nextSlug) && (
+                <nav
+                  aria-label={`More articles in ${seriesContext.series.title}`}
+                  className="mt-12 flex justify-between gap-4 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
+                >
+                  {seriesContext.previousSlug ? (
+                    <Link
+                      href={`/articles/${seriesContext.previousSlug}`}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                    >
+                      <ArrowLeftIcon
+                        aria-hidden="true"
+                        className="h-4 w-4"
+                        weight="duotone"
+                      />
+                      Previous article
+                    </Link>
+                  ) : (
+                    <span />
+                  )}
+                  {seriesContext.nextSlug && (
+                    <Link
+                      href={`/articles/${seriesContext.nextSlug}`}
+                      className="inline-flex items-center gap-2 text-right text-sm font-medium text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+                    >
+                      Next article
+                      <ArrowRightIcon
+                        aria-hidden="true"
+                        className="h-4 w-4"
+                        weight="duotone"
+                      />
+                    </Link>
+                  )}
+                </nav>
+              )}
           </article>
         </div>
       </div>

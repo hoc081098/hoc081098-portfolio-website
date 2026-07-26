@@ -28,7 +28,7 @@ src/
 
 ### Key Data Flow
 
-- **Site content** lives in `src/data/` — edit `project-data.ts`, `social-data.ts`, `work-data.ts` for content changes; all re-exported from `src/data/index.ts`.
+- **Site content** lives in `src/data/` — edit `project-data.ts`, `social-data.ts`, `work-data.ts`, or `article-series.ts` for content changes; all re-exported from `src/data/index.ts`.
 - **Articles** are MDX files at `src/app/articles/<slug>/page.mdx`. Discovery uses `fast-glob` in `src/lib/articles.ts` — no manual registration needed.
 - **RSS feed** at `/feed.xml/route.ts` fetches rendered article HTML at runtime using `cheerio` to extract content, then builds the XML feed. The `data-mdx-content` attribute on `<Prose>` in `ArticleLayout.tsx` is the scraping target.
 
@@ -42,7 +42,8 @@ import { ArticleLayout } from '@/components/ArticleLayout'
 
 export const article = {
   author: 'hoc081098',
-  date: 'YYYY-MM-DD',
+  createdAt: 'YYYY-MM-DD',
+  lastUpdatedAt: 'YYYY-MM-DDTHH:mm:ssZ',
   title: 'Article Title',
   description: 'Short description.',
   language: 'vi', // Omit for English articles.
@@ -52,6 +53,12 @@ export const article = {
 export const metadata = {
   title: article.title,
   description: article.description,
+  keywords: article.tags,
+  openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
+  },
 }
 
 export default (props) => <ArticleLayout article={article} {...props} />
@@ -60,6 +67,7 @@ Article body here...
 ```
 
 3. Images go in `src/images/articles/<slug>/` and are imported directly in MDX using the `<Image>` component (provided via `mdx-components.tsx`).
+4. Keep `createdAt` as a date-only `YYYY-MM-DD` value. Update `lastUpdatedAt` on every content edit and normalize it to a UTC RFC 3339 instant ending in `Z`.
 
 ## Article Tagging
 
@@ -67,7 +75,13 @@ Article body here...
 - Prefer a compact taxonomy: programming language, platform/framework/library, then the core technical subjects.
 - Use kebab-case tag names (`jetpack-compose`, `value-class`, `reactive-programming`) and avoid duplicate aliases such as underscore variants.
 - Keep each article focused, usually around 4-9 tags. Avoid one-off implementation-detail tags unless they are likely to become a reusable topic page.
-- For article series, use one shared series tag across every article in the series. That is a good fit for the existing `/tags/[tag]` filtered pages.
+- Tags remain topic filters and are independent from article series.
+
+## Article Series
+
+- Define ordered, one-level series in `src/data/article-series.ts`; article URLs remain flat at `/articles/<slug>`.
+- `articleSlugs` order defines Part 1, Part 2, and so on. Every slug must match an existing article, and an article may appear in at most one series.
+- Series are exposed at `/series` and `/series/<series-slug>`. Articles in a series automatically render the series label and Previous/Next navigation.
 
 ## Conventions & Patterns
 
@@ -84,6 +98,7 @@ Article body here...
 | File | Purpose |
 |---|---|
 | `src/data/index.ts` | Single export barrel for all site content |
+| `src/data/article-series.ts` | Ordered, one-level article series registry |
 | `src/lib/articles.ts` | Article discovery + metadata extraction |
 | `src/app/feed.xml/route.ts` | RSS feed — scrapes rendered HTML |
 | `src/components/ArticleLayout.tsx` | Wraps every MDX article page |

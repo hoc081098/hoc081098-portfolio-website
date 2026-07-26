@@ -2,7 +2,8 @@ import { ArticleLayout } from '@/components/ArticleLayout'
 
 export const article = {
   author: 'hoc081098',
-  date: '2026-06-08',
+  createdAt: '2026-06-08',
+  lastUpdatedAt: '2026-07-23T15:40:43Z',
   title: 'Under the Hood of Kotlin ArrayDeque: Circular Buffer, Capacity Growth, and Complexity Analysis',
   description:
     'Deep dive vào Kotlin ArrayDeque: circular buffer layout, physical vs logical index, capacity growth 1.5x, amortized O(1) analysis, và những trade-off đằng sau một data structure tưởng chừng đơn giản.',
@@ -26,6 +27,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       {
         url: `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,

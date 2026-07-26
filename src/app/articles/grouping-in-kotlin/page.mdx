@@ -2,7 +2,8 @@ import { ArticleLayout } from '@/components/ArticleLayout'
 
 export const article = {
   author: 'hoc081098',
-  date: '2023-05-28',
+  createdAt: '2023-05-28',
+  lastUpdatedAt: '2026-06-28T09:15:39Z',
   title: 'Grouping trong Kotlin (Grouping in Kotlin)',
   description:
     'So sánh groupBy, groupingBy và reduce trong Kotlin — phân tích time complexity, space complexity, và cơ chế lazy evaluation của Grouping.',
@@ -24,6 +25,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],

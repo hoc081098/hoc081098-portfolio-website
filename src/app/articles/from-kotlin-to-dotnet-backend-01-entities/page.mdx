@@ -1,0 +1,134 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'hoc081098',
+  createdAt: '2026-07-26',
+  lastUpdatedAt: '2026-07-26T18:31:15Z',
+  title: 'From Kotlin to .NET Backend #1: An Entity Is More Than a Data Class',
+  description:
+    'A short DDD practice session on entity identity and lifecycle, with a hands-on .NET exercise and Kotlin comparisons.',
+  estimatedReadingTime: 4,
+  tags: [
+    'csharp',
+    'dotnet',
+    'backend',
+    'domain-driven-design',
+    'domain-modeling',
+    'entities',
+  ],
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+  keywords: article.tags,
+  openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
+    images: [
+      `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
+    ],
+  },
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+> **Series preview:** This short draft establishes the recurring format for each
+> session: one concept, one practical exercise, Kotlin comparisons, and a few
+> review questions.
+
+## Concept: an Entity is defined by continuity of identity
+
+In DDD, an **Entity** is not defined only by its current field values. It has a
+stable identity and a lifecycle. Its attributes may change while it remains the
+same domain object.
+
+Two subscriptions can have identical plans and renewal dates but still be
+different subscriptions. Conversely, a subscription remains the same
+subscription after its plan changes.
+
+An Entity should therefore:
+
+- carry a stable domain identity;
+- expose meaningful state transitions instead of public setters;
+- protect invariants that depend on its own state; and
+- keep persistence concerns outside the domain model.
+
+```csharp
+public readonly record struct SubscriptionId(Guid Value);
+
+public sealed class Subscription
+{
+    public SubscriptionId Id { get; }
+    public string Plan { get; private set; }
+
+    public Subscription(SubscriptionId id, string plan)
+    {
+        if (string.IsNullOrWhiteSpace(plan))
+        {
+            throw new ArgumentException("Plan must not be empty.", nameof(plan));
+        }
+
+        Id = id;
+        Plan = plan;
+    }
+
+    public void ChangePlan(string nextPlan)
+    {
+        if (string.IsNullOrWhiteSpace(nextPlan))
+        {
+            throw new ArgumentException(
+                "Plan must not be empty.",
+                nameof(nextPlan)
+            );
+        }
+
+        Plan = nextPlan;
+    }
+}
+```
+
+The `SubscriptionId` is a small value type, while `Subscription` is a class with
+a lifecycle. Whether two in-memory instances compare as equal is a separate
+policy that should be made explicit; the domain identity is still `Id`.
+
+## Practical exercise
+
+Model a `WorkspaceMember` Entity with:
+
+- `MemberId`, `WorkspaceId`, `Role`, and `Status`;
+- `ChangeRole`, `Suspend`, and `Reinstate` operations;
+- an invariant that a suspended member cannot change role; and
+- tests that distinguish business identity from matching field values.
+
+Keep Entity Framework Core configuration outside the domain class. As a bonus,
+consider this rule:
+
+> A workspace must always have at least one owner.
+
+Can `WorkspaceMember` enforce it by itself? It cannot see the other members, so
+the rule likely belongs at the `Workspace` Aggregate boundary rather than inside
+one member Entity.
+
+## Kotlin comparison
+
+A Kotlin `data class` gives structural equality and `copy` by default. Those are
+excellent semantics for many Value Objects, but they can be misleading for an
+Entity whose identity survives attribute changes.
+
+A closer Kotlin model would usually use a regular class, an explicit ID such as
+`@JvmInline value class MemberId`, private mutation, and domain methods. The C#
+analogy is similar: use `record` or `record struct` where value equality is
+intended, and use a class with explicit lifecycle behavior for an Entity.
+
+## Review questions
+
+1. Which field tells you whether an Entity is still the same domain object?
+2. Which invariants can the Entity enforce using only its own state?
+3. Which rules require an Aggregate or another domain collaborator?
+
+## Next session
+
+**Value Objects:** representing concepts such as `EmailAddress`, `Money`, and
+`DateRange` so invalid states become harder to construct.

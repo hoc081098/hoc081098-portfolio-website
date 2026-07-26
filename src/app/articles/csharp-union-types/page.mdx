@@ -2,7 +2,8 @@ import { ArticleLayout } from '@/components/ArticleLayout'
 
 export const article = {
   author: 'hoc081098',
-  date: '2026-04-05',
+  createdAt: '2026-04-05',
+  lastUpdatedAt: '2026-06-07T19:36:04Z',
   title: '💠 Union Types in C#',
   description:
     'Union types in C# 15 / .NET 11 Preview 2 — syntax, implicit conversions, pattern matching semantics, null checking, and common traps.',
@@ -15,6 +16,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],
@@ -241,4 +245,3 @@ r is Result<int>                            // → r.Value is Result<int> → fa
 Result<int>  r2 = ...;  r2 is int           // union semantics ✅
 object       r3 = ...;  r3 is Result<int>   // normal runtime type check ⚠️
 ```
-

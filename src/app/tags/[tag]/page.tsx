@@ -19,8 +19,8 @@ type TagPageProps = {
 function ArticleCard({ article }: { article: ArticleWithSlug }) {
   return (
     <Card as="article">
-      <Card.Eyebrow as="time" dateTime={article.date} decorate>
-        {formatDate(article.date)}
+      <Card.Eyebrow as="time" dateTime={article.createdAt} decorate>
+        {formatDate(article.createdAt)}
       </Card.Eyebrow>
       <Card.Title href={`/articles/${article.slug}`}>
         {article.title}

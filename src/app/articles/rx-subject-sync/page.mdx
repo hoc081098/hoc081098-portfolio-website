@@ -12,7 +12,8 @@ import imgSync10 from '@/images/articles/rx-subject-sync/rxswift_sync_10.png'
 
 export const article = {
   author: 'hoc081098',
-  date: '2023-06-17',
+  createdAt: '2023-06-17',
+  lastUpdatedAt: '2026-06-28T09:15:39Z',
   title: 'Bàn về Subject trong Rx (ví dụ với RxSwift 😇)',
   description:
     'Serially rule trong ReactiveX, tại sao Subject không thread-safe ở phía Observer, và cách RxSwift detect Synchronization anomaly / Reentrancy anomaly.',
@@ -35,6 +36,9 @@ export const metadata = {
   description: article.description,
   keywords: article.tags,
   openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
     images: [
       `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
     ],
