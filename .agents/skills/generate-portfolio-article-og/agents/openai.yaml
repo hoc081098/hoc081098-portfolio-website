@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Portfolio Article OG'
+  short_description: 'Generate accurate article OG previews'
+  default_prompt: 'Use $generate-portfolio-article-og to create, compare, and integrate an Open Graph image for a portfolio article.'

@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Portfolio Article MDX Sync'
+  short_description: 'Publish and sync portfolio Markdown articles'
+  default_prompt: 'Use $sync-portfolio-article-mdx to convert this Markdown article into portfolio MDX or sync its latest MDX body back.'
