@@ -123,7 +123,7 @@ Nếu chỉ kết luận ngay CA làm chậm system thì nghe có vẻ là khái
 
 - Khi system chậm, ta không nên quy nguyên nhân ngay cho CA hay việc mapping, mà phải
   profile end-to-end để kiểm tra DB query execution, network roundtrips, serialization, CPU, allocation rate
-  và thời gian dành cho GC. Nếu một hệ thống chậm đi bởi GC
+  và thời gian dành cho GC. Nếu một hệ thống chậm đi do GC
   thì ta nên profile và tối ưu allocation ở hot path.
   Cũng phải nói thêm, cho dù ta không dùng CA, việc mapping cơ bản trong code,
   hoặc ORM materialization, hoặc serialization vẫn tạo managed allocations.
@@ -139,8 +139,8 @@ Một số hướng xử lý và lưu ý (thực tế với ASP.NET Core và EF 
 
 - Giảm allocation ở hot path bằng cách tránh mapping dư thừa
   và ưu tiên projection trực tiếp từ query (SQL `SELECT` / EF Core `.Select(...)`).
-  Performance characteristics của `AutoMapper` và các reflection-based mappers có thể khác nhau,
-  vì vậy cần đo riêng thay vì đánh đồng chúng. Chỉ nên cân nhắc thay mapper khi số liệu cho thấy
+  Các thư viện mapper như `AutoMapper`, `Mapster` và các mapping strategy khác nhau có performance characteristics riêng,
+  vì vậy cần đo đạc riêng thay vì đánh đồng chúng. Chỉ nên cân nhắc thay mapper khi số liệu cho thấy
   implementation hiện tại tạo CPU/allocation overhead đáng kể trên hot path.
 
 - Ở cấp độ system, cache có thể giúp giảm end-to-end latency bằng cách tránh lặp lại các read operation tốn kém,

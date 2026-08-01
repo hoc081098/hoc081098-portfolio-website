@@ -102,6 +102,17 @@ function validateArticleMetadata(
     )
   }
 
+  if (
+    typeof metadata.createdAt === 'string' &&
+    isValidDateOnly(metadata.createdAt) &&
+    typeof metadata.lastUpdatedAt === 'string' &&
+    isValidInstant(metadata.lastUpdatedAt) &&
+    Date.parse(metadata.lastUpdatedAt) <
+      Date.parse(`${metadata.createdAt}T00:00:00Z`)
+  ) {
+    errors.push('lastUpdatedAt must be on or after createdAt at 00:00:00 UTC')
+  }
+
   if ('date' in metadata) {
     errors.push('date is no longer supported; use createdAt')
   }
