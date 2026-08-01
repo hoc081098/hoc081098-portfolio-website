@@ -44,13 +44,16 @@ export const metadata = {
 
 export default (props) => <ArticleLayout article={article} {...props} />
 
-Phản biện nhận định Clean Architecture mặc định làm system chậm qua ba góc nhìn: performance,
-development complexity và database usage; đồng thời làm rõ mối quan hệ giữa CA, DDD và CQRS.
+Clean Architecture không miễn phí. Nó thêm boundary, abstraction, mapping và thường làm chậm delivery ở giai đoạn đầu.
+Nhưng từ đó kết luận CA mặc định làm system chậm, không tận dụng được database và chỉ phù hợp với hệ thống cực lớn là một bước khái quát hóa quá xa.
+Bài viết này phân tích nhận định trên qua ba góc nhìn: performance, development complexity và database usage; đồng thời làm rõ mối quan hệ giữa CA, DDD và CQRS.
 
 ## 💠 Tóm tắt bài viết gốc: Tại sao Clean Architecture (CA) làm system chậm đi
 
 **Tác giả:** [Hoai Le (@hoai.le.39904181)](https://www.facebook.com/hoai.le.39904181/)
 **Bài viết gốc:** [Facebook post](https://www.facebook.com/hoai.le.39904181/posts/pfbid0t3jFW5DBeAKTCwWfFZZZY91Cgf3fYkbzRCX8wgBSWufqomHB8vRC1nPwbwqv8t46l)
+
+Phần dưới đây chỉ tóm lược lập luận của bài viết gốc, không phải định nghĩa chính thức của Clean Architecture.
 
 - CA có mục tiêu chính là maintainability, testability và independence khỏi framework/DB/UI.
 - Điểm khác với 3-layer là có thêm app domain còn gọi là use case, chứa toàn bộ logic. Logic
@@ -75,18 +78,19 @@ Tránh nhà nhà clean, người người clean.
 **Bản đăng trên Facebook của mình:**
 [Facebook post của mình](https://www.facebook.com/hoc081098/posts/pfbid02auonZc7ExVW4Cgfj8fkpSNw1WrPhwLptJRbKZTvSFYvLoXHc6gfSVuQrsV6eUmZ7l)
 
-Đầu tiên, mình phải công nhận bài viết chỉ ra rất nhiều điểm đúng. CA sinh ra không phải để chạy
-task, phát triển feature nhanh hay có development velocity cao. Mục tiêu chính như bạn nói:
+Đầu tiên, mình phải công nhận bài viết chỉ ra rất nhiều điểm đúng. CA sinh ra không phải để tối đa hóa tốc độ hoàn thành task,
+phát triển feature nhanh hoặc có development velocity cao. Mục tiêu chính như bạn nói:
 maintainability, testability và framework independence. So với một implementation sử dụng 3-layer (query thẳng
 DB và DTO projection), thì một implementation CA (có thêm việc mapping và các abstraction) có thể tạo ra
 performance overhead. Mức độ ảnh hưởng còn phụ thuộc vào cách implement và workload thực tế.
 
-CA áp dụng cho hệ thống nhỏ là over-engineering, điều này đúng trong hầu hết các case nơi chỉ
+CA áp dụng cho hệ thống nhỏ là over-engineering, điều này đúng với hầu hết các case nơi bài toán chỉ
 là CRUD đơn giản, ít business logic, deadline gấp; dùng CA đúng là “dùng dao mổ trâu để giết gà”.
 Mapping object qua nhiều layer sẽ tốn chi phí rõ ràng. CA cũng sẽ làm chậm tốc độ phát triển
-ban đầu khi phải viết đủ thứ file từ domain, application rồi infrastructure, ... đủ thứ DTO,
+ban đầu khi phải viết đủ thứ file từ domain, application rồi infrastructure, ... và DTO,
 abstraction, mapper, ...
-Ngoài ra CA yêu cầu dev phải hiểu đúng, hiểu rõ & không phù hợp với mọi bài toán.
+Ngoài ra, CA đòi hỏi developer phải hiểu đúng, hiểu rõ các boundary và dependency rules.
+Bản thân CA cũng không phù hợp với mọi bài toán.
 
 <Image
   src={cleanArchitectureBackendImage}
@@ -101,7 +105,7 @@ Phần dưới là những điểm mình xin bổ sung/phản biện ở góc đ
 
 ---
 
-## 1. CA làm system chậm đi do GC pressure
+## 1. GC pressure có thực sự làm CA chậm đáng kể?
 
 Mapping qua các boundary có CPU cost và có thể phát sinh allocation, nhưng mức độ ảnh hưởng đến
 system phụ thuộc vào workload, volume và latency budget.
@@ -114,27 +118,24 @@ Allocation rate cao cũng có thể làm GC diễn ra thường xuyên hơn, nh�
 
 Nếu chỉ kết luận ngay CA làm chậm system thì nghe có vẻ là khái quát hóa quá vội vã (_hasty generalization_).
 
-- **Mapping object không phải bottleneck mặc định.** Trong nhiều I/O-bound business applications,
-  DB query execution, storage I/O, network roundtrips, cache behavior hoặc algorithm có thể chi phối
-  end-to-end latency nhiều hơn một vài phép mapping đơn giản. Tuy nhiên, đây chỉ là heuristic theo workload;
-  mức độ ảnh hưởng vẫn phải được xác nhận bằng profiling/benchmark.
+- **Mapping object không phải bottleneck mặc định.**
+  Mức độ ảnh hưởng của nó phải được xác nhận bằng profiling trên workload cụ thể.
 
 - Khi system chậm, ta không nên quy nguyên nhân ngay cho CA hay việc mapping, mà phải
   profile end-to-end để kiểm tra DB query execution, network roundtrips, serialization, CPU, allocation rate
-  và thời gian dành cho GC. Nếu 1 hệ thống chậm đi bởi GC
+  và thời gian dành cho GC. Nếu một hệ thống chậm đi bởi GC
   thì ta nên profile và tối ưu allocation ở hot path.
   Cũng phải nói thêm, cho dù ta không dùng CA, việc mapping cơ bản trong code,
-  hoặc ORM materialization, hoặc serialization vẫn có thể tạo managed allocations.
-  Đó là điều đương nhiên ở các ngôn ngữ sử dụng GC: runtime thực hiện allocation trên managed heap,
+  hoặc ORM materialization, hoặc serialization vẫn tạo managed allocations.
+  Managed allocation là một phần bình thường ở các runtime sử dụng GC: runtime thực hiện allocation trên managed heap,
   GC quản lý heap và thu hồi các object không còn reachable.
-  Tựu trung lại, mức độ ảnh hưởng phụ thuộc vào nhiều yếu tố và workload thực tế.
 
-- _DB connection pool starvation_ và _cache stampede_ là những failure mode có thể ảnh hưởng đến
+- Không nên đánh đồng mọi performance/reliability problem với GC pressure.
+  _DB connection pool starvation_ và _cache stampede_ là những failure mode ảnh hưởng đến
   reliability/availability của system. Tuy nhiên, những failure mode này không đủ để kết luận rằng
-  CPU/allocation overhead của việc mapping có đáng kể hay không; điều đó vẫn phải được xác định bằng
-  profiling/benchmark trên workload thực tế.
+  CPU/allocation overhead của việc mapping có đáng kể hay không.
 
-Giải pháp thực tế (ví dụ với .NET) là:
+Một số hướng xử lý và lưu ý (thực tế với ASP.NET Core và EF Core):
 
 - Giảm allocation ở hot path bằng cách tránh mapping dư thừa
   và ưu tiên projection trực tiếp từ query (SQL `SELECT` / EF Core `.Select(...)`).
@@ -142,10 +143,11 @@ Giải pháp thực tế (ví dụ với .NET) là:
   vì vậy cần đo riêng thay vì đánh đồng chúng. Chỉ nên cân nhắc thay mapper khi số liệu cho thấy
   implementation hiện tại tạo CPU/allocation overhead đáng kể trên hot path.
 
-- Cache là một trade-off riêng, không phải giải pháp mặc định cho GC pressure. Nó phù hợp hơn với
-  read-heavy workloads và những use case chấp nhận dữ liệu cũ trong một khoảng ngắn (_bounded staleness_).
+- Ở cấp độ system, cache có thể giúp giảm end-to-end latency bằng cách tránh lặp lại các read operation tốn kém,
+  nhưng đây là một trade-off riêng chứ không phải giải pháp trực tiếp cho GC pressure.
+  Nó phù hợp hơn với read-heavy workloads và những use case chấp nhận dữ liệu cũ trong một khoảng ngắn (_bounded staleness_).
   Với multi-instance systems, ta còn phải xử lý cache invalidation giữa các instance; ví dụ,
-  Redis Pub/Sub có thể đóng vai trò như một invalidation backplane. Cache cũng có thể giữ object sống
+  dùng Redis Pub/Sub đóng vai trò như một invalidation backplane. Cache cũng có thể giữ object sống
   lâu hơn, làm tăng memory usage và độ phức tạp khi vận hành.
 
 - Nếu dùng C#, ta có thể dùng `readonly struct` khi nó nhỏ (mốc khoảng ≤ 16 bytes - heuristic,
@@ -164,19 +166,21 @@ Vì vậy, kết luận cuối cùng vẫn phải dựa trên profiling và benc
 [EF Core performance guidance](https://learn.microsoft.com/en-us/ef/core/performance/) và
 [EF Core performance diagnosis](https://learn.microsoft.com/en-us/ef/core/performance/performance-diagnosis).
 
-Cái nhìn khác: với các system mà ultra-low latency là yêu cầu cốt lõi (ví dụ như high-frequency trading),
-ta có thể cần giảm hoặc bypass một số abstraction ở measured hot path, nhưng vẫn có thể giữ
+Ở góc nhìn khác, với các system mà ultra-low latency là yêu cầu cốt lõi (ví dụ như high-frequency trading),
+ta cần giảm hoặc bypass một số abstraction ở measured hot path, nhưng vẫn giữ
 architectural boundaries ở các phần còn lại.
 
 ---
 
-## 2. Sự phức tạp về mặt source code & chậm chạp
+## 2. Độ phức tạp của source code và tốc độ phát triển
 
-Đầu tiên mình xác nhận là mình đồng tình với bạn về việc source code phức tạp hơn và tốc độ phát
-triển chậm ban đầu. Nhưng ta phải công nhận sự phức tạp này là sự phức tạp có chủ ý, có trật tự,
-không hỗn mang. Nó đến từ sự phân chia rõ ràng và nó biểu lộ sự phức tạp của logic nghiệp vụ
-(cái phức tạp sẵn có) ra bên ngoài. Trong mô hình 3-layer, khi responsibility và boundary
-không được xác định rõ, business logic có nguy cơ dồn vào service lớn (god service) hoặc bị phân tán giữa
+Đầu tiên, mình đồng tình rằng CA làm source code phức tạp hơn và khiến tốc độ phát triển ban đầu chậm lại.
+Tuy nhiên, phần complexity này phần lớn là có chủ ý, có cấu trúc và không hỗn mang: các boundary, abstraction và trách nhiệm được phân chia rõ ràng
+để cô lập sự thay đổi, đồng thời làm cho độ phức tạp vốn có của nghiệp vụ (cái phức tạp sẵn có) trở nên minh bạch và dễ quản lý hơn.
+Dù vậy, việc bổ sung nhiều layer, folder, class và indirection vẫn là một chi phí thật.
+Cái giá này chỉ đáng trả khi lợi ích dài hạn tương xứng với quy mô, vòng đời và độ phức tạp của hệ thống.
+
+Trong mô hình 3-layer, khi responsibility và boundary không được xác định rõ, business logic có nguy cơ dồn vào service lớn (god service) hoặc bị phân tán giữa
 controller (presentation layer), service (business logic layer) và repository (data layer).
 Tuy nhiên, mô hình 3-layer không mặc định dẫn đến god service; một implementation được tổ chức
 tốt vẫn có thể modular và testable.
@@ -204,11 +208,11 @@ cách phân chia này, ranh giới về code và logic sẽ rõ ràng hơn.
 - 1 Bounded Context có thể gồm nhiều Aggregate. Mỗi Aggregate là một cluster của các Entity và Value Object,
   được xem như một _consistency boundary_.
   Mọi update từ bên ngoài Aggregate chỉ được đi qua entry point của Aggregate là Aggregate Root.
-- Ví dụ: `Order` không thể có `total ≤ 0`, `Order` đã paid không thể cancel, `User` không thể tự gán
+- Ví dụ: trong một domain giả định, `Order` không thể có `total ≤ 0`, `Order` đã paid không thể cancel, `User` không thể tự gán
   role `Admin`.
 
-→ Rõ ràng domain layer có business logic, nhưng đây là logic cốt lõi và bất biến (invariant). Chỗ
-này không có gì phức tạp cả, nó chỉ áp dụng các nguyên lý OOP, SOLID, và code như class thông thường.
+→ Rõ ràng domain layer có business logic, nhưng đây là logic cốt lõi và bất biến (invariant).
+Về mặt cơ chế code, đây không phải thứ gì thần bí: chủ yếu vẫn là các class thông thường, được thiết kế theo OOP và các nguyên tắc như SOLID.
 
 ---
 
@@ -218,7 +222,7 @@ Layer này mới chứa Use Case.
 Use Case chứa application-specific rules/workflow và điều phối nghiệp vụ (orchestration logic),
 không tự triển khai lại core business rules hay invariants của Aggregate.
 
-> Nếu ứng dụng .NET chọn kết hợp thêm CQRS, Use Case thường được triển khai dưới dạng
+> Nếu ứng dụng ASP.NET Core chọn kết hợp thêm CQRS, Use Case thường được triển khai dưới dạng
 > `CommandHandler`/`QueryHandler`.
 
 ---
@@ -237,7 +241,7 @@ Layer.
 
 ### 2.3. Ví dụ
 
-Ta lấy ví dụ Cancel order:
+Ta lấy ví dụ _Cancel Order_:
 
 ```text
 UseCase: CancelOrder(orderId, reason, actorId, requestId)
@@ -254,15 +258,16 @@ begin transaction
 commit
 ```
 
-- Nhiều người nhầm chỗ này. Use Case không nên triển khai lại invariant rule hoặc tự quyết định
-  domain state transition thay cho Aggregate. Nó vẫn có thể xử lý application-level concerns như
-  validation của request (cơ bản như `null`, empty, invalid format, ...), authorization, idempotency,
-  resource existence và transaction boundary.
-  Use Case dùng Domain Layer + các abstraction (interface) được định nghĩa trong Application Layer.
-  Implementation của các abstraction này nằm ở Infrastructure Layer.
+Nhiều người nhầm chỗ này. Use Case không nên triển khai lại invariant rule hoặc tự quyết định
+domain state transition thay cho Aggregate. Nó vẫn có thể xử lý application-level concerns như
+validation của request (cơ bản như `null`, empty, invalid format, ...), authorization, idempotency,
+resource existence và transaction boundary.
+Use Case dùng Domain Layer + các abstraction (interface) được định nghĩa trong Application Layer.
+Implementation của các abstraction này nằm ở Infrastructure Layer.
 
-→ Vậy logic chỗ này có phức tạp không? Theo mình là không. Nó chỉ refer Domain Layer (thuần code) +
-interface. Việc Use Case phụ thuộc vào interface thay vì implementation cụ thể cho phép ta thay
+→ Vậy logic chỗ này có phức tạp không? Theo mình là không.
+Use Case chỉ phụ thuộc vào Domain Layer (thuần business logic code) và các interface được định nghĩa ở Application Layer.
+Việc Use Case chỉ phụ thuộc vào interface thay vì implementation cụ thể cho phép ta thay
 dependency bằng test double (mock/fake) khi unit test. Đây chỉ là OOP căn bản.
 
 Điểm yếu là giai đoạn đầu sẽ chậm, nhưng đó là cái giá phải trả. Với dự án lớn và được tổ chức tốt,
@@ -273,13 +278,13 @@ discipline của team.
 
 ---
 
-## 3. CA không tận dụng được DB
+## 3. CA không tận dụng được DB?
 
 Mình xin phản biện lại như sau: **CA không cấm dùng projection, `JOIN`, raw SQL hay stored procedure.**
 Repository không bắt buộc generic. Nếu chọn CQRS, read model có thể tách riêng khỏi write model.
 
 - `SELECT *`: bạn hoàn toàn có thể tạo method đặc thù trong repository để lấy dữ liệu theo từng
-  trường hợp, ví dụ: `getBasicInfoById`, `getByIdWithRoles`, ... EF Core hỗ trợ projection qua
+  trường hợp, ví dụ: `GetBasicInfoById`, `GetByIdWithRoles`, ... EF Core hỗ trợ projection qua
   `.Select(...)` để chỉ lấy các field cần thiết, và `.Include(...)` để eager-load (các) navigation
   properties. SQL được generate ra còn phụ thuộc vào query shape và cấu hình single/split query. Với
   single-query mode, EF Core thường dùng `JOIN`; với split-query mode, collection navigation có thể
@@ -292,11 +297,12 @@ Repository không bắt buộc generic. Nếu chọn CQRS, read model có thể 
 
 ---
 
-Trước hết, ta phải hiểu rằng: **CA, DDD và CQRS là các lựa chọn độc lập vì chúng giải quyết những concern khác nhau:**
+Để bàn chính xác về write path và read projection, trước hết cần tách biệt vai trò của CA, DDD và CQRS.
+Ta phải hiểu rằng: **CA, DDD và CQRS là các lựa chọn độc lập vì chúng giải quyết những concern khác nhau:**
 
 - **CA:** tập trung vào layer boundaries và dependency direction. Domain không phụ thuộc vào framework
-  hay external concerns; Application phụ thuộc vào Domain; Infrastructure/Data và Presentation nằm
-  bên ngoài và depend inward thông qua các abstraction/port.
+  hay external concerns; Application phụ thuộc vào Domain; Infrastructure implement các port/interface được định nghĩa phía trong,
+  còn Presentation gọi các Application Use Case và phụ thuộc vào Application Contracts.
 
 - **DDD:** tập trung vào modeling domain và boundary của nó thông qua Bounded Context, Entity, Value Object,
   Aggregate, invariants, Domain Event (fact đã xảy ra trong domain) và cách biểu diễn domain error.
@@ -313,7 +319,7 @@ việc tách read/write ở hai mức:
 
 ---
 
-Quay lại việc tối ưu DB, trong cách kết hợp CA + DDD Rich Domain Model + CQRS đang được nói tới:
+Quay lại bài toán tối ưu DB trong mô hình CA kết hợp DDD Rich Domain Model và CQRS:
 
 - Với `Command`, không phải lúc nào cũng cần phải load Aggregate.
   - Khi Command thay đổi state của một Aggregate đang tồn tại và state đó được bảo vệ bởi invariants,
@@ -323,10 +329,9 @@ Quay lại việc tối ưu DB, trong cách kết hợp CA + DDD Rich Domain Mod
   - Nếu Command chỉ tạo Aggregate mới thì chỉ cần dùng constructor/factory rồi persist là đủ.
     Còn các operation không dựa trên Aggregate invariants thì có thể dùng write path đơn giản hơn.
 
-- Với `Query`, ta có thể bypass domain, viết 1 service interface riêng ở Application Layer,
-  và implementation ở Infrastructure layer dùng Dapper hoặc EF Core projection hoặc raw SQL trả về DTO,
-  trong đó DTO khai báo ở Application Layer.
-  DTO chỉ chứa field cần thiết → tận dụng full sức mạnh SQL (`JOIN`, `GROUP BY`, `HAVING`, stored procedure...).
+- Với `Query`, ta có thể bypass domain, viết 1 service interface riêng cùng với DTO ở Application Layer.
+  Và implementation ở Infrastructure layer sẽ dùng `Dapper`, EF Core projection hoặc raw SQL để trả về DTO trực tiếp.
+  DTO chỉ chứa các field cần thiết → vẫn tận dụng full sức mạnh SQL (`JOIN`, `GROUP BY`, `HAVING`, _stored procedure_...).
 
 CQRS tạo thêm command/query path, model cũng như abstraction, nên nó có thể không phù hợp với các bài toán CRUD đơn giản
 hoặc hệ thống không cần tối ưu read/write độc lập.
@@ -337,6 +342,7 @@ Chung quy lại, CA không ngăn cản ta tận dụng các kỹ thuật tối �
 ## Kết luận
 
 CA có trade-off và cost thật, nhưng nó không phải bottleneck mặc định. Vấn đề performance, DB usage
-hay tốc độ phát triển thường đến từ sự cứng nhắc, không phải bản thân CA. CA là kim chỉ nam, không
-phải giáo điều. Với dự án nhỏ, CRUD đơn giản và ít business logic, lợi ích của việc áp dụng đầy đủ CA
-thường không tương xứng với complexity phát sinh. **Đừng coi CA là template, hãy coi nó là guideline.**
+hay tốc độ phát triển thường đến từ việc áp dụng CA một cách cứng nhắc, chứ không phải đến từ nguyên lý cốt lõi của CA.
+CA là kim chỉ nam, không phải giáo điều.
+Với dự án nhỏ, CRUD đơn giản và ít business logic, lợi ích của việc áp dụng đầy đủ CA thường không tương xứng
+với complexity phát sinh. **Đừng coi CA là template, hãy coi nó là guideline.**
