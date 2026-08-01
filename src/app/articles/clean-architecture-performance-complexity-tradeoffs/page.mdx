@@ -1,11 +1,12 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
 import cleanArchitectureBackendImage from './clean-architecture-backend.png'
 import articleOgImage from './open-graph.png'
+import articleSummaryImage from './summary.png'
 
 export const article = {
   author: 'hoc081098',
   createdAt: '2026-08-01',
-  lastUpdatedAt: '2026-08-01T11:00:28Z',
+  lastUpdatedAt: '2026-08-01T16:19:08Z',
   title:
     'Clean Architecture có thực sự làm system chậm đi? Performance, complexity và những trade-off thực tế',
   description:
@@ -340,6 +341,13 @@ Chung quy lại, CA không ngăn cản ta tận dụng các kỹ thuật tối �
 ---
 
 ### Kết luận
+
+<Image
+  src={articleSummaryImage}
+  alt="Infographic tổng hợp các layer và trade-off của Clean Architecture về performance, complexity, database usage và CQRS tùy chọn"
+  sizes="(min-width: 768px) 42rem, calc(100vw - 3rem)"
+  className="mx-auto h-auto w-full max-w-2xl"
+/>
 
 CA có trade-off và cost thật, nhưng nó không phải bottleneck mặc định. Vấn đề performance, DB usage
 hay tốc độ phát triển thường đến từ việc áp dụng CA một cách cứng nhắc, chứ không phải đến từ nguyên lý cốt lõi của CA.
