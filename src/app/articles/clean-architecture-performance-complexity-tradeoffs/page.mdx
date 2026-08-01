@@ -5,7 +5,7 @@ import articleOgImage from './open-graph.png'
 export const article = {
   author: 'hoc081098',
   createdAt: '2026-08-01',
-  lastUpdatedAt: '2026-07-31T19:41:26Z',
+  lastUpdatedAt: '2026-08-01T10:40:58Z',
   title:
     'Clean Architecture có thực sự làm system chậm đi? Performance, complexity và những trade-off thực tế',
   description:
@@ -150,7 +150,7 @@ Một số hướng xử lý và lưu ý (thực tế với ASP.NET Core và EF 
   dùng Redis Pub/Sub đóng vai trò như một invalidation backplane. Cache cũng có thể giữ object sống
   lâu hơn, làm tăng memory usage và độ phức tạp khi vận hành.
 
-- Nếu dùng C#, ta có thể dùng `readonly struct` khi nó nhỏ (mốc khoảng ≤ 16 bytes - heuristic,
+- Nếu dùng C#, ta có thể dùng `readonly struct` khi nó nhỏ (mốc khoảng ≤ 16 bytes — heuristic,
   không phải rule cứng), immutable, có value semantics, chủ yếu đóng vai trò như là một value container
   thay vì một model of behavior, và không cần inheritance từ base class. Cách sử dụng `struct` này có
   thể tránh một object allocation riêng trên heap khi value không bị boxing, từ đó giảm áp lực lên GC.

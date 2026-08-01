@@ -67,7 +67,7 @@ Article body here...
 ```
 
 3. Images go in `src/images/articles/<slug>/` and are imported directly in MDX using the `<Image>` component (provided via `mdx-components.tsx`).
-4. Keep `createdAt` as a date-only `YYYY-MM-DD` value. Update `lastUpdatedAt` on every content edit and normalize it to a UTC RFC 3339 instant ending in `Z`.
+4. Keep `createdAt` as a date-only `YYYY-MM-DD` value, but derive that calendar date from UTC rather than the machine or user's local timezone. Update `lastUpdatedAt` on every content edit and normalize it to a UTC RFC 3339 instant ending in `Z`.
 
 ## Article Tagging
 
