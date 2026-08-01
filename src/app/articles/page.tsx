@@ -22,7 +22,7 @@ export default async function ArticlesIndex() {
   return (
     <SimpleLayout
       title="Writing on mobile development, backend services, reactive programming, and clean architecture."
-      intro="Notes, tutorials, and essays on Android, Flutter, iOS, Kotlin, Dart, ASP.NET Core, and the things I learn along the way. Also published on Medium."
+      intro="Notes, tutorials, and essays on Android, Flutter, iOS, Kotlin, Dart, ASP.NET Core, and the things I learn along the way."
     >
       {/* Series button */}
       {series.length > 0 && (
