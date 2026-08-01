@@ -5,7 +5,7 @@ import articleOgImage from './open-graph.png'
 export const article = {
   author: 'hoc081098',
   createdAt: '2026-08-01',
-  lastUpdatedAt: '2026-08-01T10:40:58Z',
+  lastUpdatedAt: '2026-08-01T11:00:28Z',
   title:
     'Clean Architecture có thực sự làm system chậm đi? Performance, complexity và những trade-off thực tế',
   description:
@@ -105,7 +105,7 @@ Phần dưới là những điểm mình xin bổ sung/phản biện ở góc đ
 
 ---
 
-## 1. GC pressure có thực sự làm CA chậm đáng kể?
+### 1. GC pressure có thực sự làm CA chậm đáng kể?
 
 Mapping qua các boundary có CPU cost và có thể phát sinh allocation, nhưng mức độ ảnh hưởng đến
 system phụ thuộc vào workload, volume và latency budget.
@@ -172,7 +172,7 @@ architectural boundaries ở các phần còn lại.
 
 ---
 
-## 2. Độ phức tạp của source code và tốc độ phát triển
+### 2. Độ phức tạp của source code và tốc độ phát triển
 
 Đầu tiên, mình đồng tình rằng CA làm source code phức tạp hơn và khiến tốc độ phát triển ban đầu chậm lại.
 Tuy nhiên, phần complexity này phần lớn là có chủ ý, có cấu trúc và không hỗn mang: các boundary, abstraction và trách nhiệm được phân chia rõ ràng
@@ -199,7 +199,7 @@ cách phân chia này, ranh giới về code và logic sẽ rõ ràng hơn.
 
 ---
 
-### 2.1. Domain layer (thuần language, không framework)
+#### 2.1. Domain Layer (thuần language, không framework)
 
 - Domain model chứa cả data + core business logic + invariant rules + luật tồn tại của domain.
 - Entity: có ID, hai entity bằng nhau chỉ cần ID bằng nhau, không cần so sánh toàn bộ content;
@@ -216,7 +216,7 @@ Về mặt cơ chế code, đây không phải thứ gì thần bí: chủ yếu
 
 ---
 
-### 2.2. Application layer
+#### 2.2. Application Layer
 
 Layer này mới chứa Use Case.
 Use Case chứa application-specific rules/workflow và điều phối nghiệp vụ (orchestration logic),
@@ -239,7 +239,7 @@ Layer.
 
 ---
 
-### 2.3. Ví dụ
+#### 2.3. Ví dụ
 
 Ta lấy ví dụ _Cancel Order_:
 
@@ -278,7 +278,7 @@ discipline của team.
 
 ---
 
-## 3. CA không tận dụng được DB?
+### 3. CA không tận dụng được DB?
 
 Mình xin phản biện lại như sau: **CA không cấm dùng projection, `JOIN`, raw SQL hay stored procedure.**
 Repository không bắt buộc generic. Nếu chọn CQRS, read model có thể tách riêng khỏi write model.
@@ -339,7 +339,7 @@ Chung quy lại, CA không ngăn cản ta tận dụng các kỹ thuật tối �
 
 ---
 
-## Kết luận
+### Kết luận
 
 CA có trade-off và cost thật, nhưng nó không phải bottleneck mặc định. Vấn đề performance, DB usage
 hay tốc độ phát triển thường đến từ việc áp dụng CA một cách cứng nhắc, chứ không phải đến từ nguyên lý cốt lõi của CA.
