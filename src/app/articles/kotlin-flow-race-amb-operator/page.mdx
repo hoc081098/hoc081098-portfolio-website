@@ -1,4 +1,5 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
+import articleOgImage from './open-graph-1200x630.png'
 import rxRaceImage from './rx-race.png'
 
 export const article = {
@@ -28,9 +29,10 @@ export const metadata = {
     modifiedTime: article.lastUpdatedAt,
     images: [
       {
-        url: `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
-        width: 1200,
-        height: 630,
+        url: articleOgImage.src,
+        width: articleOgImage.width,
+        height: articleOgImage.height,
+        alt: 'Three concurrent Kotlin Flows race, with the first event selecting the winner while the others are canceled',
       },
     ],
   },
@@ -247,6 +249,13 @@ public fun <T> Flow<T>.raceWith(
 ```
 
 ## Conclusion
+
+<Image
+  src={articleOgImage}
+  alt="Three concurrent Kotlin Flows race, with the first event selecting the winner while the others are canceled"
+  sizes="(min-width: 768px) 42rem, calc(100vw - 3rem)"
+  className="mx-auto h-auto w-full max-w-2xl"
+/>
 
 We have implemented the `race` operator.
 Using channels and a select expression makes handling backpressure
