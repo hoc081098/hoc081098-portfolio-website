@@ -1,10 +1,8 @@
-> Đã xử lý trong 17s
-
 # Bản chốt: biến website và GitHub thành bằng chứng năng lực
 
 Mục tiêu không phải làm nó “đẹp hơn”. Nó đã đủ đẹp rồi. Mục tiêu là để một tech lead, recruiter hoặc khách hàng nhìn trong 30 giây và kết luận:
 
-> Đây là một Senior Mobile/Kotlin Engineer có chiều sâu về reactive systems, concurrency, architecture và open source; hiện đang mở rộng nghiêm túc sang backend/.NET/PostgreSQL.
+> Đây là một Senior Mobile/Kotlin Engineer có chiều sâu về reactive systems, concurrency, software architecture, performance và open source; hiện đang mở rộng nghiêm túc sang backend/.NET/PostgreSQL.
 
 Hiện website chưa truyền tải được điều đó. Trang Projects chỉ có GitHub profile, RxMobileTeam và Medium; còn GitHub README thì quá dài, nhiều badge và liệt kê package, khiến điểm mạnh bị chìm.
 
@@ -18,7 +16,37 @@ Không định vị kiểu:
 
 Câu này đúng nhưng nhạt, ai cũng viết được. Nên chốt một trục chính và một trục phát triển:
 
-> Senior Mobile & Kotlin Engineer specializing in reactive systems, concurrency, architecture, and Kotlin Multiplatform — expanding into .NET backend and distributed data systems.
+> Senior Mobile & Kotlin Engineer specializing in reactive systems, concurrency, software architecture, and performance — building Kotlin Multiplatform libraries and expanding into .NET backend and distributed data systems.
+
+### Description cũ
+
+```text
+description: 'A senior full-stack engineer,  mobile developer and backend developer.\n'
+        'I have 7+ years of experience (since 2018), have a strong knowledge of Clean Architecture,'
+        ' MVVM, MVI, Reactive Programming, Kotlin/Android, Dart/Flutter, iOS/Swift.\n'
+        'Focus on technical, clean code, good architecture and performance.',
+```
+
+Phần nên giữ là 7+ years of experience, nền tảng mobile đa hệ, architecture, reactive programming, code quality và performance. Không nên giữ cách định vị “senior full-stack engineer, mobile developer and backend developer” vì nó dàn đều ba vai trò và làm mờ năng lực mạnh nhất.
+
+### Những technical aspect cần thể hiện
+
+- Software architecture: Clean Architecture, MVVM, MVI, modularization và design trade-offs
+- Reactive programming: stream semantics, state management, cancellation và backpressure
+- Concurrency and multithreading: synchronization, structured concurrency, thread safety và lifecycle
+- Performance optimization: profiling, allocation, latency, rendering và benchmark trước/sau
+- Data structures and algorithms: complexity, implementation details và lựa chọn cấu trúc dữ liệu phù hợp
+- Clean, maintainable, testable code: correctness, API design, testing và maintainability
+
+Mô tả dài dùng cho About và profile bio:
+
+> Senior Mobile & Kotlin Engineer with 7+ years of experience building reliable, high-performance applications and libraries across Android, Kotlin Multiplatform, Compose Multiplatform, and Flutter. I focus on software architecture, reactive programming, concurrency, performance optimization, and clean, maintainable code, applying algorithmic thinking where it materially improves correctness or efficiency. I’m currently expanding this foundation into .NET backend and distributed data systems.
+
+Metadata/SEO nên dùng phiên bản ngắn hơn:
+
+> Senior Mobile & Kotlin Engineer focused on reactive systems, concurrency, software architecture, and performance, now expanding into .NET backend.
+
+Không cần nhét tất cả keyword vào headline. Headline chốt identity; description dài thể hiện chiều sâu; project, article, test và benchmark cung cấp bằng chứng cho từng claim.
 
 Thông điệp xuyên suốt phải là:
 
@@ -44,7 +72,7 @@ Ví dụ:
 
 > Senior Mobile & Kotlin Engineer
 >
-> Building reliable mobile systems, Kotlin Multiplatform libraries, and reactive architectures. Open-source contributor and maintainer, now expanding into .NET backend and PostgreSQL.
+> Building reliable, high-performance mobile systems and Kotlin Multiplatform libraries, with a focus on reactive programming, concurrency, and software architecture. Open-source contributor and maintainer, now expanding into .NET backend and PostgreSQL.
 
 Bên dưới có ba nút:
 
@@ -62,6 +90,7 @@ Ngay dưới hero cần một hàng bằng chứng ngắn:
 - RxDart maintainer/contributor — chỉ ghi đúng vai trò có thể kiểm chứng
 - Author of FlowExt, solivagant và các thư viện KMP
 - Upstream contributions to FlutterFire, RxDart, Khonshu hoặc dự án lớn khác
+- Technical depth về software architecture, concurrency, performance optimization, data structures và algorithms — mỗi claim cần link tới project, article, test hoặc benchmark cụ thể
 - Số release, star, download hoặc platform support nếu có số liệu đáng tin
 
 Không dùng con số trang trí kiểu profile views, streak hay tổng số commit. Những số đó dễ làm màu và gần như không nói gì về năng lực.
@@ -431,22 +460,3 @@ Mà là:
 > Một engineer có nền tảng Mobile/Kotlin rất sâu, hiểu reactive systems và architecture, có open-source contribution thật, đồng thời đang mở rộng có phương pháp sang backend và distributed data.
 
 Website phải ưu tiên case study và bằng chứng. GitHub phải ưu tiên project chọn lọc và contribution đã được review. Bỏ bớt badge, stats và danh sách dài. Khi kiếm đã sắc, không cần treo thêm đèn LED quanh chuôi.
-
----
-
-Ừ, làm theo bản trên là ổn và đúng hướng. Thực ra không cần làm hết một lượt; chỉ cần làm đúng phần quan trọng trước là portfolio đã khác hẳn.
-
-Ưu tiên theo thứ tự này:
-
-1. Làm lại trang Projects thành case study thật.
-2. Đưa Featured Work + proof lên ngay trang chủ.
-3. Viết lại headline để chốt rõ: Senior Mobile/Kotlin, reactive systems, KMP; đang mở rộng sang backend.
-4. Rút gọn GitHub README, bỏ bớt badge/stats.
-5. Chọn lại 6 repo pin để kể đúng hành trình kỹ thuật.
-6. Sửa Work Experience cho rõ và đáng tin hơn.
-
-Chỉ cần hoàn thành 6 việc đó là đã đạt khoảng 80–90% hiệu quả. SEO, JSON-LD, sitemap, trang Uses… là phần hoàn thiện sau.
-
-Điểm cần giữ tỉnh táo nhất: đừng cố làm mình trông full-stack hơn thực tế. Cứ đánh cực mạnh vào Mobile/Kotlin/open source — nơi đã có bằng chứng thật — rồi trình bày backend như hướng phát triển nghiêm túc. Làm vậy vừa nổi bật vừa khó bị bắt bẻ.
-
-Nói gọn: bản kế hoạch ổn, thực tế và đủ mạnh để triển khai ngay.
