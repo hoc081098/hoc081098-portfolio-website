@@ -1,7 +1,9 @@
 import { ImageResponse } from 'next/og'
 import { type NextRequest } from 'next/server'
 
+import { OpenGraphBackdrop } from '@/components/OpenGraphBackdrop'
 import { profileData } from '@/data/profile-data'
+import { ogTheme } from '@/lib/og-theme'
 
 export const runtime = 'edge'
 
@@ -21,7 +23,7 @@ export async function GET(request: NextRequest) {
         style={{
           width: '1200px',
           height: '630px',
-          background: '#18181b',
+          background: ogTheme.canvas,
           display: 'flex',
           flexDirection: 'column',
           padding: '72px 80px',
@@ -30,6 +32,8 @@ export async function GET(request: NextRequest) {
           position: 'relative',
         }}
       >
+        <OpenGraphBackdrop />
+
         {/* Top accent bar */}
         <div
           style={{
@@ -38,7 +42,7 @@ export async function GET(request: NextRequest) {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+            background: ogTheme.accentGradient,
           }}
         />
 
@@ -49,11 +53,12 @@ export async function GET(request: NextRequest) {
             alignItems: 'center',
             gap: '12px',
             marginBottom: '40px',
+            position: 'relative',
           }}
         >
           <div
             style={{
-              color: '#8b5cf6',
+              color: ogTheme.accentText,
               fontSize: '20px',
               fontWeight: '700',
               letterSpacing: '-0.02em',
@@ -63,8 +68,12 @@ export async function GET(request: NextRequest) {
           </div>
           {isArticle && (
             <>
-              <div style={{ color: '#52525b', fontSize: '18px' }}>·</div>
-              <div style={{ color: '#71717a', fontSize: '18px' }}>Article</div>
+              <div style={{ color: ogTheme.mutedText, fontSize: '18px' }}>
+                ·
+              </div>
+              <div style={{ color: ogTheme.mutedText, fontSize: '18px' }}>
+                Article
+              </div>
             </>
           )}
         </div>
@@ -72,7 +81,8 @@ export async function GET(request: NextRequest) {
         {/* Title */}
         <div
           style={{
-            color: '#f4f4f5',
+            position: 'relative',
+            color: ogTheme.primaryText,
             fontSize: title.length > 60 ? '44px' : '52px',
             fontWeight: '700',
             lineHeight: '1.15',
@@ -88,8 +98,10 @@ export async function GET(request: NextRequest) {
         {/* Description */}
         <div
           style={{
-            color: '#a1a1aa',
+            position: 'relative',
+            color: ogTheme.secondaryText,
             fontSize: '22px',
+            fontWeight: '500',
             lineHeight: '1.55',
             marginTop: '20px',
             marginBottom: '48px',
@@ -102,18 +114,19 @@ export async function GET(request: NextRequest) {
         <div
           style={{
             display: 'flex',
+            position: 'relative',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderTop: '1px solid #27272a',
+            borderTop: `1px solid ${ogTheme.divider}`,
             paddingTop: '24px',
           }}
         >
-          <div style={{ color: '#71717a', fontSize: '18px' }}>
+          <div style={{ color: ogTheme.mutedText, fontSize: '18px' }}>
             {profileData.displayName}
           </div>
           <div
             style={{
-              color: '#52525b',
+              color: ogTheme.mutedText,
               fontSize: '17px',
               letterSpacing: '0.01em',
             }}

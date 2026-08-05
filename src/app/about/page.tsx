@@ -79,10 +79,10 @@ export default function About() {
             </p>
             <p>
               I'm an RxDart maintainer, open-source contributor, technical
-              writer, and co-founder of RxMobileTeam. I'm now applying my mobile
-              and library-engineering foundation to .NET backend, Domain-Driven
-              Design, PostgreSQL, and distributed data systems while keeping
-              mobile and Kotlin engineering at the center of my work.
+              writer, and co-founder of RxMobileTeam. My backend work focuses on
+              .NET, Domain-Driven Design, Clean Architecture, PostgreSQL, and
+              distributed data systems while mobile and Kotlin engineering
+              remain at the center of my work.
             </p>
           </div>
         </div>

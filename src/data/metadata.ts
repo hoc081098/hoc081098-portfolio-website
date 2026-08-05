@@ -6,7 +6,7 @@ export const seoMetadata = {
   ),
   title: {
     template: '%s - hoc081098',
-    default: `${profileData.displayName} — ${profileData.role}`,
+    default: `${profileData.displayName}: ${profileData.brandHeadline}`,
   },
   description: profileData.seoDescription,
   alternates: {

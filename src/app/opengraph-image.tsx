@@ -1,9 +1,11 @@
 import { ImageResponse } from 'next/og'
 
+import { OpenGraphBackdrop } from '@/components/OpenGraphBackdrop'
 import { profileData } from '@/data/profile-data'
+import { ogTheme } from '@/lib/og-theme'
 
 export const runtime = 'edge'
-export const alt = `${profileData.displayName} — ${profileData.role}`
+export const alt = `${profileData.displayName}: ${profileData.brandHeadline}`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -14,7 +16,7 @@ export default async function Image() {
         style={{
           width: '1200px',
           height: '630px',
-          background: '#18181b',
+          background: ogTheme.canvas,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -24,6 +26,8 @@ export default async function Image() {
           position: 'relative',
         }}
       >
+        <OpenGraphBackdrop beamTop={444} />
+
         {/* Top accent bar */}
         <div
           style={{
@@ -32,14 +36,15 @@ export default async function Image() {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+            background: ogTheme.accentGradient,
           }}
         />
 
         {/* Name */}
         <div
           style={{
-            color: '#8b5cf6',
+            position: 'relative',
+            color: ogTheme.accentText,
             fontSize: '28px',
             fontWeight: '700',
             letterSpacing: '-0.02em',
@@ -52,7 +57,8 @@ export default async function Image() {
         {/* Full name */}
         <div
           style={{
-            color: '#f4f4f5',
+            position: 'relative',
+            color: ogTheme.primaryText,
             fontSize: '60px',
             fontWeight: '800',
             letterSpacing: '-0.04em',
@@ -66,13 +72,15 @@ export default async function Image() {
         {/* Tagline */}
         <div
           style={{
-            color: '#a1a1aa',
+            position: 'relative',
+            color: ogTheme.secondaryText,
             fontSize: '26px',
+            fontWeight: '500',
             textAlign: 'center',
             lineHeight: '1.5',
           }}
         >
-          {profileData.role}
+          {profileData.brandHeadline}
         </div>
 
         {/* Bottom domain */}
@@ -80,7 +88,7 @@ export default async function Image() {
           style={{
             position: 'absolute',
             bottom: '36px',
-            color: '#52525b',
+            color: ogTheme.mutedText,
             fontSize: '18px',
             letterSpacing: '0.02em',
           }}

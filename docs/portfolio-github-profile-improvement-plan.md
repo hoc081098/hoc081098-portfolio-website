@@ -2,7 +2,7 @@
 
 Mục tiêu không phải làm nó “đẹp hơn”. Nó đã đủ đẹp rồi. Mục tiêu là để một tech lead, recruiter hoặc khách hàng nhìn trong 30 giây và kết luận:
 
-> Đây là một Senior Mobile/Kotlin Engineer có chiều sâu về reactive systems, concurrency, software architecture, performance và open source; hiện đang mở rộng nghiêm túc sang backend/.NET/PostgreSQL.
+> Đây là một Senior Mobile/Kotlin Engineer có chiều sâu về reactive systems, concurrency, software architecture, performance và open source; đồng thời xây dựng .NET backend/PostgreSQL như một trục kỹ thuật thứ hai.
 
 Hiện website chưa truyền tải được điều đó. Trang Projects chỉ có GitHub profile, RxMobileTeam và Medium; còn GitHub README thì quá dài, nhiều badge và liệt kê package, khiến điểm mạnh bị chìm.
 
@@ -14,9 +14,11 @@ Không định vị kiểu:
 
 > Software Engineer building mobile apps, backend services, and open-source tools.
 
-Câu này đúng nhưng nhạt, ai cũng viết được. Nên chốt một trục chính và một trục phát triển:
+Câu này đúng nhưng nhạt, ai cũng viết được. Brand headline được chốt là:
 
-> Senior Mobile & Kotlin Engineer specializing in reactive systems, concurrency, software architecture, and performance — building Kotlin Multiplatform libraries and expanding into .NET backend and distributed data systems.
+> Senior Mobile & Kotlin Engineer — .NET Backend
+
+Dấu `—` tách vai trò senior đã được chứng minh ở Mobile/Kotlin khỏi trục .NET Backend, tránh ngụ ý mình đang tự nhận là Senior Backend Engineer.
 
 ### Description cũ
 
@@ -40,19 +42,19 @@ Phần nên giữ là 7+ years of experience, nền tảng mobile đa hệ, arch
 
 Mô tả dài dùng cho About và profile bio:
 
-> Senior Mobile & Kotlin Engineer with 7+ years of experience building reliable, high-performance applications and libraries across Android, Kotlin Multiplatform, Compose Multiplatform, and Flutter. I focus on software architecture, reactive programming, concurrency, performance optimization, and clean, maintainable code, applying algorithmic thinking where it materially improves correctness or efficiency. I’m currently expanding this foundation into .NET backend and distributed data systems.
+> Senior Mobile & Kotlin Engineer with 7+ years of experience building reliable, high-performance applications and libraries across Android, Kotlin Multiplatform, Compose Multiplatform, and Flutter. I focus on software architecture, reactive programming, concurrency, performance optimization, and clean, maintainable code, applying algorithmic thinking where it materially improves correctness or efficiency. I also build .NET backend and distributed data systems on top of that foundation.
 
 Metadata/SEO nên dùng phiên bản ngắn hơn:
 
-> Senior Mobile & Kotlin Engineer focused on reactive systems, concurrency, software architecture, and performance, now expanding into .NET backend.
+> Senior Mobile & Kotlin Engineer building reliable mobile and .NET backend systems, focused on reactive systems, concurrency, architecture, and performance.
 
 Không cần nhét tất cả keyword vào headline. Headline chốt identity; description dài thể hiện chiều sâu; project, article, test và benchmark cung cấp bằng chứng cho từng claim.
 
 Thông điệp xuyên suốt phải là:
 
-Mobile/Kotlin là thực lực đã được chứng minh. Backend/.NET là hướng mở rộng nghiêm túc. Architecture và reactive programming là sợi chỉ đỏ kết nối cả hai.
+Mobile/Kotlin là thực lực senior đã được chứng minh. Backend/.NET là trục kỹ thuật thứ hai đang được xây dựng bằng project và bài viết thật. Architecture và reactive programming là sợi chỉ đỏ kết nối cả hai.
 
-Không nên tự gọi mình là Senior Backend Developer ở thời điểm này. Trang chủ hiện đang dùng “Senior Mobile & Backend Developer”, trong khi bằng chứng backend công khai chưa tương xứng với chữ senior.
+Không dùng “Senior Mobile & Backend Developer” vì dễ bị hiểu là senior đồng đều ở cả backend. Headline “Senior Mobile & Kotlin Engineer — .NET Backend” đưa Backend vào thương hiệu nhưng vẫn giữ ranh giới seniority rõ ràng.
 
 ---
 
@@ -70,9 +72,9 @@ Hero cần trả lời ngay ba câu:
 
 Ví dụ:
 
-> Senior Mobile & Kotlin Engineer
+> Senior Mobile & Kotlin Engineer — .NET Backend
 >
-> Building reliable, high-performance mobile systems and Kotlin Multiplatform libraries, with a focus on reactive programming, concurrency, and software architecture. Open-source contributor and maintainer, now expanding into .NET backend and PostgreSQL.
+> Building reliable, high-performance mobile and backend systems across Kotlin Multiplatform and .NET, with a focus on reactive programming, concurrency, software architecture, and performance. RxDart maintainer and open-source contributor.
 
 Bên dưới có ba nút:
 
@@ -87,7 +89,7 @@ Bên dưới có ba nút:
 Ngay dưới hero cần một hàng bằng chứng ngắn:
 
 - 7+ years in mobile engineering
-- RxDart maintainer/contributor — chỉ ghi đúng vai trò có thể kiểm chứng
+- RxDart maintainer — kèm link trực tiếp chứng minh vai trò
 - Author of FlowExt, solivagant và các thư viện KMP
 - Upstream contributions to FlutterFire, RxDart, Khonshu hoặc dự án lớn khác
 - Technical depth về software architecture, concurrency, performance optimization, data structures và algorithms — mỗi claim cần link tới project, article, test hoặc benchmark cụ thể
@@ -240,7 +242,7 @@ Thay bằng một career narrative cụ thể:
 - Đi sâu vào reactive programming
 - Đóng góp sang Flutter/RxDart
 - Chuyển sang KMP và Compose Multiplatform
-- Hiện mở rộng sang backend, DDD và PostgreSQL
+- Xây dựng .NET backend với DDD và PostgreSQL
 - Mục tiêu dài hạn: mobile + backend + architecture leadership
 
 ### Trang Uses
@@ -289,9 +291,9 @@ Senior không cần chứng minh mình senior bằng một biển logo. Code và
 #### 1. Identity
 
 Petrus Nguyễn Thái Học\
-Senior Mobile & Kotlin Engineer\
+Senior Mobile & Kotlin Engineer — .NET Backend\
 Reactive systems · Kotlin Multiplatform · Mobile architecture\
-Currently expanding into .NET backend and PostgreSQL
+Building .NET backend and PostgreSQL systems
 
 #### 2. Evidence
 
@@ -457,6 +459,6 @@ Thương hiệu tốt nhất của hoc081098 không phải:
 
 Mà là:
 
-> Một engineer có nền tảng Mobile/Kotlin rất sâu, hiểu reactive systems và architecture, có open-source contribution thật, đồng thời đang mở rộng có phương pháp sang backend và distributed data.
+> Một engineer có nền tảng Mobile/Kotlin rất sâu, hiểu reactive systems và architecture, có open-source contribution thật, đồng thời xây dựng .NET backend và distributed data như trục kỹ thuật thứ hai.
 
 Website phải ưu tiên case study và bằng chứng. GitHub phải ưu tiên project chọn lọc và contribution đã được review. Bỏ bớt badge, stats và danh sách dài. Khi kiếm đã sắc, không cần treo thêm đèn LED quanh chuôi.
