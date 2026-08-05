@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
             marginBottom: '40px',
             position: 'relative',
           }}
@@ -67,14 +66,16 @@ export async function GET(request: NextRequest) {
             {profileData.handle}
           </div>
           {isArticle && (
-            <>
-              <div style={{ color: ogTheme.mutedText, fontSize: '18px' }}>
-                ·
-              </div>
-              <div style={{ color: ogTheme.mutedText, fontSize: '18px' }}>
-                Article
-              </div>
-            </>
+            <div
+              style={{
+                color: ogTheme.mutedText,
+                fontSize: '18px',
+                marginLeft: '14px',
+                whiteSpace: 'pre',
+              }}
+            >
+              {'·  Article'}
+            </div>
           )}
         </div>
 

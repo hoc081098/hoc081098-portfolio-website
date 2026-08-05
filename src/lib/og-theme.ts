@@ -12,6 +12,4 @@ export const ogTheme = {
     'radial-gradient(circle, rgba(124, 92, 255, 0.34) 0%, rgba(88, 120, 255, 0.14) 38%, rgba(8, 11, 22, 0) 72%)',
   blueGlow:
     'radial-gradient(circle, rgba(88, 120, 255, 0.24) 0%, rgba(13, 22, 48, 0.08) 48%, rgba(8, 11, 22, 0) 72%)',
-  energyBeam:
-    'linear-gradient(90deg, rgba(124, 92, 255, 0) 0%, rgba(124, 92, 255, 0.75) 30%, rgba(88, 120, 255, 0.95) 58%, rgba(139, 92, 246, 0.72) 78%, rgba(139, 92, 246, 0) 100%)',
 } as const

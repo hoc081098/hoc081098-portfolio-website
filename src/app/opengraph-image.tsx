@@ -26,7 +26,7 @@ export default async function Image() {
           position: 'relative',
         }}
       >
-        <OpenGraphBackdrop beamTop={444} />
+        <OpenGraphBackdrop />
 
         {/* Top accent bar */}
         <div
