@@ -5,7 +5,7 @@ import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import portraitImage from '@/images/portrait.jpg'
-import { socialData } from '@/data'
+import { profileData, socialData } from '@/data'
 import { socialIconsMap } from '@/components/icons'
 
 function SocialLink({
@@ -37,8 +37,7 @@ function SocialLink({
 
 export const metadata: Metadata = {
   title: 'About',
-  description:
-    "I'm Petrus Nguyễn Thái Học (hoc081098), a software engineer based in Da Nang, Vietnam. 7+ years building mobile apps, backend services, and open-source tools.",
+  description: profileData.aboutMetadataDescription,
 }
 
 export default function About() {
@@ -64,25 +63,26 @@ export default function About() {
           </h1>
           <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
             <p>
-              I'm a software engineer building mobile apps, backend services,
-              and open-source tools with 7+ years of experience (since 2018). I
-              graduated with a degree in Information Technology from Đà Nẵng
-              University of Science and Technology, and I'm based in Da Nang,
-              Vietnam.
+              I'm {profileData.displayName} ({profileData.handle}), a{' '}
+              {profileData.role} based in Da Nang, Vietnam, with 7+ years of
+              experience building applications and open-source libraries across
+              Android, Kotlin Multiplatform, Compose Multiplatform, and Flutter.
+              I graduated with a degree in Information Technology from Đà Nẵng
+              University of Science and Technology.
             </p>
             <p>
-              I have a strong focus on Clean Architecture, MVVM, MVI, and
-              Reactive Programming. I work across Kotlin/Android, Dart/Flutter,
-              iOS/Swift, and backend services such as ASP.NET Core. I care
-              deeply about technical quality, clean code, good architecture, and
-              performance — whether building solo or as part of a team.
+              I focus on software architecture, reactive programming,
+              concurrency and thread safety, performance optimization, and
+              clean, maintainable, testable code. I use data structures and
+              algorithms when they materially improve correctness, latency,
+              memory use, or API design.
             </p>
             <p>
-              In my spare time, I write technical articles on Medium and
-              actively contribute to the open-source community on GitHub. I
-              co-founded RxMobileTeam, a team focused on reactive mobile
-              development. My goal is to keep growing, share knowledge, and
-              build things that matter.
+              I'm an RxDart maintainer, open-source contributor, technical
+              writer, and co-founder of RxMobileTeam. I'm now applying my mobile
+              and library-engineering foundation to .NET backend, Domain-Driven
+              Design, PostgreSQL, and distributed data systems while keeping
+              mobile and Kotlin engineering at the center of my work.
             </p>
           </div>
         </div>

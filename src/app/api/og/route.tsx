@@ -1,14 +1,15 @@
 import { ImageResponse } from 'next/og'
 import { type NextRequest } from 'next/server'
 
+import { profileData } from '@/data/profile-data'
+
 export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
-  const title = searchParams.get('title') ?? 'hoc081098 Portfolio'
+  const title = searchParams.get('title') ?? profileData.displayName
   const description =
-    searchParams.get('description') ??
-    'Software Engineer — mobile apps, backend services, open-source tools'
+    searchParams.get('description') ?? profileData.ogDescription
   const isArticle = searchParams.get('type') === 'article'
 
   const truncatedDesc =
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
               letterSpacing: '-0.02em',
             }}
           >
-            hoc081098
+            {profileData.handle}
           </div>
           {isArticle && (
             <>
@@ -108,7 +109,7 @@ export async function GET(request: NextRequest) {
           }}
         >
           <div style={{ color: '#71717a', fontSize: '18px' }}>
-            Petrus Nguyễn Thái Học
+            {profileData.displayName}
           </div>
           <div
             style={{

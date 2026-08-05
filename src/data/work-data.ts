@@ -1,6 +1,7 @@
 import type { ImageProps } from 'next/image'
 
 import logoGotecq from '@/images/companies/logo-gotecq.jpeg'
+import { profileData } from './profile-data'
 
 export type WorkRole = {
   /**
@@ -18,7 +19,7 @@ export const workData: WorkRole[] = [
   {
     sortOrder: 1,
     company: 'Full-time developer & Freelance / Open Source',
-    title: 'Senior Mobile & Backend Developer',
+    title: profileData.role,
     start: '2018',
     end: {
       label: 'Present',

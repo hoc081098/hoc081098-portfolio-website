@@ -1,7 +1,9 @@
 import { ImageResponse } from 'next/og'
 
+import { profileData } from '@/data/profile-data'
+
 export const runtime = 'edge'
-export const alt = 'hoc081098 – Petrus Nguyễn Thái Học'
+export const alt = `${profileData.displayName} — ${profileData.role}`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -44,7 +46,7 @@ export default async function Image() {
             marginBottom: '16px',
           }}
         >
-          hoc081098
+          {profileData.handle}
         </div>
 
         {/* Full name */}
@@ -58,7 +60,7 @@ export default async function Image() {
             textAlign: 'center',
           }}
         >
-          Petrus Nguyễn Thái Học
+          {profileData.displayName}
         </div>
 
         {/* Tagline */}
@@ -70,7 +72,7 @@ export default async function Image() {
             lineHeight: '1.5',
           }}
         >
-          Senior Mobile & Backend Developer
+          {profileData.role}
         </div>
 
         {/* Bottom domain */}
