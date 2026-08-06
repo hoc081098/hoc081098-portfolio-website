@@ -6,9 +6,19 @@ Mục tiêu không phải làm nó “đẹp hơn”. Nó đã đủ đẹp rồ
 
 Hiện website chưa truyền tải được điều đó. Trang Projects chỉ có GitHub profile, RxMobileTeam và Medium; còn GitHub README thì quá dài, nhiều badge và liệt kê package, khiến điểm mạnh bị chìm.
 
+**Legend trạng thái**
+
+- ✅ **Hoàn tất** — đã chốt và áp dụng.
+- 🟡 **Đang thực hiện** — đã triển khai một phần, vẫn còn hạng mục cần hoàn thiện.
+- ⬜ **Chưa bắt đầu** — chưa triển khai.
+
 ---
 
 ## 1. Định vị thương hiệu kỹ thuật
+
+> **Trạng thái:** ✅ Hoàn tất
+>
+> Đã áp dụng cho homepage, About, metadata và Open Graph.
 
 Không định vị kiểu:
 
