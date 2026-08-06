@@ -1,4 +1,5 @@
 import { type Metadata } from 'next'
+import Link from 'next/link'
 import { ArrowRightIcon, BooksIcon } from '@phosphor-icons/react/ssr'
 
 import { Button } from '@/components/Button'
@@ -6,6 +7,43 @@ import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import { formatDate } from '@/lib/formatDate'
 import { getAllArticles, getAllArticleSeries } from '@/lib/articles'
+import { slugifyTag } from '@/lib/tags'
+
+const MAX_VISIBLE_ARTICLE_TAGS = 4
+
+function ArticleTags({ tags }: { tags?: string[] }) {
+  let uniqueTags = [...new Set(tags ?? [])]
+
+  if (uniqueTags.length === 0) {
+    return null
+  }
+
+  let visibleTags = uniqueTags.slice(0, MAX_VISIBLE_ARTICLE_TAGS)
+  let remainingTagCount = uniqueTags.length - visibleTags.length
+
+  return (
+    <div className="pointer-events-none relative z-30 mt-4 flex flex-wrap items-center gap-2">
+      {visibleTags.map((tag) => (
+        <Link
+          key={tag}
+          href={`/tags/${slugifyTag(tag)}`}
+          translate="no"
+          className="notranslate pointer-events-auto rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-600 ring-1 ring-violet-100 transition ring-inset hover:bg-violet-100 hover:text-violet-700 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-violet-500/10 dark:text-violet-300 dark:ring-violet-400/20 dark:hover:bg-violet-500/20 dark:hover:text-violet-200 dark:focus:ring-offset-zinc-900"
+        >
+          {tag}
+        </Link>
+      ))}
+      {remainingTagCount > 0 && (
+        <span
+          aria-label={`${remainingTagCount} more tags`}
+          className="text-xs font-medium text-zinc-400 dark:text-zinc-500"
+        >
+          +{remainingTagCount} more
+        </span>
+      )}
+    </div>
+  )
+}
 
 export const metadata: Metadata = {
   title: 'Articles',
@@ -59,6 +97,7 @@ export default async function ArticlesIndex() {
                   {article.title}
                 </Card.Title>
                 <Card.Description>{article.description}</Card.Description>
+                <ArticleTags tags={article.tags} />
                 <Card.Cta>Read article</Card.Cta>
               </Card>
             ))
