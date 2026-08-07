@@ -5,7 +5,7 @@ type SocialItem = {
   value: string
 }
 
-export const socialData: SocialItem[] = [
+export const socialData = [
   {
     key: 'github',
     name: 'GitHub',
@@ -30,12 +30,13 @@ export const socialData: SocialItem[] = [
     link: 'mailto:hoc081098@gmail.com',
     value: 'hoc081098@gmail.com',
   },
-]
+] as const satisfies readonly SocialItem[]
 
-export const socialDataMap = socialData.reduce(
-  (acc, cur) => {
-    acc[cur.key] = cur
-    return acc
-  },
-  {} as Record<string, SocialItem>,
-)
+type SocialDataItem = (typeof socialData)[number]
+type SocialDataMap = {
+  [Item in SocialDataItem as Item['key']]: Item
+}
+
+export const socialDataMap = Object.fromEntries(
+  socialData.map((item) => [item.key, item] as const),
+) as SocialDataMap

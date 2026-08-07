@@ -9,7 +9,10 @@ import {
   BriefcaseIcon,
   BuildingOfficeIcon,
   CloudArrowDownIcon,
+  ArrowDownIcon,
   ArrowRightIcon,
+  FileTextIcon,
+  GithubLogoIcon,
 } from '@phosphor-icons/react/ssr'
 import { getAllArticles, type ArticleWithSlug } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
@@ -17,6 +20,7 @@ import {
   profileData,
   resumeUrl,
   socialData,
+  socialDataMap,
   workData,
   type WorkRole,
 } from '@/data'
@@ -28,6 +32,8 @@ import landscape3 from '@/images/landscapes/20250430_224510-COLLAGE.jpg'
 import landscape4 from '@/images/landscapes/PXL_20250426_173919684.jpg'
 
 const landscapePhotos = [landscape1, landscape2, landscape3, landscape4]
+const heroSecondaryButtonStyles =
+  'px-5 py-2.5 ring-1 ring-zinc-200 shadow-sm shadow-zinc-950/5 hover:ring-zinc-300 dark:ring-0 dark:shadow-none dark:hover:ring-0'
 
 function Article({ article }: { article: ArticleWithSlug }) {
   return (
@@ -51,9 +57,9 @@ function SocialLink({
   icon: React.ComponentType<{ className?: string; weight?: string }>
 }) {
   return (
-    <Link className="group -m-1 p-1" target="_blank" {...props}>
+    <Link className="group -m-1 p-1" {...props}>
       <Icon
-        className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300"
+        className="h-6 w-6 fill-zinc-500 transition group-hover:fill-violet-500 dark:fill-zinc-400 dark:group-hover:fill-violet-400"
         weight="duotone"
       />
     </Link>
@@ -170,6 +176,7 @@ function Photos() {
 
 export default async function Home() {
   let articles = (await getAllArticles()).slice(0, 4)
+  let secondarySocials = socialData.filter(({ key }) => key !== 'github')
 
   return (
     <>
@@ -181,28 +188,50 @@ export default async function Home() {
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
             {profileData.heroDescription}
           </p>
-          <div className="mt-6 flex gap-6">
-            {socialData.map((e) => (
-              <SocialLink
-                key={e.key}
-                href={e.link}
-                aria-label={e.value}
-                icon={socialIconsMap[e.key]}
-              />
-            ))}
-          </div>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Button
-              href="/about"
-              variant="primary"
-              className="group gap-2 px-5 py-2.5 text-sm"
+              href="#featured-work"
+              variant="accent"
+              className="group px-5 py-2.5"
             >
-              More about me
-              <ArrowRightIcon
-                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+              View featured work
+              <ArrowDownIcon
+                className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5"
                 weight="bold"
               />
             </Button>
+            <Button
+              href={socialDataMap.github.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="secondary"
+              className={heroSecondaryButtonStyles}
+            >
+              <GithubLogoIcon className="h-4 w-4" weight="bold" />
+              GitHub
+            </Button>
+            <Button
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="secondary"
+              className={heroSecondaryButtonStyles}
+            >
+              <FileTextIcon className="h-4 w-4" weight="bold" />
+              View résumé
+            </Button>
+          </div>
+          <div className="mt-6 flex gap-6">
+            {secondarySocials.map((social) => (
+              <SocialLink
+                key={social.key}
+                href={social.link}
+                target={social.key === 'email' ? undefined : '_blank'}
+                rel={social.key === 'email' ? undefined : 'noopener noreferrer'}
+                aria-label={`${social.name}: ${social.value}`}
+                icon={socialIconsMap[social.key]}
+              />
+            ))}
           </div>
         </div>
       </Container>
