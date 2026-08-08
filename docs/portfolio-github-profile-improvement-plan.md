@@ -70,9 +70,15 @@ Không dùng “Senior Mobile & Backend Developer” vì dễ bị hiểu là se
 
 ## 2. Website portfolio
 
+> **Trạng thái:** 🟡 Đang thực hiện
+>
+> Hero, Proof strip và Featured engineering work trên homepage đã hoàn tất. Trang Projects và các case study riêng vẫn chưa triển khai.
+
 ### Trang chủ nên có cấu trúc mới
 
 #### Phần 1: Hero
+
+> **Trạng thái:** ✅ Hoàn tất
 
 Hero cần trả lời ngay ba câu:
 
@@ -96,29 +102,42 @@ Bên dưới có ba nút:
 
 #### Phần 2: Proof strip
 
+> **Trạng thái:** ✅ Hoàn tất
+>
+> Đã audit cả account `hoc081098` và organization `Kotlin-Android-Open-Source`; không còn giới hạn nguồn bằng chứng ở personal repositories.
+
 Ngay dưới hero cần một hàng bằng chứng ngắn:
 
-- 7+ years in mobile engineering
+- Since 2018 in mobile engineering
 - RxDart maintainer — kèm link trực tiếp chứng minh vai trò
-- Author of FlowExt, solivagant và các thư viện KMP
+- Author of FlowExt — KMP library có adoption và release thật
+- Author & maintainer của MVI-Coroutines-Flow — Android MVI/Clean Architecture sample có 1k+ stars, tests, releases và CI
 - Upstream contributions to FlutterFire, RxDart, Khonshu hoặc dự án lớn khác
 - Technical depth về software architecture, concurrency, performance optimization, data structures và algorithms — mỗi claim cần link tới project, article, test hoặc benchmark cụ thể
 - Số release, star, download hoặc platform support nếu có số liệu đáng tin
+
+Proof strip hiện dùng đúng năm direct proof: `Since 2018`, RxDart CODEOWNER, FlowExt, merged upstream contributions và MVI-Coroutines-Flow. Technical depth không đứng thành claim chữ chung chung; nó được chứng minh qua source/tests của MVI-Coroutines-Flow, các upstream PR và bài architecture-performance cụ thể.
 
 Không dùng con số trang trí kiểu profile views, streak hay tổng số commit. Những số đó dễ làm màu và gần như không nói gì về năng lực.
 
 #### Phần 3: Featured engineering work
 
+> **Trạng thái:** ✅ Hoàn tất
+>
+> Sau khi audit organization `Kotlin-Android-Open-Source`, homepage chốt sáu card cân bằng. Không thêm card chỉ vì nhiều stars nếu nó trùng chủ đề, incomplete hoặc maintenance yếu.
+
 Đây phải là phần trọng tâm, đứng trước ảnh quê và trước blog.
 
-Chọn khoảng 4–6 dự án:
+Chốt sáu dự án:
 
 1. FlowExt — flagship về Kotlin Flow, concurrency và reactive semantics.
-2. solivagant — Compose Multiplatform navigation, type safety, lifecycle.
-3. Một KMP application/template — chứng minh khả năng tích hợp library vào sản phẩm.
-4. Một contribution upstream — RxDart, FlutterFire hoặc Khonshu.
-5. PostgreSQL HA demo — Patroni, HAProxy, etcd, EF Core.
-6. Một .NET DDD/CQRS project — ghi rõ đây là backend engineering practice, không giả làm production SaaS.
+2. MVI-Coroutines-Flow — Android MVI, multi-module Clean Architecture, Coroutines Flow và testing; 1k+ stars, role author/maintainer có thể kiểm chứng.
+3. GitHub Search KMM — end-to-end KMP application với Compose, SwiftUI và shared presentation/domain/data.
+4. Selected upstream contributions — FlutterFire, Koin, Khonshu và Google Ground.
+5. PostgreSQL HA lab — Patroni, HAProxy, etcd, EF Core; ghi rõ đây là infrastructure demo.
+6. NetAuth — .NET DDD/CQRS/Clean Architecture practice; không giả làm production SaaS.
+
+`solivagant` vẫn có giá trị về Compose Multiplatform navigation, lifecycle và state restoration nhưng đã archived. Chuyển nó sang catalogue Projects/Earlier open-source work với badge rõ ràng, thay vì dùng một trong sáu slot homepage. `Jetpack-Compose-MVI-Coroutines-Flow` chỉ là companion link vì README hiện ghi “In progress”.
 
 Mỗi card không chỉ có tên và link. Nó cần:
 
@@ -144,11 +163,11 @@ Nên chia thành ba nhóm:
 
 #### Open-source libraries
 
-FlowExt, solivagant, ViewBindingDelegate, các package Dart có giá trị thật.
+FlowExt, solivagant (archived), ViewBindingDelegate, kotlin-channel-event-bus và các package Dart có giá trị thật.
 
 #### Applications and architecture samples
 
-KMP application, Android architecture sample, Compose Multiplatform app.
+MVI-Coroutines-Flow, GitHub Search KMM, KMP application, Android architecture sample và Compose Multiplatform app. Compose-MVI, StateFlow và Pagination samples là supporting/earlier work, không cần nâng tất cả thành flagship.
 
 #### Backend and infrastructure experiments
 
@@ -310,7 +329,7 @@ Building .NET backend and PostgreSQL systems
 Chỉ 4–6 dòng:
 
 - Maintainer/contributor role có thể xác minh
-- Author of FlowExt và solivagant
+- Author of FlowExt và MVI-Coroutines-Flow; `solivagant` ghi rõ archived nếu nhắc tới
 - Upstream contributions
 - Technical writing
 - Portfolio và contact
@@ -319,13 +338,14 @@ Chỉ 4–6 dòng:
 
 Dùng bảng khoảng 5 dự án:
 
-| Project            | What it proves                                    |
-| ------------------ | ------------------------------------------------- |
-| FlowExt            | Flow semantics, concurrency, cancellation, KMP    |
-| solivagant         | Compose Multiplatform navigation and lifecycle    |
-| KMP sample         | End-to-end multiplatform application architecture |
-| PostgreSQL HA demo | Failover, routing and consistency trade-offs      |
-| .NET DDD project   | Domain modelling, CQRS and backend learning       |
+| Project                | What it proves                                    |
+| ---------------------- | ------------------------------------------------- |
+| FlowExt                | Flow semantics, concurrency, cancellation, KMP    |
+| MVI-Coroutines-Flow    | Android MVI, modular Clean Architecture, testing  |
+| GitHub Search KMM      | End-to-end multiplatform application architecture |
+| Upstream contributions | Externally reviewed fixes and optimization        |
+| PostgreSQL HA lab      | Failover, routing and consistency trade-offs      |
+| NetAuth                | Domain modelling, CQRS and backend learning       |
 
 Không liệt kê 17 package ngang hàng. Dự án cũ có thể đặt trong một section “Earlier open-source work”.
 
@@ -400,11 +420,13 @@ Nếu vai trò đã thay đổi, dùng:
 Thứ tự đề xuất:
 
 1. FlowExt — project mạnh nhất về chiều sâu kỹ thuật.
-2. solivagant — KMP/Compose architecture.
-3. KMP-App-Template-solivagant hoặc app KMP hoàn thiện nhất.
+2. MVI-Coroutines-Flow — Android/MVI/Clean Architecture có adoption, tests, releases và maintenance history rõ.
+3. GitHub Search KMM — application KMP hoàn thiện hơn template đơn thuần.
 4. PostgresPatroniHaproxyEfcoreDemo — hướng backend/infrastructure.
-5. netauth-ddd-cqrs-clean hoặc backend project hoàn thiện nhất.
-6. Một project mature từ Flutter/RxDart có users, release và lịch sử lâu dài.
+5. netauth-ddd-cqrs-clean — .NET DDD/CQRS/Clean Architecture practice.
+6. Một project mature từ Flutter/RxDart hoặc open-source library còn maintenance, có users, release và lịch sử lâu dài. Chỉ dùng `solivagant` nếu chấp nhận pin một archived reference và ghi trạng thái minh bạch.
+
+Không chọn pin chỉ từ repositories trên account `hoc081098`. Mỗi lần refresh portfolio phải audit cả organization `Kotlin-Android-Open-Source`, repository canonical sau khi transfer/fork, và upstream organization đang giữ project. Trong audit 2026-08-08, Compose-MVI được giữ làm companion vì còn “In progress”; StateFlow/Pagination/DataStore samples có giá trị lịch sử nhưng trùng hoặc quá hẹp cho sáu slot chính.
 
 Không pin sáu repo cùng một loại. Sáu repo phải kể được hành trình:
 
@@ -432,8 +454,8 @@ Mỗi repository được pin phải có:
 ### Ưu tiên 1 — tác động lớn nhất
 
 1. Làm lại trang Projects.
-2. Đưa Featured Work lên homepage.
-3. Viết lại headline và positioning.
+2. ✅ Đưa Featured Work lên homepage — hoàn tất.
+3. ✅ Viết lại headline và positioning — hoàn tất.
 4. Rút gọn GitHub README.
 5. Chọn lại sáu pinned repositories.
 6. Sửa Work Experience.
@@ -443,7 +465,7 @@ Chỉ sáu việc này đã thay đổi portfolio rất mạnh.
 ### Ưu tiên 2
 
 1. Viết case study cho FlowExt.
-2. Viết case study cho solivagant.
+2. Viết case study cho MVI-Coroutines-Flow.
 3. Viết case study PostgreSQL HA.
 4. Thêm upstream contribution section.
 5. Thêm architecture diagram cho project quan trọng.

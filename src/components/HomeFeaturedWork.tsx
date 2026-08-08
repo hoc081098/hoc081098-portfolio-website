@@ -5,8 +5,8 @@ import {
   DatabaseIcon,
   DevicesIcon,
   GitPullRequestIcon,
-  NavigationArrowIcon,
   ShieldCheckIcon,
+  TreeStructureIcon,
   WaveSineIcon,
 } from '@phosphor-icons/react/ssr'
 
@@ -20,7 +20,7 @@ import {
 
 const featuredWorkIcons = {
   reactive: WaveSineIcon,
-  navigation: NavigationArrowIcon,
+  android: TreeStructureIcon,
   application: DevicesIcon,
   upstream: GitPullRequestIcon,
   backend: ShieldCheckIcon,
@@ -30,8 +30,8 @@ const featuredWorkIcons = {
 const iconStyles = {
   reactive:
     'bg-violet-100 text-violet-600 dark:bg-violet-400/10 dark:text-violet-300',
-  navigation:
-    'bg-fuchsia-100 text-fuchsia-600 dark:bg-fuchsia-400/10 dark:text-fuchsia-300',
+  android:
+    'bg-green-100 text-green-700 dark:bg-green-400/10 dark:text-green-300',
   application:
     'bg-blue-100 text-blue-600 dark:bg-blue-400/10 dark:text-blue-300',
   upstream:

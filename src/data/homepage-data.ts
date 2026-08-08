@@ -31,16 +31,16 @@ export const homeProofData = [
     external: false,
   },
   {
-    value: 'Architecture × performance',
-    detail: 'Concrete complexity and runtime trade-offs',
-    href: '/articles/clean-architecture-performance-complexity-tradeoffs',
-    external: false,
+    value: '1k+ GitHub stars',
+    detail: 'MVI-Coroutines-Flow · author & maintainer',
+    href: 'https://github.com/Kotlin-Android-Open-Source/MVI-Coroutines-Flow',
+    external: true,
   },
 ] as const satisfies readonly HomeProofPoint[]
 
 export type FeaturedWorkKind =
   | 'reactive'
-  | 'navigation'
+  | 'android'
   | 'application'
   | 'upstream'
   | 'backend'
@@ -110,35 +110,47 @@ export const featuredWorkData = [
     ],
   },
   {
-    name: 'solivagant',
-    kind: 'navigation',
-    category: 'Navigation architecture',
-    role: 'Author',
-    status: 'Archived reference',
-    statusTone: 'archived',
+    name: 'MVI-Coroutines-Flow',
+    kind: 'android',
+    category: 'Android architecture',
+    role: 'Author & maintainer',
+    status: 'Maintained sample',
+    statusTone: 'sample',
     summary:
-      'A type-safe Compose Multiplatform navigation library designed around state and lifecycle.',
+      'A multi-module Android reference for unidirectional state, Kotlin Coroutines Flow, and testable Clean Architecture.',
     problem:
-      'Compose Multiplatform needed typed navigation that could survive lifecycle and state restoration across different targets.',
+      'Reactive Android features need deterministic state and event handling without coupling UI, domain, and data concerns.',
     decision:
-      'Model routes and back stacks as state instead of wrapping platform routers; this improves control and portability while owning more restoration and lifecycle complexity.',
+      'Separate feature, domain, data, and MVI infrastructure modules; model intents, immutable state, and one-shot events with Flow. Explicit boundaries improve testability while adding contracts and module plumbing.',
     evidence:
-      'Published releases and Android, Desktop, and iOS samples; now explicitly archived and no longer maintained.',
-    tags: ['Compose Multiplatform', 'Navigation', 'Lifecycle', 'State'],
+      '1k+ GitHub stars, tagged releases, extensive ViewModel, domain, and data tests, plus dedicated build and unit-test workflows.',
+    tags: [
+      'Android',
+      'MVI',
+      'Coroutines',
+      'Flow',
+      'Clean Architecture',
+      'Testing',
+    ],
     links: [
       {
         label: 'Source',
-        href: 'https://github.com/hoc081098/solivagant',
+        href: 'https://github.com/Kotlin-Android-Open-Source/MVI-Coroutines-Flow',
         external: true,
       },
       {
-        label: 'Archived docs',
-        href: 'https://hoc081098.github.io/solivagant/docs/0.x/',
+        label: 'Tests',
+        href: 'https://github.com/Kotlin-Android-Open-Source/MVI-Coroutines-Flow/tree/master/feature-main/src/test',
         external: true,
       },
       {
-        label: 'Samples',
-        href: 'https://github.com/hoc081098/solivagant/tree/master/samples',
+        label: 'Releases',
+        href: 'https://github.com/Kotlin-Android-Open-Source/MVI-Coroutines-Flow/releases',
+        external: true,
+      },
+      {
+        label: 'Compose companion',
+        href: 'https://github.com/Kotlin-Android-Open-Source/Jetpack-Compose-MVI-Coroutines-Flow',
         external: true,
       },
     ],
