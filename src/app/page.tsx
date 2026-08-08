@@ -5,6 +5,8 @@ import clsx from 'clsx'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
+import { HomeFeaturedWork } from '@/components/HomeFeaturedWork'
+import { HomeProofStrip } from '@/components/HomeProofStrip'
 import {
   BriefcaseIcon,
   BuildingOfficeIcon,
@@ -235,6 +237,8 @@ export default async function Home() {
           </div>
         </div>
       </Container>
+      <HomeProofStrip />
+      <HomeFeaturedWork />
       <Photos />
       <Container className="mt-24 md:mt-28">
         <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
