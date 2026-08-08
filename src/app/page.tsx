@@ -4,7 +4,7 @@ import clsx from 'clsx'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
-import { Container } from '@/components/Container'
+import { Container, ContainerOuter } from '@/components/Container'
 import { HomeFeaturedWork } from '@/components/HomeFeaturedWork'
 import { HomeProofStrip } from '@/components/HomeProofStrip'
 import {
@@ -150,16 +150,16 @@ function Photos() {
   let rotations = ['rotate-2', '-rotate-2', 'rotate-2', '-rotate-2']
 
   return (
-    <div className="mt-16 sm:mt-20">
+    <ContainerOuter className="mt-16 sm:mt-20">
       <div className="mb-4 text-center text-sm text-zinc-500 italic dark:text-zinc-400">
         A few snapshots from Hải Lăng, Quảng Trị — my hometown.
       </div>
-      <div className="-my-4 flex snap-x snap-mandatory gap-5 overflow-x-auto overflow-y-hidden scroll-smooth py-4 pr-[max(0px,50%-11rem)] pl-[max(0px,50%-11rem)] [scrollbar-width:none] sm:snap-none sm:justify-center sm:gap-8 sm:overflow-hidden sm:pr-0 sm:pl-0 [&::-webkit-scrollbar]:hidden">
+      <div className="-my-4 flex snap-x snap-mandatory gap-5 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth py-4 pr-[max(0px,50%-5.5rem)] pl-[max(0px,50%-5.5rem)] [scrollbar-width:none] sm:grid sm:snap-none sm:grid-cols-4 sm:justify-items-center sm:gap-[clamp(1rem,2.5vw,2rem)] sm:overflow-visible sm:px-4 lg:px-6 [&::-webkit-scrollbar]:hidden">
         {landscapePhotos.map((src, imageIndex) => (
           <div
             key={imageIndex}
             className={clsx(
-              'relative aspect-9/10 w-44 flex-none snap-center overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:snap-align-none sm:rounded-2xl dark:bg-zinc-800',
+              'relative aspect-9/10 w-44 flex-none snap-center overflow-hidden rounded-xl bg-zinc-100 sm:w-full sm:max-w-72 sm:snap-align-none sm:rounded-2xl dark:bg-zinc-800',
               rotations[imageIndex % rotations.length],
             )}
           >
@@ -172,7 +172,7 @@ function Photos() {
           </div>
         ))}
       </div>
-    </div>
+    </ContainerOuter>
   )
 }
 
