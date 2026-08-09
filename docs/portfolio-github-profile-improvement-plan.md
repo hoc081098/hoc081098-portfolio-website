@@ -72,7 +72,7 @@ Không dùng “Senior Mobile & Backend Developer” vì dễ bị hiểu là se
 
 > **Trạng thái:** 🟡 Đang thực hiện
 >
-> Hero, Proof strip và Featured engineering work trên homepage đã hoàn tất. Trang Projects và các case study riêng vẫn chưa triển khai.
+> Hero, Proof strip, Featured engineering work và catalogue Projects đã hoàn tất. Các case study riêng, Work Experience và những phần nội dung phụ vẫn cần triển khai.
 
 ### Trang chủ nên có cấu trúc mới
 
@@ -155,28 +155,59 @@ Ví dụ với FlowExt:
 
 Thêm tag cụ thể: Kotlin Multiplatform, Coroutines, Flow, Concurrency, Testing.
 
-### Trang Projects phải làm lại gần như toàn bộ
+### Trang Projects
 
-Hiện trang “Projects I’ve built” chỉ có ba link tổng hợp. Đây là điểm yếu nghiêm trọng nhất của website.
+> **Trạng thái:** ✅ Hoàn tất
+>
+> Đã audit account `hoc081098`, hai organization `Kotlin-Android-Open-Source` và `Flutter-Dart-Open-Source`, các package mang topic `hoc081098` trên pub.dev, cùng canonical upstream repositories như RxDart và kotlin-channel-event-bus.
 
-Nên chia thành ba nhóm:
+Trang Projects hiện là một catalogue curated, chia thành ba nhóm. Mỗi full card đều có role, trạng thái, technical focus, evidence, tags và direct links; không còn ba link tổng hợp chung chung.
 
 #### Open-source libraries
 
-FlowExt, solivagant (archived), ViewBindingDelegate, kotlin-channel-event-bus và các package Dart có giá trị thật.
+Chín full cards:
+
+1. RxDart — Maintainer & repository-wide CODEOWNER; đây là external-governance proof mạnh nhất.
+2. FlowExt — maintained KMP Flow library.
+3. dart_either — active Dart library, release 2026 và adoption mạnh trên pub.dev.
+4. rxdart_ext — stable reactive Dart library.
+5. rx_shared_preferences — stable Flutter storage library.
+6. kotlin-channel-event-bus — stable KMP concurrency library ở canonical Foundation repository.
+7. sqlbrite — reactive SQLite/Flutter library.
+8. listenable_stream — Listenable/Stream interoperability.
+9. ViewBindingDelegate — earlier stable Android lifecycle library.
+
+`solivagant`, `kmp-viewmodel`, PhDownloader và nhóm Dart packages cũ vẫn xuất hiện dưới dạng compact Earlier/Supporting work. Archived status luôn hiển thị rõ, không dùng bot activity để suy ra active development.
 
 #### Applications and architecture samples
 
-MVI-Coroutines-Flow, GitHub Search KMM, KMP application, Android architecture sample và Compose Multiplatform app. Compose-MVI, StateFlow và Pagination samples là supporting/earlier work, không cần nâng tất cả thành flagship.
+Năm full cards:
+
+1. MVI-Coroutines-Flow — maintained Android architecture sample và signature work.
+2. GitHub Search KMM — stable KMP architecture sample với Compose/SwiftUI boundary.
+3. Refresh Token Sample — focused concurrency/security sample; không claim test coverage chưa có.
+4. Node Auth Flutter + RxDart — earlier Flutter/RxDart application.
+5. Movie Ticket Booking — earlier full-stack Flutter application.
+
+ComicReaderApp nằm ở compact Earlier work. Compose-MVI vẫn chỉ là companion vì README ghi “In progress”; StateFlow, Pagination, DataStore và KMP templates không được nâng thành equal full cards vì trùng chủ đề, thiếu tests hoặc adoption độc lập yếu.
 
 #### Backend and infrastructure experiments
 
-.NET DDD/CQRS, PostgreSQL HA, cursor pagination, event-driven experiments.
+Hai full cards:
 
-Mỗi dự án nên có một trang case study riêng:
+1. NetAuth — ghi rõ Educational .NET project, với DDD/CQRS/Clean Architecture, outbox và test suites.
+2. PostgreSQL HA lab — ghi rõ Infrastructure lab, với runnable failover scenarios và operational evidence.
+
+Cursor Pagination chỉ là compact supporting demo vì chưa có automated tests hoặc benchmarks.
+
+RxDart, FlowExt và MVI-Coroutines-Flow được đánh dấu `Signature work`. Tổng thể có 16 full cards và 6 compact entries, đủ breadth qua KMP, Android, Flutter/Dart, iOS, .NET và data infrastructure mà không giả vờ mọi project đều hiện tại hoặc quan trọng ngang nhau.
+
+Các số star, like và 30-day downloads là snapshot tại thời điểm audit; UI làm tròn và cần được refresh định kỳ.
+
+Catalogue đã hoàn tất; bước sau là viết case study riêng cho các project quan trọng:
 
 - `/projects/flowext`
-- `/projects/solivagant`
+- `/projects/mvi-coroutines-flow`
 - `/projects/postgres-ha`
 
 Một case study tốt gồm:
@@ -453,7 +484,7 @@ Mỗi repository được pin phải có:
 
 ### Ưu tiên 1 — tác động lớn nhất
 
-1. Làm lại trang Projects.
+1. ✅ Làm lại trang Projects — hoàn tất.
 2. ✅ Đưa Featured Work lên homepage — hoàn tất.
 3. ✅ Viết lại headline và positioning — hoàn tất.
 4. Rút gọn GitHub README.
