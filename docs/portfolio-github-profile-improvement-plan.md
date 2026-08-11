@@ -224,27 +224,37 @@ Một case study tốt gồm:
 
 Đây mới là thứ phân biệt senior thật với người học tutorial.
 
-### Work Experience phải viết lại
+### Work Experience
 
-Không dùng một “company” tên:
+> **Trạng thái:** 🟡 Timeline và technical scope đã hoàn tất; measurable outcomes còn thiếu
+>
+> Đã đối chiếu LinkedIn ngày 2026-08-10 và thay “Full-time developer & Freelance / Open Source” bằng employment history cụ thể. Homepage tách employment khỏi open-source maintenance và independent work, đồng thời link trực tiếp tới LinkedIn và Projects.
+
+Employment timeline hiện tại:
+
+1. **SUPREMETECH CO., LTD — Full-time**
+   - Senior Android Software Engineer — Jul 2023–Present
+   - Android Engineer — Dec 2021–Jul 2023
+2. **GoTECQ Vietnam, Ltd. — Full-time**
+   - Flutter Developer — Oct 2020–Aug 2021
+3. **FOXCODE — Part-time**
+   - Mobile Developer — Mar 2019–Jul 2020
+
+Technical scope trên homepage chỉ dùng role và skills có thể đối chiếu từ LinkedIn: Android, Kotlin, Jetpack, reactive programming, RxJava/RxKotlin, Flutter/Dart, Swift và iOS. Không bịa metrics hoặc business outcomes.
+
+Đã loại bỏ “company” mơ hồ trước đây:
 
 > Full-time developer & Freelance / Open Source
 
-Cách đó mơ hồ và tạo cảm giác đang che thông tin.
+Employment, open-source maintenance và independent engineering work giờ được trình bày riêng. Contract/Freelance chỉ nên thêm khi có client/domain và scope đủ cụ thể để công khai.
 
-Nên tách rõ:
+Phần còn thiếu để đánh dấu hoàn tất hoàn toàn là 2–4 kết quả cụ thể cho từng employment period:
 
-- Employment
-- Contract/Freelance
-- Open-source maintenance
-
-Mỗi công việc cần 2–4 kết quả cụ thể:
-
-- Thiết kế hoặc migrate kiến trúc gì
-- Chịu trách nhiệm module nào
-- Làm việc với team bao nhiêu người
-- Cải thiện build time, crash rate, maintainability hoặc release process thế nào
-- Mentoring, review hay technical decision ra sao
+- Kiến trúc hoặc migration đã trực tiếp thiết kế
+- Module/product domain đã chịu trách nhiệm
+- Quy mô team và phạm vi collaboration
+- Thay đổi đo được về build time, crash rate, performance, maintainability hoặc release process
+- Mentoring, code review và technical decisions
 
 Không công khai được công ty thì ghi:
 
@@ -489,7 +499,7 @@ Mỗi repository được pin phải có:
 3. ✅ Viết lại headline và positioning — hoàn tất.
 4. Rút gọn GitHub README.
 5. Chọn lại sáu pinned repositories.
-6. Sửa Work Experience.
+6. 🟡 Sửa Work Experience — timeline và technical scope đã cập nhật; measurable outcomes còn thiếu.
 
 Chỉ sáu việc này đã thay đổi portfolio rất mạnh.
 

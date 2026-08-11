@@ -7,26 +7,23 @@ import { Card } from '@/components/Card'
 import { Container, ContainerOuter } from '@/components/Container'
 import { HomeFeaturedWork } from '@/components/HomeFeaturedWork'
 import { HomeProofStrip } from '@/components/HomeProofStrip'
+import { socialIconsMap } from '@/components/icons'
+import { resumeUrl } from '@/data/common'
+import { profileData } from '@/data/profile-data'
+import { socialData, socialDataMap } from '@/data/social-data'
+import { workData, type WorkDate, type WorkExperience } from '@/data/work-data'
 import {
   BriefcaseIcon,
   BuildingOfficeIcon,
   CloudArrowDownIcon,
   ArrowDownIcon,
   ArrowRightIcon,
+  ArrowUpRightIcon,
   FileTextIcon,
   GithubLogoIcon,
 } from '@phosphor-icons/react/ssr'
 import { getAllArticles, type ArticleWithSlug } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
-import {
-  profileData,
-  resumeUrl,
-  socialData,
-  socialDataMap,
-  workData,
-  type WorkRole,
-} from '@/data'
-import { socialIconsMap } from '@/components/icons'
 
 import landscape1 from '@/images/landscapes/IMG_20230115_060320.jpg'
 import landscape2 from '@/images/landscapes/IMG_20260214_172437.jpg'
@@ -68,21 +65,33 @@ function SocialLink({
   )
 }
 
-function Role({ role }: { role: WorkRole }) {
-  let startLabel =
-    typeof role.start === 'string' ? role.start : role.start.label
-  let startDate =
-    typeof role.start === 'string' ? role.start : role.start.dateTime
+function DateLabel({ date }: { date: WorkDate }) {
+  if (date.dateTime) {
+    return <time dateTime={date.dateTime}>{date.label}</time>
+  }
 
-  let endLabel = typeof role.end === 'string' ? role.end : role.end.label
-  let endDate = typeof role.end === 'string' ? role.end : role.end.dateTime
+  return <span>{date.label}</span>
+}
+
+function DateRange({ start, end }: { start: WorkDate; end: WorkDate }) {
+  return (
+    <span>
+      <DateLabel date={start} /> <span className="sr-only">until</span>{' '}
+      <span aria-hidden="true">—</span> <DateLabel date={end} />
+    </span>
+  )
+}
+
+function Employer({ experience }: { experience: WorkExperience }) {
+  let { company, employmentType, location, logo, positions, start, end } =
+    experience
 
   return (
     <li className="flex gap-4">
       <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-full shadow-md ring-1 shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-        {role.logo ? (
+        {logo ? (
           <Image
-            src={role.logo}
+            src={logo}
             alt=""
             className="h-full w-full object-cover"
             width={40}
@@ -95,46 +104,99 @@ function Role({ role }: { role: WorkRole }) {
           />
         )}
       </div>
-      <dl className="flex flex-auto flex-wrap gap-x-2">
-        <dt className="sr-only">Company</dt>
-        <dd className="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">
-          {role.company}
-        </dd>
-        <dt className="sr-only">Role</dt>
-        <dd className="text-xs text-zinc-500 dark:text-zinc-400">
-          {role.title}
-        </dd>
-        <dt className="sr-only">Date</dt>
-        <dd
-          className="ml-auto text-xs text-zinc-400 dark:text-zinc-500"
-          aria-label={`${startLabel} until ${endLabel}`}
-        >
-          <time dateTime={startDate}>{startLabel}</time>{' '}
-          <span aria-hidden="true">—</span>{' '}
-          <time dateTime={endDate}>{endLabel}</time>
-        </dd>
-      </dl>
+      <div className="min-w-0 flex-auto">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            {company}
+          </h3>
+          <p className="text-xs text-zinc-400 sm:ml-auto dark:text-zinc-500">
+            <DateRange start={start} end={end} />
+          </p>
+        </div>
+        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          {employmentType}
+          {location ? ` · ${location}` : null}
+        </p>
+
+        <ol className="mt-4 space-y-5 border-l border-zinc-200 dark:border-zinc-700/70">
+          {positions.map((position) => (
+            <li key={position.title} className="relative pl-4">
+              <span
+                aria-hidden="true"
+                className="absolute top-1.5 -left-1 h-2 w-2 rounded-full bg-violet-500 ring-4 ring-white dark:bg-violet-400 dark:ring-zinc-900"
+              />
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h4 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                  {position.title}
+                </h4>
+                {positions.length > 1 ? (
+                  <p className="text-xs text-zinc-400 sm:ml-auto dark:text-zinc-500">
+                    <DateRange start={position.start} end={position.end} />
+                  </p>
+                ) : null}
+              </div>
+              <p className="mt-2 text-xs leading-5 text-zinc-600 dark:text-zinc-400">
+                {position.focus}
+              </p>
+              <ul
+                aria-label={`Technical focus for ${position.title}`}
+                className="mt-2.5 flex flex-wrap gap-1.5"
+              >
+                {position.skills.map((skill) => (
+                  <li
+                    key={skill}
+                    className="rounded-md bg-zinc-100 px-2 py-1 text-[0.68rem] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                  >
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </div>
     </li>
   )
 }
 
-function Resume() {
+function ExperienceTimeline() {
   return (
     <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
-      <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <BriefcaseIcon className="h-6 w-6 flex-none" weight="duotone" />
-        <span className="ml-3">Work Experience</span>
-      </h2>
-      <ol className="mt-6 space-y-4">
-        {workData.map((role, roleIndex) => (
-          <Role key={roleIndex} role={role} />
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <BriefcaseIcon className="h-6 w-6 flex-none" weight="duotone" />
+          <span className="ml-3">Work Experience</span>
+        </h2>
+        <Link
+          href={socialDataMap.linkedin.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 transition hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+        >
+          LinkedIn
+          <span className="sr-only">(opens in a new tab)</span>
+          <ArrowUpRightIcon
+            aria-hidden="true"
+            className="h-3.5 w-3.5"
+            weight="bold"
+          />
+        </Link>
+      </div>
+      <p className="mt-3 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+        Employment is listed separately from open-source maintenance and
+        independent engineering work.
+      </p>
+      <ol className="mt-7 space-y-8">
+        {workData.map((experience) => (
+          <Employer key={experience.company} experience={experience} />
         ))}
       </ol>
       <Button
         href={resumeUrl}
         target="_blank"
+        rel="noopener noreferrer"
         variant="secondary"
-        className="group mt-6 w-full"
+        className={clsx('group mt-6 w-full', heroSecondaryButtonStyles)}
       >
         Download CV
         <CloudArrowDownIcon
@@ -142,6 +204,13 @@ function Resume() {
           weight="duotone"
         />
       </Button>
+      <Link
+        href="/projects#open-source-libraries"
+        className="mt-4 flex items-center justify-center gap-1.5 text-xs font-semibold text-zinc-500 transition hover:text-violet-600 dark:text-zinc-400 dark:hover:text-violet-400"
+      >
+        View open-source maintenance
+        <ArrowRightIcon className="h-3.5 w-3.5" weight="bold" />
+      </Link>
     </div>
   )
 }
@@ -267,7 +336,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
-            <Resume />
+            <ExperienceTimeline />
           </div>
         </div>
       </Container>
