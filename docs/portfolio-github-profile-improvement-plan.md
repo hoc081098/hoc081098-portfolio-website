@@ -339,9 +339,9 @@ Câu này vừa minh bạch vừa không tự hạ thấp mình.
 
 ## 3. GitHub profile homepage
 
-> **Trạng thái:** 🟡 Đang thực hiện
+> **Trạng thái:** ✅ Hoàn tất
 >
-> Phần đầu README đã được viết lại và commit tại `6071d7e`: positioning, Engineering Profile, open-source proof và hướng .NET backend hiện tại đã rõ hơn. Catalogue package, GitHub Stats, các badge và section collapse vẫn còn; bước rút gọn sâu hơn và bổ sung selected upstream contributions chưa hoàn tất.
+> Phần đầu README được viết lại qua các commit `6071d7e`, `79ac23f` và `e6b1559`: positioning và Engineering Profile rõ hơn, Featured Projects là bảng sáu proof mạnh với link evidence trực tiếp, còn Technical Writing được đặt ngay sau bảng proof. Libraries & Packages, GitHub Stats và Open Source Organizations được chủ động giữ gần như nguyên trạng vì tạo personality và cho thấy breadth/lịch sử.
 
 ### Baseline và hướng cải thiện
 
@@ -404,11 +404,11 @@ Copy hiện tại:
 
 Dùng `building` thay vì biến project học hoặc lab thành kinh nghiệm production.
 
-### Phần còn lại cần hoàn thiện
+### Featured proof và content decisions
 
-#### 5. Featured work — 🟡 Đang thực hiện
+#### 5. Featured work — ✅ Hoàn tất
 
-README hiện mới đẩy PostgreSQL HA lab lên `Featured Projects`. Mục tiêu cuối vẫn là một selection cân bằng khoảng 5 dự án:
+README dùng bảng sáu proof cân bằng giữa reactive systems, Android architecture, KMP application, upstream review, backend và data infrastructure:
 
 | Project                | What it proves                                    |
 | ---------------------- | ------------------------------------------------- |
@@ -419,49 +419,45 @@ README hiện mới đẩy PostgreSQL HA lab lên `Featured Projects`. Mục ti�
 | PostgreSQL HA lab      | Failover, routing and consistency trade-offs      |
 | NetAuth                | Domain modelling, CQRS and backend learning       |
 
-Không liệt kê 17 package ngang hàng. Dự án cũ có thể đặt trong một section “Earlier open-source work”.
+Mỗi row link trực tiếp tới source và evidence phù hợp như docs, tests, releases, architecture, CI, demo scenarios hoặc technical notes. Bảng này là lớp scan nhanh; nội dung problem, architecture/trade-off và result chi tiết vẫn nằm ở portfolio.
 
-#### 6. Selected upstream contributions — ⬜ Chưa bắt đầu
+#### 6. Technical Writing — ✅ Hoàn tất
 
-Đưa 3–5 PR đáng giá nhất:
+`Technical Writing` được đặt ngay sau Featured Projects và trước Tech Stack. Vị trí này biến bài viết thành lớp proof tiếp theo cho chiều sâu tư duy kỹ thuật, thay vì để nó chìm sau catalogue Libraries và GitHub Stats.
 
-- FlutterFire transaction bug
-- RxDart operators
-- Khonshu hoặc project lớn khác
-- Một contribution liên quan Android/KMP
+Copy evergreen trỏ về catalogue bài viết trên portfolio và nêu rõ các chủ đề chính: Kotlin/mobile engineering, reactive systems, software architecture, performance và .NET backend development.
 
-Nêu ngắn:
+#### 7. Selected upstream contributions — ✅ Hoàn tất
 
-> Fixed X by changing Y; merged after maintainer review.
+Không tạo thêm một section dài. `Selected upstream contributions` là một row trong Featured Projects với bốn PR đã merged:
 
-Đây là bằng chứng cực mạnh vì code đã qua review của người ngoài.
+- FlutterFire
+- Koin
+- Khonshu
+- Google Ground
 
-#### 7. Contact và phần nội dung cũ — 🟡 Đang thực hiện
+Engineering signal được tóm tắt là các narrow fix liên quan traversal, state restoration, error paths và locking, đã qua maintainer review ở những project established.
 
-Portfolio, LinkedIn và email đã có ở phần đầu. Social badges, Tech Stack, package catalogue, GitHub Stats và các section collapse vẫn được giữ ở phiên bản hiện tại; sẽ review tiếp dựa trên signal-to-noise thay vì xóa chỉ để đạt một số dòng tùy ý.
+#### 8. Contact và personality — ✅ Hoàn tất
 
-### Những thứ cần tiếp tục cân nhắc bỏ hoặc thu nhỏ
+Portfolio, LinkedIn và email đã có ở phần đầu. Các section sau được chủ động giữ gần như nguyên trạng:
 
-- GitHub streak
-- Profile views
-- WakaTime chart khổng lồ
-- Badge cho từng ngôn ngữ
-- Facebook khỏi phần đầu
-- “Self-taught” không cần đặt trong headline
-- Buy Me a Coffee ở vị trí nổi bật
-- Danh sách package cũ dài hàng cây số
+- Libraries & Packages — thể hiện breadth và maintenance history.
+- GitHub Stats — tạo personality và continuity.
+- Open Source Organizations — thể hiện phạm vi ecosystem ngoài personal account.
+- Tech Stack và social badges — hỗ trợ scan nhanh, nhưng không được xem là proof chính.
 
-Không phải các thứ đó xấu. Nhưng chúng chiếm diện tích đáng lẽ dành cho bằng chứng seniority.
+Quyết định không rút README chỉ để đạt một số dòng tùy ý. Hierarchy mới bảo đảm identity và proof xuất hiện trước phần personality; `self-taught` vẫn không đặt trong headline.
 
 ### Claim RxDart maintainer
 
 > **Trạng thái:** ✅ Hoàn tất
 
-README không dùng claim mơ hồ `Official RxDart maintainer`. Copy hiện tại là:
+Primary claim trong phần Open-Source Work dùng wording có thể verify trực tiếp:
 
 > RxDart maintainer & repository-wide CODEOWNER
 
-Claim được đặt một lần trong phần Open-Source Work và link trực tiếp tới file CODEOWNERS làm bằng chứng. Nếu vai trò thay đổi trong tương lai, phải cập nhật copy thành `Former RxDart maintainer` hoặc `Long-term RxDart contributor`.
+Claim này link trực tiếp tới file CODEOWNERS làm bằng chứng. Catalogue Libraries & Packages vẫn giữ copy cũ `Official maintainer` kèm link RxDart và commit history; đây là catalogue copy, không phải positioning chính. Nếu tiếp tục cleanup wording, nên đồng bộ nó thành `RxDart maintainer`. Nếu vai trò thay đổi trong tương lai, phải cập nhật cả hai vị trí thành `Former RxDart maintainer` hoặc `Long-term RxDart contributor`.
 
 Độ tin cậy quý hơn một danh xưng kêu.
 
@@ -508,7 +504,7 @@ Mỗi repository được pin phải có:
 1. ✅ Làm lại trang Projects — hoàn tất.
 2. ✅ Đưa Featured Work lên homepage — hoàn tất.
 3. ✅ Viết lại headline và positioning — hoàn tất.
-4. 🟡 Rút gọn GitHub README — phần đầu đã được tái cấu trúc và commit; catalogue package, stats và selected upstream contributions còn cần review.
+4. ✅ Tái cấu trúc GitHub README — hoàn tất; Featured Projects đã có sáu proof mạnh, còn Libraries, Stats và Organizations được giữ theo chủ đích.
 5. Chọn lại sáu pinned repositories.
 6. 🟡 Sửa Work Experience — timeline và technical scope đã cập nhật; measurable outcomes còn thiếu.
 
@@ -519,7 +515,7 @@ Chỉ sáu việc này đã thay đổi portfolio rất mạnh.
 1. Viết case study cho FlowExt.
 2. Viết case study cho MVI-Coroutines-Flow.
 3. Viết case study PostgreSQL HA.
-4. Thêm upstream contribution section.
+4. ✅ Đưa selected upstream contributions vào Featured Projects dưới dạng một proof row — hoàn tất.
 5. Thêm architecture diagram cho project quan trọng.
 
 ### Ưu tiên 3
@@ -545,4 +541,4 @@ Mà là:
 
 > Một engineer có nền tảng Mobile/Kotlin rất sâu, hiểu reactive systems và architecture, có open-source contribution thật, đồng thời xây dựng .NET backend và distributed data như trục kỹ thuật thứ hai.
 
-Website phải ưu tiên case study và bằng chứng. GitHub phải ưu tiên project chọn lọc và contribution đã được review. Bỏ bớt badge, stats và danh sách dài. Khi kiếm đã sắc, không cần treo thêm đèn LED quanh chuôi.
+Website phải ưu tiên case study và bằng chứng. GitHub phải đặt project chọn lọc, contribution đã được review và technical writing trước các phần personality. Libraries, stats, organizations và badge có thể giữ để thể hiện breadth và cá tính, nhưng không được đứng thay cho proof.
