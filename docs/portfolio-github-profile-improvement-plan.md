@@ -4,7 +4,7 @@ Mục tiêu không phải làm nó “đẹp hơn”. Nó đã đủ đẹp rồ
 
 > Đây là một Senior Mobile/Kotlin Engineer có chiều sâu về reactive systems, concurrency, software architecture, performance và open source; đồng thời xây dựng .NET backend/PostgreSQL như một trục kỹ thuật thứ hai.
 
-Hiện website chưa truyền tải được điều đó. Trang Projects chỉ có GitHub profile, RxMobileTeam và Medium; còn GitHub README thì quá dài, nhiều badge và liệt kê package, khiến điểm mạnh bị chìm.
+Ở baseline ban đầu, website chưa truyền tải được điều đó: trang Projects chỉ có GitHub profile, RxMobileTeam và Medium; còn GitHub README quá dài, nhiều badge và liệt kê package, khiến điểm mạnh bị chìm. Các phần cốt lõi của website và GitHub profile hiện đã được cải thiện; tài liệu này tiếp tục tracking những hạng mục còn lại.
 
 **Legend trạng thái**
 
@@ -339,9 +339,13 @@ Câu này vừa minh bạch vừa không tự hạ thấp mình.
 
 ## 3. GitHub profile homepage
 
-### Rút README xuống còn khoảng 30–40% độ dài hiện tại
+> **Trạng thái:** 🟡 Đang thực hiện
+>
+> Phần đầu README đã được viết lại và commit tại `6071d7e`: positioning, Engineering Profile, open-source proof và hướng .NET backend hiện tại đã rõ hơn. Catalogue package, GitHub Stats, các badge và section collapse vẫn còn; bước rút gọn sâu hơn và bổ sung selected upstream contributions chưa hoàn tất.
 
-README hiện có:
+### Baseline và hướng cải thiện
+
+README baseline có:
 
 - Nhiều badge mạng xã hội
 - Dòng “self-taught senior”
@@ -356,28 +360,55 @@ Thông tin nhiều nhưng signal-to-noise thấp.
 
 Senior không cần chứng minh mình senior bằng một biển logo. Code và contribution phải nói thay.
 
-### Cấu trúc GitHub README nên là
+Implementation hiện tại giữ lại nét cá nhân và breadth kỹ thuật, nhưng không còn dồn mọi claim vào một danh sách phẳng. Phần `About Me` được chia thành các headline có hierarchy rõ ràng.
 
-#### 1. Identity
+### Cấu trúc phần đầu đã áp dụng
 
-Petrus Nguyễn Thái Học\
+#### 1. Identity — ✅ Hoàn tất
+
+Hi there, I'm Petrus Nguyễn Thái Học\
 Senior Mobile & Kotlin Engineer — .NET Backend\
-Reactive systems · Kotlin Multiplatform · Mobile architecture\
-Building .NET backend and PostgreSQL systems
+Reactive systems · Kotlin Multiplatform · Mobile architecture · Performance
 
-#### 2. Evidence
+> **Quyết định:** Không dùng `self-taught` trong headline. Đây là câu chuyện xuất phát điểm, không phải định vị kỹ thuật hiện tại; với 7+ năm kinh nghiệm và proof open-source rõ ràng, headline ưu tiên role và năng lực. Yếu tố này được nhắc nhẹ trong About của portfolio và phần Engineering Profile trên GitHub README.
 
-Chỉ 4–6 dòng:
+#### 2. Engineering Profile — ✅ Hoàn tất
 
-- Maintainer/contributor role có thể xác minh
-- Author of FlowExt và MVI-Coroutines-Flow; `solivagant` ghi rõ archived nếu nhắc tới
-- Upstream contributions
-- Technical writing
-- Portfolio và contact
+Copy đã chốt:
 
-#### 3. Featured work
+> I build reliable, high-performance mobile and backend systems across `Kotlin/Android`, `Kotlin Multiplatform`, `Compose Multiplatform`, `Flutter/Dart`, `iOS/Swift`, `NestJS`, and `ASP.NET Core`. I'm a senior engineer with 7+ years of experience, building and shipping software since summer 2018. Beyond formal education, I am largely self-taught, with my engineering growth shaped by hands-on product work, open-source maintenance, and a long-term focus on software fundamentals.
 
-Dùng bảng khoảng 5 dự án:
+Dòng `Strong knowledge of` được giữ lại để người đọc scan nhanh breadth kỹ thuật:
+
+> **Strong knowledge of:** `Clean Architecture`, `MVVM`, `MVI`, `Reactive Programming` (RxJava/RxKotlin, RxSwift, rxdart, RxJs, Kotlinx Coroutines Flow), `Kotlin/Android`, `Dart/Flutter`, `iOS/Swift`.
+
+Các quyết định được giữ:
+
+- Giữ `7+ years of experience` và viết mốc thời gian tự nhiên là `since summer 2018`.
+- Chỉ dùng `self-taught` một lần trong phần profile, không lặp lại ở headline.
+- Đưa `NestJS` vào breadth kỹ thuật thay cho cách viết mở `NestJs, ...`.
+- Chuyển ba bullet identity thành prose để README bớt cảm giác liệt kê CV.
+
+#### 3. Open-Source Work — ✅ Hoàn tất
+
+Chỉ giữ hai claim mạnh ở phần đầu:
+
+- `RxDart maintainer & repository-wide CODEOWNER`, có link trực tiếp tới `ReactiveX/rxdart/.github/CODEOWNERS`.
+- Author & maintainer của FlowExt và MVI-Coroutines-Flow, kèm technical focus cụ thể: reactive programming, concurrency, architecture, testing và performance.
+
+#### 4. Current Focus — ✅ Hoàn tất
+
+Copy hiện tại:
+
+> I'm building .NET backend and data systems with `DDD`, `CQRS`, `PostgreSQL`, and high-availability patterns — NetAuth and the PostgreSQL HA lab.
+
+Dùng `building` thay vì biến project học hoặc lab thành kinh nghiệm production.
+
+### Phần còn lại cần hoàn thiện
+
+#### 5. Featured work — 🟡 Đang thực hiện
+
+README hiện mới đẩy PostgreSQL HA lab lên `Featured Projects`. Mục tiêu cuối vẫn là một selection cân bằng khoảng 5 dự án:
 
 | Project                | What it proves                                    |
 | ---------------------- | ------------------------------------------------- |
@@ -390,7 +421,7 @@ Dùng bảng khoảng 5 dự án:
 
 Không liệt kê 17 package ngang hàng. Dự án cũ có thể đặt trong một section “Earlier open-source work”.
 
-#### 4. Selected upstream contributions
+#### 6. Selected upstream contributions — ⬜ Chưa bắt đầu
 
 Đưa 3–5 PR đáng giá nhất:
 
@@ -405,21 +436,11 @@ Nêu ngắn:
 
 Đây là bằng chứng cực mạnh vì code đã qua review của người ngoài.
 
-#### 5. Current focus
+#### 7. Contact và phần nội dung cũ — 🟡 Đang thực hiện
 
-Currently working on:
+Portfolio, LinkedIn và email đã có ở phần đầu. Social badges, Tech Stack, package catalogue, GitHub Stats và các section collapse vẫn được giữ ở phiên bản hiện tại; sẽ review tiếp dựa trên signal-to-noise thay vì xóa chỉ để đạt một số dòng tùy ý.
 
-- .NET and ASP.NET Core
-- Domain-Driven Design and modular monoliths
-- PostgreSQL reliability and high availability
-
-Dùng từ learning, building hoặc exploring đúng chỗ. Đừng biến project học thành kinh nghiệm production.
-
-#### 6. Contact
-
-Portfolio, LinkedIn, email. Hết.
-
-### Những thứ nên bỏ hoặc thu nhỏ
+### Những thứ cần tiếp tục cân nhắc bỏ hoặc thu nhỏ
 
 - GitHub streak
 - Profile views
@@ -427,30 +448,20 @@ Portfolio, LinkedIn, email. Hết.
 - Badge cho từng ngôn ngữ
 - Facebook khỏi phần đầu
 - “Self-taught” không cần đặt trong headline
-- “NestJs, …” kiểu liệt kê vô tận
 - Buy Me a Coffee ở vị trí nổi bật
 - Danh sách package cũ dài hàng cây số
 
 Không phải các thứ đó xấu. Nhưng chúng chiếm diện tích đáng lẽ dành cho bằng chứng seniority.
 
-### Claim “Official RxDart maintainer”
+### Claim RxDart maintainer
 
-README hiện đang ghi claim này nhiều lần.
+> **Trạng thái:** ✅ Hoàn tất
 
-Chỉ giữ nếu có bằng chứng rõ:
+README không dùng claim mơ hồ `Official RxDart maintainer`. Copy hiện tại là:
 
-- Có quyền maintainer hiện tại
-- Có tên trong organization/team
-- Có commit/release/review gần đây
-- Có link trực tiếp chứng minh vai trò
+> RxDart maintainer & repository-wide CODEOWNER
 
-Nếu vai trò đã thay đổi, dùng:
-
-> Former RxDart maintainer
->
-> hoặc
->
-> Long-term RxDart contributor
+Claim được đặt một lần trong phần Open-Source Work và link trực tiếp tới file CODEOWNERS làm bằng chứng. Nếu vai trò thay đổi trong tương lai, phải cập nhật copy thành `Former RxDart maintainer` hoặc `Long-term RxDart contributor`.
 
 Độ tin cậy quý hơn một danh xưng kêu.
 
@@ -497,7 +508,7 @@ Mỗi repository được pin phải có:
 1. ✅ Làm lại trang Projects — hoàn tất.
 2. ✅ Đưa Featured Work lên homepage — hoàn tất.
 3. ✅ Viết lại headline và positioning — hoàn tất.
-4. Rút gọn GitHub README.
+4. 🟡 Rút gọn GitHub README — phần đầu đã được tái cấu trúc và commit; catalogue package, stats và selected upstream contributions còn cần review.
 5. Chọn lại sáu pinned repositories.
 6. 🟡 Sửa Work Experience — timeline và technical scope đã cập nhật; measurable outcomes còn thiếu.
 

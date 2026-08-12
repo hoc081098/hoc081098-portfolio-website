@@ -68,7 +68,10 @@ export default function About() {
               experience building applications and open-source libraries across
               Android, Kotlin Multiplatform, Compose Multiplatform, and Flutter.
               I graduated with a degree in Information Technology from Đà Nẵng
-              University of Science and Technology.
+              University of Science and Technology. Beyond formal education,
+              much of my engineering growth has been self-taught through
+              hands-on product work, open-source maintenance, and a long-term
+              focus on software fundamentals.
             </p>
             <p>
               I focus on software architecture, reactive programming,
