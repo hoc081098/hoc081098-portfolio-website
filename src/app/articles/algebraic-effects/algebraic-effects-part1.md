@@ -1,6 +1,8 @@
 # Monad Transformer Stack và MTL (cats-mtl) — bước đệm tới Algebraic Effects (Phần 1)
 > Estimated reading time: 5 minutes
 
+> TODO: Publish
+
 ## 💠 Effect values trong Functional Programming
 
 Hôm qua rảnh rỗi cùng ChatGPT tìm hiểu về *algebraic effects*. Nếu bạn nào đã quen với *Functional Programming* (FP)
