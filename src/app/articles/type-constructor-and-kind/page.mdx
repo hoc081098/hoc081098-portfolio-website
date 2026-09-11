@@ -3,10 +3,10 @@ import { ArticleLayout } from '@/components/ArticleLayout'
 export const article = {
   author: 'hoc081098',
   createdAt: '2026-09-11',
-  lastUpdatedAt: '2026-09-11T06:27:43Z',
+  lastUpdatedAt: '2026-09-11T14:08:04Z',
   title: 'Type Constructor và Kind: Nền tảng để hiểu Higher-Kinded Types',
   description:
-    'Giải thích từ type và type constructor đến kind, partial application của Either, và đặt nền tảng để đi tiếp tới Higher-Kinded Types.',
+    'Giải thích từ type và Type Constructor đến kind, partial application của Either, và đặt nền tảng để đi tiếp tới Higher-Kinded Types.',
   estimatedReadingTime: 5,
   language: 'vi',
   tags: [
@@ -39,14 +39,14 @@ export const metadata = {
 
 export default (props) => <ArticleLayout article={article} {...props} />
 
-Chém gió nhiều về Functional Programming nhưng những khái niệm sau mình đôi lúc vẫn bị nhầm lẫn, note luôn cho nóng: **Type constructor, Higher-Kinded Types (HKT), Type classes**.
+Chém gió nhiều về Functional Programming nhưng mình đôi lúc vẫn nhầm lẫn giữa **Type Constructor, Higher-Kinded Types (HKT) và Type Classes**. Đây là phần đầu của chuỗi note này, tập trung vào Type Constructor và Kind — nền tảng để đi tiếp tới Higher-Kinded Types và Type Classes.
 
 ---
 
-💠 **Type** là thứ quá quen thuộc trong các ngôn ngữ lập trình như Kotlin, Dart, Java, etc.
+💠 **Type** là thứ quá quen thuộc trong các ngôn ngữ lập trình như Kotlin, Dart, Java, v.v.
 
-Ta thường xuyên gặp: `Int`, `Long`, `Float`, `Double`, `Bool`, `String`, `List/Array`, `Set/Map`, `Lambda/Function`, ...
-Simple, right? Các type hoàn chỉnh như: `Int`, `Long`, `Float`, `Double`, `Bool`, `String`, `List<Int>`, `Map<String, Int>`, `Either<String, Int>` có thể được dùng trực tiếp làm type của một value. Ví dụ với Kotlin:
+Ta thường xuyên gặp: `Int`, `Long`, `Float`, `Double`, `Boolean`/`bool`/`Bool` (tùy ngôn ngữ), `String`, `List`/`Array`, `Set`/`Map`, `Function`, ...
+Simple, right? Các type hoàn chỉnh như: `Int`, `Long`, `Float`, `Double`, `Boolean`, `String`, `List<Int>`, `Map<String, Int>`, `Either<String, Int>` có thể được dùng trực tiếp làm type của một value. Ví dụ với Kotlin:
 
 ```kotlin
 val number: Int = 42
@@ -60,33 +60,41 @@ val integers: List<Int> = listOf(1, 2, 3)
 💠 **Tiếp đến là Type Constructor.**
 
 Nghe chữ _constructor_ thì rất dễ liên tưởng tới class constructor.
-Class constructor được dùng để tạo ra một **instance/value** của class: `val user = User(...)`.
-Tức là class constructor hoạt động ở **value-level**.
+Class constructor được dùng để tạo ra một **instance/value** của class, chẳng hạn `val user = User(...)`.
+Ở đây, class constructor hoạt động ở **value-level**.
 
 Còn **Type Constructor** hoạt động ở một level khác.
-Ta có thể hình dung nó giống như một “function ở type-level”: nhận vào một hoặc nhiều type và tạo ra một type mới.
-Ví dụ: `List`, `Option`, `Either` là các type constructor.
-Ta có thể biểu diễn trực quan các type argument còn thiếu dưới dạng `List<_>`, `Option<_>`, `Either<L, _>`, ...
-Các biểu thức trên chưa phải là type hoàn chỉnh vì vẫn còn thiếu type argument, trong đó `_` là placeholder đại diện cho type còn thiếu. Khi ta cung cấp type vào đó để điền vào chỗ trống, ta mới thu được một type hoàn chỉnh.
+Ta có thể hình dung nó giống như một “function ở type-level”, nhận vào một hoặc nhiều type và tạo ra một type mới.
+Ví dụ: `List`, `Option`, `Either` là các Type Constructor.
 
-Ví dụ: `List<_>` có thể hình dung tương đương với một hàm nhận một type `A` và trả về type `List<A>`,
-Viết dưới dạng function chính là `[A] => List<A>`.
-Tương tự với `Either`, `Either` có 2 type argument, khi ta cố định 1 type argument `L`, thì ta thu được một type constructor `Either<L, _>` nhận 1 type argument `R` và trả về `Either<L, R>`.
-Viết dưới dạng function chính là `[R] => Either<L, R>`.
+Để biểu diễn trực quan vị trí type argument còn thiếu, trong bài này ta dùng pseudonotation `List<_>`, `Option<_>`, `Either<L, _>`, ...
+Lưu ý rằng đây không phải là cú pháp của Kotlin, Haskell hay Scala.
+Các biểu thức `List<_>`, ... trên chưa phải là các type hoàn chỉnh vì vẫn còn thiếu type argument,
+trong đó `_` chỉ đóng vai trò placeholder.
+Khi ta cung cấp type nào đó để điền vào chỗ trống `_`, ta mới thu được một type hoàn chỉnh.
+
+Ví dụ: `List<_>` có thể hình dung tương đương với một hàm nhận một type `A` và trả về type `List<A>`.
+Ta có thể mô tả mapping này bằng notation trung lập `A ↦ List<A>`.
+Tương tự với `Either`, vì `Either` có 2 type argument, nên khi ta cố định 1 type argument `L`,
+thì ta thu được một Type Constructor `Either<L, _>`, và Type Constructor này nhận 1 type argument `R` và trả về type hoàn chỉnh `Either<L, R>`.
+Mapping tương ứng là `R ↦ Either<L, R>`.
 
 Ta có thể hiểu trực giác rằng **Type Constructor giống một function nhận type và tạo ra type**.
-Lưu ý: đây là cách hình dung để dễ hiểu. Type Constructor không phải runtime function theo nghĩa thông thường, mà là một cấu trúc ở **type-level**.
+Lưu ý rằng đây chỉ là một cách hình dung để dễ hiểu.
+Type Constructor không phải runtime function theo nghĩa thông thường, mà là một cấu trúc ở **type-level**.
 
 ---
 
 💠 **Kind**
 
-Đến đây xuất hiện thêm một khái niệm nữa: **Kind**.
+Đến đây xuất hiện thêm một khái niệm nữa, đó là **Kind**.
 
-Nếu type mô tả một value `42 :: Int`, có nghĩa value `42` có type `Int`.
-Vậy ta có câu hỏi tương tự ở type-level: type `Int` thuộc kind nào? Hay nói dân dã: type của type `Int` là gì?
-Với Haskell, `Int` là một type hoàn chỉnh, có kind là `Type`: `Int :: Type`.
-Haskell cũ thường viết `Int :: *`, với `*` là notation cũ của kind `Type`.
+Nếu type mô tả một value `42 :: Int`, ta hiểu rằng value `42` có type `Int`.
+Vậy ta có câu hỏi tương tự ở type-level: “type `Int` thuộc Kind nào?”
+Hay nói dân dã, thì “Type của type `Int` là gì?”
+
+Với Haskell, `Int` là một type hoàn chỉnh và có Kind là `Type`. Ta viết là `Int :: Type`.
+Trong GHC, `*` là legacy notation cho `Type`, nhưng `Type` mới là cách viết được khuyến nghị hiện nay.
 
 Có thể nhớ mối quan hệ rất đơn giản:
 
@@ -107,18 +115,18 @@ Int : Type
 💠 **Tiếp tục với Type Constructor**
 
 Một type constructor như `List` chưa phải type hoàn chỉnh vì nó vẫn cần thêm một type argument.
-Conceptually: `List :: Type -> Type`, nghĩa là `List` nhận một `Type` và trả về một `Type`.
+Conceptually, `List :: Type -> Type` có nghĩa là `List` nhận một `Type` và trả về một `Type`.
 Khi ta truyền vào một type argument, ví dụ `Int`, ta thu được một type hoàn chỉnh là `List<Int>`.
 Và khi đó `List<Int> :: Type`.
 
 Tương tự với `Either`: `Either :: Type -> Type -> Type`
 Nó cần hai type argument.
-Sau khi truyền argument đầu tiên, ví dụ `String`, ta được: `Either<String, _> :: Type -> Type`.
-Sau khi truyền tiếp argument thứ hai, ví dụ `Int`, ta thu được một type hoàn chỉnh: `Either<String, Int> :: Type`.
+Sau khi truyền argument đầu tiên, ví dụ `String`, ta được `Either<String, _> :: Type -> Type`.
+Sau khi truyền tiếp argument thứ hai, ví dụ `Int`, ta thu được một type hoàn chỉnh `Either<String, Int> :: Type`.
 
-Nếu viết theo kiểu Haskell:
+Các kind judgments tương ứng, theo notation hiện đại của Haskell/GHC:
 
-```haskell
+```text
 Either            :: Type -> Type -> Type
 Either String     :: Type -> Type
 Either String Int :: Type
@@ -153,5 +161,11 @@ Either<L,R> : Type
 ```
 
 Đến đây ta mới bắt đầu có nền tảng để nói tiếp về **Higher-Kinded Types**:
-nếu generic thông thường ở Java, Kotlin, Dart, C# cho phép ta abstract trên các concrete/proper type có kind `Type`,
-thì HKT (ở các ngôn ngữ functional như Haskell, Scala, Flix, ...) cho phép ta abstract trên những type constructor có kind “cao hơn” như `Type -> Type`. Nhưng cái đó để phần sau 😄.
+
+Nói theo mental model về Kind ở trên, generic parameter thông thường trong Java, Kotlin, Dart và C# đại diện cho những type có kind `Type`,
+còn gọi là proper types, chẳng hạn một Type Constructor đã được apply đầy đủ như `List<Int>`.
+Các ngôn ngữ này không cho phép ta trực tiếp abstract trên Type Constructor bằng một type parameter có Kind cao hơn,
+như `Type -> Type`.
+
+HKT, ở những ngôn ngữ hỗ trợ nó như Haskell, Scala và Flix, cho phép ta abstract trên chính những Type Constructor như vậy.
+Nhưng cái đó để phần sau 😄.
