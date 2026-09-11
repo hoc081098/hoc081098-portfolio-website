@@ -125,10 +125,24 @@ Either<L,R> : Type
 
 Đến đây ta mới bắt đầu có nền tảng để nói tiếp về **Higher-Kinded Types**:
 
-Nói theo mental model về Kind ở trên, generic parameter thông thường trong Java, Kotlin, Dart và C# đại diện cho những type có kind `Type`,
-còn gọi là proper types, chẳng hạn một Type Constructor đã được apply đầy đủ như `List<Int>`.
-Các ngôn ngữ này không cho phép ta trực tiếp abstract trên Type Constructor bằng một type parameter có Kind cao hơn,
-như `Type -> Type`.
+Nói theo mental model về Kind ở phần trên, _Generic type parameter_ thông thường trong các ngôn ngữ lập trình như
+Java, Kotlin, Dart và C# chỉ đại diện cho những type có Kind `Type` (còn gọi là proper types),
+chứ không thể đại diện cho Kind “cao hơn” được.
 
-HKT, ở những ngôn ngữ hỗ trợ nó như Haskell, Scala và Flix, cho phép ta abstract trên chính những Type Constructor như vậy.
+Ví dụ với Kotlin:
+
+```kotlin
+interface Monoid<T> {
+    fun empty(): T
+    fun combine(a: T, b: T): T
+}
+```
+
+`T` ở đây chỉ có thể là các type đầy đủ như `Int`, `Long`, `List<Int>`, `List<Long>` hoặc `Either<String, Int>`.
+`T` không thể đại diện cho `List<_>`, `Either<L, _>` hay `Either<_, _>` được.
+
+Vì vậy, các ngôn ngữ này không cho phép ta trực tiếp abstract trên các Type Constructor có Kind cao hơn `Type`.
+
+Còn HKT, ở những ngôn ngữ hỗ trợ nó như Haskell, Scala và Flix,
+lại cho phép ta abstract trên chính những Type Constructor có Kind cao hơn như vậy.
 Nhưng cái đó để phần sau 😄.
