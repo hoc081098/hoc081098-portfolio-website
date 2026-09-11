@@ -1,4 +1,6 @@
-# Type constructor, Higher-Kinded Types (HKT), Type classes
+# Type Constructor và Kind: Nền tảng để hiểu Higher-Kinded Types
+
+> Estimated reading time: 5 minutes
 
 Chém gió nhiều về Functional Programming nhưng những khái niệm sau mình đôi lúc vẫn bị nhầm lẫn, note luôn cho nóng: **Type constructor, Higher-Kinded Types (HKT), Type classes**.
 
@@ -11,7 +13,7 @@ Simple, right? Các type hoàn chỉnh như: `Int`, `Long`, `Float`, `Double`, `
 
 ```kotlin
 val number: Int = 42
-val integers: List<Int> = [1, 2, 3]
+val integers: List<Int> = listOf(1, 2, 3)
 ```
 
 `Int` là một type hoàn chỉnh. `List<Int>` cũng là một type hoàn chỉnh. `Either<String, Int>` cũng vậy.
@@ -20,7 +22,7 @@ val integers: List<Int> = [1, 2, 3]
 
 💠 **Tiếp đến là Type Constructor.**
 
-Nghe chữ *constructor* thì rất dễ liên tưởng tới class constructor.
+Nghe chữ _constructor_ thì rất dễ liên tưởng tới class constructor.
 Class constructor được dùng để tạo ra một **instance/value** của class: `val user = User(...)`.
 Tức là class constructor hoạt động ở **value-level**.
 
@@ -30,7 +32,7 @@ Ví dụ: `List`, `Option`, `Either` là các type constructor.
 Ta có thể biểu diễn trực quan các type argument còn thiếu dưới dạng `List<_>`, `Option<_>`, `Either<L, _>`, ...
 Các biểu thức trên chưa phải là type hoàn chỉnh vì vẫn còn thiếu type argument, trong đó `_` là placeholder đại diện cho type còn thiếu. Khi ta cung cấp type vào đó để điền vào chỗ trống, ta mới thu được một type hoàn chỉnh.
 
-Ví dụ: `List<_>` có thể hình dung tương đương với một hàm nhận một type `A` và trả về type `List<A>`, 
+Ví dụ: `List<_>` có thể hình dung tương đương với một hàm nhận một type `A` và trả về type `List<A>`,
 Viết dưới dạng function chính là `[A] => List<A>`.
 Tương tự với `Either`, `Either` có 2 type argument, khi ta cố định 1 type argument `L`, thì ta thu được một type constructor `Either<L, _>` nhận 1 type argument `R` và trả về `Either<L, R>`.
 Viết dưới dạng function chính là `[R] => Either<L, R>`.

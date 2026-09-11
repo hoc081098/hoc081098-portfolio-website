@@ -29,4 +29,16 @@ export const articleSeries: readonly ArticleSeries[] = [
     },
     articleSlugs: ['from-kotlin-to-dotnet-backend-01-entities'],
   },
+  {
+    slug: 'type-constructor-hkt-typeclasses',
+    title: 'Type Constructor, Higher-Kinded Types và Type Classes',
+    description:
+      'Chuỗi bài viết đi từ Type Constructor và Kind đến Higher-Kinded Types và Type Classes, tập trung vào trực giác, kind signatures và cách áp dụng trong code.',
+    theme: {
+      from: '#06B6D4',
+      via: '#8B5CF6',
+      to: '#EC4899',
+    },
+    articleSlugs: ['type-constructor-and-kind'],
+  },
 ]
