@@ -1,164 +1,179 @@
-💠 Dart: Null, dynamic, noSuchMethod, Null safety và những thứ thú vị (có thể bạn chưa biết 😬)
+# `Null` trong Dart: từ dynamic invocation đến null safety
 
-Có nhiều bạn không biết rằng, "null" trong Dart là 1 value có type riêng, chính là class "Null".
+Trong Dart, `null` không chỉ là ký hiệu cho _absence of value_. Bản thân nó là một value có type `Null`. Chi tiết tưởng
+chừng nhỏ này lại mở ra một câu chuyện thú vị về type system của Dart, cơ chế dynamic invocation và sự thay đổi của ngôn
+ngữ kể từ khi null safety xuất hiện.
 
-Khác với Java/C#, nơi "null" thường được hiểu là value đại diện cho absent reference value và có thể gán vô các
-reference variable phù hợp (ví dụ C# khi không bật nullable reference types).
+Trong Java, `null` có thể được assign cho một variable có reference type. C# cũng cho phép điều tương tự khi _nullable
+reference types_ chưa được enable hoặc compiler chỉ phát warning:
 
-Ví dụ Java: String a = null;
-
-Khi gọi method trên 1 null ref thì sẽ throw exception ngay, "NullPointerException" thần thánh 🤣.
-
----
-
-💠 Dart "Null" thì nó khác hơn, trước Dart 2.12 (null safety) thì "Null" được xem như bottom type/subtype của mọi type,
-nên nó có thể gán vô bất kỳ type nào.
-
-Đoạn này thì nhìn syntax vẫn giống Java/C#. Nhưng cơ chế method invocation lại khác. Ví dụ Dart < 2.12:
-
-```dart
-String a = null;
-
-a.toString(); // vẫn OK, trả về "null".
-a.hashCode; // vẫn OK.
-a.length; // throws NoSuchMethodError
+```java
+String value = null;
+value.length(); // Throws NullPointerException.
 ```
 
-Ảo không. Dart không đơn giản check null rồi throw như Java/C#. Khi gọi member trên "null", runtime vẫn thực hiện member
-lookup trên receiver thực tế.
+Khi invoke một instance member thông qua null reference, Java sẽ throw `NullPointerException`, còn C# sẽ throw
+`NullReferenceException`. Dart trước null safety có cùng rủi ro ở runtime, nhưng type hierarchy và cách xử lý member
+invocation có một số điểm đáng chú ý hơn.
 
-Class "Null" có "toString", "hashCode", "==" nên gọi các member này trên null value vẫn OK.
+## 💠 Trước null safety: `Null` là bottom type
 
-Vậy còn ".length" thì sao? Tại runtime nó thấy "a" là "Null", mà "Null" lại không có ".length" property.
-
-Về mặt compile time, do giới hạn của type system ở Dart cũ, "Null" là bottom type/subtype của "String", nên gán vô được
-"String", trong khi "length" chỉ có trên "String".
-
-Khi runtime lookup không tìm thấy "length" trên "Null", lời gọi sẽ rơi vào cơ chế "noSuchMethod", và implementation mặc
-định sẽ ném "NoSuchMethodError".
-
----
-
-💠 noSuchMethod — một feature khá "dynamic" của Dart
-
-Dart Object class có một method đặc biệt: noSuchMethod(Invocation invocation)
-
-Khi runtime thực hiện một member invocation nhưng không tìm thấy member tương ứng trên object, cơ chế noSuchMethod có
-thể được kích hoạt. Ví dụ conceptually:
+Trước Dart 2.12, `Null` được xem là _bottom type_, tức subtype của mọi type khác. Vì vậy, `null` có thể được assign cho
+một variable thuộc bất kỳ type nào:
 
 ```dart
-dynamic object = whatever;
-object.someMethod();
+String value = null;
+
+value.toString(); // Returns "null".
+value.hashCode;   // Valid.
+value.length;     // Throws NoSuchMethodError.
 ```
 
-Nếu runtime không tìm thấy someMethod, lời gọi có thể rơi xuống: object.noSuchMethod(...). Implementation mặc định của
-Object.noSuchMethod sẽ ném NoSuchMethodError.
+Đoạn code vẫn pass compile-time checking vì static type của `value` là `String`, mà `String` có getter `length`. Tuy
+nhiên, runtime value của nó lại là `null`.
 
-Class cũng có thể override noSuchMethod để xử lý những lời gọi không tồn tại theo cách riêng. Bản thân thư viện Mockito
-và Mocktail đều dùng thằng này để stub/verify cho các mock objects.
+Class `Null` có một số member như `toString()`, `hashCode` và operator `==`, nên các invocation tương ứng vẫn valid ở
+runtime. Ngược lại, `Null` không có getter `length`. Khi member lookup không tìm thấy member này trên runtime receiver,
+invocation kết thúc bằng `NoSuchMethodError`.
 
-Thường thì cái method này hay đi kèm với dynamic keyword, nơi mà ta có thể espace khỏi static type checking của Dart.
-Code có thể access các member mà không bị compiler bắt lỗi. Nhưng nếu runtime lookup member mà không tìm thấy,
-invocation sẽ đi qua noSuchMethod, implementation mặc định sẽ ném NoSuchMethodError.
+**Điểm mấu chốt:** type system cũ cho phép `null` flow vào một expression có static type không phản ánh khả năng null.
+Vì thế, code đã pass compile-time checking vẫn có thể fail khi runtime thực hiện member lookup.
 
-dynamic keyword này có thể hữu ích khi làm việc với các dữ liệu có dynamic shape như JSON hoặc một số dynamic/legacy
-interop API, dù trong application code hiện đại vẫn nên đưa dữ liệu về static type càng sớm càng tốt.
+## 💠 `noSuchMethod` và dynamic invocation
 
-Đây là một trong những feature cho thấy Dart từng có một DNA khá dynamic, dù bản thân Dart vẫn có static type system.
-
----
-
-💠 Còn Dart >= 2.12 thì sao? Từ version này Dart bắt đầu hỗ trợ Null Safety, nên sẽ khác một chút về mặt syntax khi dùng
-static type checking.
-
-Ví dụ với code đã bật Null Safety:
+Class `Object` khai báo method [`noSuchMethod(Invocation)`][object-no-such-method]. Khi một dynamic invocation không
+resolve được member tương ứng, runtime tạo một `Invocation` tương ứng rồi dispatch đến `noSuchMethod`:
 
 ```dart
-String? a = null;
-
-a.length; // Compile error ngay
-a.hashCode; // vẫn ngon ăn, giải thích sau
-a.toString(); // vẫn ngon ăn, giải thích sau
+dynamic object = 42;
+object.someMethod(); // Throws NoSuchMethodError.
 ```
 
-Bây giờ compiler catch được việc ta invoke 1 member trên 1 nullable value. Ta hoặc là check nó khác "null" trước rồi
-invoke, hoặc dùng "?." safe call, hoặc dùng "!" để null assert:
+Default implementation của `Object.noSuchMethod` sẽ throw `NoSuchMethodError`. Một class có thể override method này để
+handle invocation theo cách riêng. Các mocking library như Mockito và Mocktail tận dụng cơ chế này để stub và verify
+invocation trên mock object.
+
+`noSuchMethod` thường được nhắc cùng `dynamic` vì member access trên receiver có static type `dynamic` không được check
+tại compile time. Ví dụ trên pass analyzer, nhưng chỉ đến runtime chương trình mới phát hiện `int` không có
+`someMethod()`.
+
+**`dynamic` không disable toàn bộ type system.** Nó chỉ defer một phần static checking của các expression liên quan sang
+runtime. Cơ chế này hữu ích khi làm việc với JSON có dynamic shape, legacy API hoặc một số interop API. Tuy vậy,
+application code hiện đại nên đưa data về một static type cụ thể càng sớm càng tốt.
+
+Đây là một dấu vết cho thấy Dart từng mang nhiều đặc trưng của một dynamic language, dù bản thân nó vẫn có static type
+system.
+
+## 💠 Từ Dart 2.12: nullable type và non-nullable type được tách biệt
+
+Dart 2.12 giới thiệu sound null safety. Từ đó, `String` không còn accept `null`. Nếu một variable có thể chứa `null`,
+type của nó phải encode điều này bằng dấu `?`:
 
 ```dart
-if (a != null) a.length; // OK
-a?.length; // OK
-a!.length; // maybe throw
+String? maybeString = null;
+
+maybeString.length;     // Compile-time error.
+maybeString.hashCode;   // Valid.
+maybeString.toString(); // Valid.
 ```
 
-Vậy còn vụ "hashCode", "toString()" thì sao? Theo Dart docs, "String?" có thể coi essentially như là union type của
-"String" và "Null":
+`length` bị compiler reject vì `maybeString` có thể là `null`. Ta phải narrow nullable type bằng promotion, null-aware
+access hoặc null assertion:
+
+```dart
+if (maybeString != null) {
+  maybeString.length; // Promoted to String.
+}
+
+maybeString?.length;  // Returns int?.
+maybeString!.length;  // Throws if maybeString is null.
+```
+
+Null assertion `!` không làm code “an toàn hơn”. Nó khẳng định với runtime rằng value chắc chắn khác `null` và sẽ throw
+nếu giả định đó sai. Vì vậy, promotion hoặc `?.` thường communicate intent rõ ràng hơn khi phù hợp với bài toán.
+
+### 💠 Vì sao nullable value vẫn gọi được `toString()`?
+
+Tài liệu [Understanding null safety][understanding-null-safety] mô tả `String?` bằng một mental model gần với union giữa
+`String` và `Null`:
 
 ```text
 String? ≈ String | Null
 ```
 
-Dart không có general-purpose union type theo syntax như trên, nhưng về mặt nullability thì có thể hình dung như vậy.
-
-Mà hai type "String" và "Null" có một số member chung, chính là "hashCode", "==" và "toString()".
-
-Nên dù static type là "String?", ta vẫn gọi được những member chung đó mà không cần phải qua null check hay null assert:
+Đây chỉ là _mental model_, không phải syntax cho general-purpose union type trong Dart. Với một expression có type
+`String?`, compiler chỉ cho phép access trực tiếp những member có trên cả `String` và `Null`: `toString()`, `hashCode`
+và `==`.
 
 ```dart
-String? a = null;
+String? maybeString = null;
 
-a.hashCode; // OK
-a.toString(); // OK
-a == null; // OK
+maybeString.hashCode;   // Valid.
+maybeString.toString(); // Valid; returns "null".
+maybeString == null;    // Valid; evaluates to true.
 ```
 
-Còn những member chỉ tồn tại trên "String", ví dụ "length", thì compiler không cho gọi trực tiếp:
+Trong khi đó, `length` chỉ tồn tại trên `String`, nên expression sau bị reject ngay tại compile time:
 
 ```dart
-a.length; // Compile error
+maybeString.length; // Compile-time error.
 ```
 
-vì tại thời điểm đó "a" hoàn toàn có thể là một "Null".
+Đây chính là mục tiêu của null safety: unsafe member access trên `null` được catch tại compile time, thay vì chờ đến
+runtime.
 
-Và có thêm 1 lưu ý nữa, từ Dart 2.12 thì Bottom type không còn là"Null" mà là Never type (giống Kotlin Nothing, Swift
-Never, ...). Điều này là hợp lý vì bây giờ không thể gán null vô những type không null.
+### 💠 `Never` thay thế `Null` làm bottom type
 
----
+Sau khi null safety được giới thiệu, `Null` không còn là subtype của mọi type. Nó vẫn là subtype của các nullable type
+như `String?`, nhưng không phải subtype của non-nullable type như `String`.
 
-💠 "Null" class và null value của Dart có concept khá giống với "nil" ở Ruby hoặc "None" ở Python. Ở 2 ngôn ngữ này,
-"nil" có type thực sự là "NilClass" và "None" có type thực sự là "NoneType".
-
-Chúng có cùng 1 triết lý: biểu diễn sự absence of value bằng 1 value thực sự có type riêng. Ruby và Python là
-dynamically typed, nên việc bảo đảm ta đã handle nil/None chủ yếu diễn ra ở runtime thay vì được static type checker
-enforce như null-safe Dart.
-
-Các ngôn ngữ FP như Scala 2 thường dùng Option monad, Scala 3 ngoài Option còn có union type, và khi bật Explicit Nulls
-có thể biểu diễn nullable type rõ ràng dưới dạng String | Null.
-
-Fix, F#, Ocalm, ... thì cũng dùng Option monad Haskell thì dùng Maybe monad (cùng concept với Option chỉ khác tên gọi
-thôi).
-
-Điểm mạnh của Option monad là bắt ta model hóa sự thiếu value rõ ràng bằng ADT, và caller phải handle tường minh, ví dụ
-.fold hoặc pattern matching chẳng hạn.
-
----
-
-💠 Nhìn lại thì câu chuyện về "Null" khá thú vị, vì chỉ từ một value tưởng như rất đơn giản là "null" lại thấy được khá
-rõ quá trình Dart thay đổi qua thời gian.
-
-Dart cũ khá "thoáng": "Null" là bottom type, "null" có thể chui vào gần như mọi type, và một số lỗi chỉ lộ ra khi
-runtime thực sự lookup member. Cộng thêm "dynamic" và "noSuchMethod", có thể thấy Dart mang trong mình khá nhiều DNA của
-một dynamic language.
-
-Từ Dart 2.12, Null Safety siết lại type system: nullable và non-nullable được phân biệt ngay từ compile time, "Null"
-không còn đóng vai trò bottom type nữa và "Never" nhận lấy vị trí đó.
-
-Nhưng những thứ như "dynamic", "noSuchMethod", "Invocation" hay chính class "Null" vẫn còn đó. Hiểu chúng không chỉ để
-biết vài trivia vui vui của Dart, mà còn giúp ta hiểu vì sao type system hiện tại của Dart lại được thiết kế như vậy.
-
-Nhiều khi nhìn một dòng rất bình thường:
+Vai trò _bottom type_ được chuyển cho `Never`. Một expression có type `Never` không thể complete normally hoặc return
+một value. Ví dụ điển hình là một function luôn throw exception:
 
 ```dart
-String? a = null;
+Never fail(String message) {
+  throw StateError(message);
+}
 ```
 
-nhưng phía sau nó là cả một đoạn lịch sử tiến hóa của language design 😄.
+Nhờ đó, type hierarchy vẫn có một bottom type phục vụ type inference và flow analysis. Các non-nullable type không vì
+thế mà phải chấp nhận `null`.
+
+## 💠 So sánh với một số ngôn ngữ khác
+
+`null` trong Dart có nét tương đồng với `nil` của Ruby và `None` của Python: `nil` là instance duy nhất của `NilClass`,
+còn `None` là instance duy nhất của `NoneType`. Tuy nhiên, Ruby và Python là dynamically typed, nên việc handle `nil` và
+`None` chủ yếu diễn ra tại runtime. Null-safe Dart đưa phần lớn checking này vào static type system.
+
+Các functional languages thường model absence of value bằng một _algebraic data type_ (ADT) riêng:
+
+- Scala có `Option`. Scala 3 còn hỗ trợ union type và có thể biểu diễn nullable type bằng `String | Null` khi bật
+  Explicit Nulls.
+- F# và OCaml có `option`.
+- Haskell có `Maybe`.
+
+`Option` và `Maybe` encode absence of value ngay trong type, đồng thời buộc caller handle từng case bằng pattern
+matching, `fold` hoặc combinator phù hợp. Nullable type cũng theo đuổi mục tiêu đó, dù model và API cụ thể khác nhau.
+
+## Kết luận
+
+Lịch sử của `Null` phản ánh khá rõ quá trình Dart siết chặt type system:
+
+- Trước Dart 2.12, `Null` là bottom type. `null` có thể flow vào hầu hết mọi type và một số lỗi chỉ xuất hiện khi
+  runtime thực hiện member lookup.
+- Từ Dart 2.12, nullable và non-nullable type được phân biệt tại compile time. `Never` trở thành bottom type.
+- `dynamic`, `noSuchMethod`, `Invocation` và class `Null` vẫn tồn tại, nhưng chúng nằm trong một type system chặt chẽ
+  hơn.
+
+Declaration sau trông rất ngắn:
+
+```dart
+String? maybeString = null;
+```
+
+Nhưng phía sau nó là cả một design choice quan trọng về nullability:
+
+> Absence of value phải được encode trong type và được handle explicitly, thay vì trở thành một runtime error bất ngờ.
+
+[object-no-such-method]: https://api.dart.dev/dart-core/Object/noSuchMethod.html
+[understanding-null-safety]: https://dart.dev/null-safety/understanding-null-safety
