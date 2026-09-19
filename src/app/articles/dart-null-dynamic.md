@@ -84,8 +84,8 @@ system.
 
 ## 💠 3. Từ Dart 2.12: nullable type và non-nullable type được tách biệt
 
-Dart 2.12 giới thiệu sound null safety. Từ đó, `String` không còn accept `null`. Nếu một variable có thể chứa `null`,
-type của nó phải encode điều này bằng dấu `?`:
+Dart 2.12 giới thiệu sound null safety. Trong library đã opt in null safety, `String` không còn accept `null`. Một
+`String` variable có thể chứa `null` phải dùng type `String?`:
 
 ```dart
 String? maybeString = null;
@@ -95,8 +95,8 @@ maybeString.hashCode;   // Valid.
 maybeString.toString(); // Valid.
 ```
 
-`length` bị compiler reject vì `maybeString` có thể là `null`. Ta phải narrow nullable type bằng promotion, null-aware
-access hoặc null assertion:
+`length` bị compiler reject vì `maybeString` có thể là `null`. Tùy intent, ta có thể narrow bằng promotion, dùng
+null-aware access hoặc áp dụng null assertion:
 
 ```dart
 if (maybeString != null) {
@@ -170,8 +170,8 @@ Các functional languages thường model absence of value bằng một _algebra
 - F# và OCaml có `option`.
 - Haskell có `Maybe`.
 
-`Option` và `Maybe` encode absence of value ngay trong type, đồng thời buộc caller handle từng case bằng pattern
-matching, `fold` hoặc combinator phù hợp. Nullable type cũng theo đuổi mục tiêu đó, dù model và API cụ thể khác nhau.
+`Option` và `Maybe` encode absence of value ngay trong type, thường được xử lý bằng pattern matching, `fold` hoặc
+combinator phù hợp. Nullable type cũng theo đuổi mục tiêu đó, dù model và API cụ thể khác nhau.
 
 ## 💠 5. Kết luận
 
@@ -179,7 +179,8 @@ Lịch sử của `Null` phản ánh khá rõ quá trình Dart siết chặt typ
 
 - Trước Dart 2.12, `Null` là bottom type. `null` có thể flow vào hầu hết mọi type và một số lỗi chỉ xuất hiện khi
   runtime thực hiện member lookup.
-- Từ Dart 2.12, nullable và non-nullable type được phân biệt tại compile time. `Never` trở thành bottom type.
+- Dart 2.12 giới thiệu sound null safety, phân biệt nullable và non-nullable type tại compile time. `Never` trở thành
+  bottom type.
 - `dynamic`, `noSuchMethod`, `Invocation` và class `Null` vẫn tồn tại, nhưng chúng nằm trong một type system chặt chẽ
   hơn.
 
