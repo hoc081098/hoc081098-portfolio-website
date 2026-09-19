@@ -1,5 +1,6 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
 import dartNullDynamicImage from './dart-null-dynamic.png'
+import articleOgImage from './open-graph-1200x630.png'
 
 export const article = {
   author: 'hoc081098',
@@ -23,11 +24,10 @@ export const metadata = {
     modifiedTime: article.lastUpdatedAt,
     images: [
       {
-        url:
-          `/api/og?type=article&title=${encodeURIComponent(article.title)}` +
-          `&description=${encodeURIComponent(article.description)}`,
-        width: 1200,
-        height: 630,
+        url: articleOgImage.src,
+        width: articleOgImage.width,
+        height: articleOgImage.height,
+        alt: 'Legacy Dart lets null flow through a porous type hierarchy, while null-safe Dart routes it into an explicit nullable branch above Never',
       },
     ],
   },
