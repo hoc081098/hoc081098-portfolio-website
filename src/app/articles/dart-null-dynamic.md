@@ -16,7 +16,7 @@ Khi invoke một instance member thông qua null reference, Java sẽ throw `Nul
 `NullReferenceException`. Dart trước null safety có cùng rủi ro ở runtime, nhưng type hierarchy và cách xử lý member
 invocation có một số điểm đáng chú ý hơn.
 
-## 💠 Trước null safety: `Null` là bottom type
+## 💠 1. Trước null safety: `Null` là bottom type
 
 Trước Dart 2.12, `Null` được xem là _bottom type_, tức subtype của mọi type khác. Vì vậy, `null` có thể được assign cho
 một variable thuộc bất kỳ type nào:
@@ -32,14 +32,32 @@ value.length;     // Throws NoSuchMethodError.
 Đoạn code vẫn pass compile-time checking vì static type của `value` là `String`, mà `String` có getter `length`. Tuy
 nhiên, runtime value của nó lại là `null`.
 
-Class `Null` có một số member như `toString()`, `hashCode` và operator `==`, nên các invocation tương ứng vẫn valid ở
-runtime. Ngược lại, `Null` không có getter `length`. Khi member lookup không tìm thấy member này trên runtime receiver,
-invocation kết thúc bằng `NoSuchMethodError`.
+Class `Null` khai báo `toString()` và `hashCode`, nên các member access tương ứng vẫn valid ở runtime. Ngược lại,
+`Null` không có getter `length`. Khi member lookup không tìm thấy member này trên runtime receiver, invocation kết thúc
+bằng `NoSuchMethodError`.
 
 **Điểm mấu chốt:** type system cũ cho phép `null` flow vào một expression có static type không phản ánh khả năng null.
 Vì thế, code đã pass compile-time checking vẫn có thể fail khi runtime thực hiện member lookup.
 
-## 💠 `noSuchMethod` và dynamic invocation
+### 1.1. Nếu `Null` không implement `Object`, `==` đến từ đâu?
+
+Trong type hierarchy của Dart, [`Null`][null-class] là class duy nhất không implement `Object`. Declaration hiện tại
+của `Null` trong `dart:core` chỉ trực tiếp khai báo `hashCode` và `toString()`, không khai báo `operator ==`.
+
+Equality expression là một special case trong language semantics, không phải một method invocation luôn được dispatch
+đến `Null.operator ==`:
+
+```dart
+null == null;   // true
+null == '123';  // false
+'123' == null;  // false
+```
+
+Theo [Dart Language Specification][dart-equality], nếu một trong hai operand là `null`, expression trả về `true` chỉ
+khi cả hai đều là `null`. Chỉ khi cả hai operand đều non-null thì Dart mới invoke `operator ==` trên operand bên trái.
+Vì vậy, `null == '123'` trả về `false` mà không cần lookup `operator ==` trên `Null`.
+
+## 💠 2. `noSuchMethod` và dynamic invocation
 
 Class `Object` khai báo method [`noSuchMethod(Invocation)`][object-no-such-method]. Khi một dynamic invocation không
 resolve được member tương ứng, runtime tạo một `Invocation` tương ứng rồi dispatch đến `noSuchMethod`:
@@ -64,7 +82,7 @@ application code hiện đại nên đưa data về một static type cụ thể
 Đây là một dấu vết cho thấy Dart từng mang nhiều đặc trưng của một dynamic language, dù bản thân nó vẫn có static type
 system.
 
-## 💠 Từ Dart 2.12: nullable type và non-nullable type được tách biệt
+## 💠 3. Từ Dart 2.12: nullable type và non-nullable type được tách biệt
 
 Dart 2.12 giới thiệu sound null safety. Từ đó, `String` không còn accept `null`. Nếu một variable có thể chứa `null`,
 type của nó phải encode điều này bằng dấu `?`:
@@ -92,7 +110,7 @@ maybeString!.length;  // Throws if maybeString is null.
 Null assertion `!` không làm code “an toàn hơn”. Nó khẳng định với runtime rằng value chắc chắn khác `null` và sẽ throw
 nếu giả định đó sai. Vì vậy, promotion hoặc `?.` thường communicate intent rõ ràng hơn khi phù hợp với bài toán.
 
-### 💠 Vì sao nullable value vẫn gọi được `toString()`?
+### 3.1. Vì sao nullable value vẫn gọi được `toString()`?
 
 Tài liệu [Understanding null safety][understanding-null-safety] mô tả `String?` bằng một mental model gần với union giữa
 `String` và `Null`:
@@ -102,8 +120,8 @@ String? ≈ String | Null
 ```
 
 Đây chỉ là _mental model_, không phải syntax cho general-purpose union type trong Dart. Với một expression có type
-`String?`, compiler chỉ cho phép access trực tiếp những member có trên cả `String` và `Null`: `toString()`, `hashCode`
-và `==`.
+`String?`, compiler cho phép access trực tiếp `toString()` và `hashCode`, vì chúng vẫn valid khi value là `null`.
+Equality được xử lý riêng theo language semantics đã giải thích ở trên, nên comparison với `null` cũng valid.
 
 ```dart
 String? maybeString = null;
@@ -122,7 +140,7 @@ maybeString.length; // Compile-time error.
 Đây chính là mục tiêu của null safety: unsafe member access trên `null` được catch tại compile time, thay vì chờ đến
 runtime.
 
-### 💠 `Never` thay thế `Null` làm bottom type
+### 3.2. `Never` thay thế `Null` làm bottom type
 
 Sau khi null safety được giới thiệu, `Null` không còn là subtype của mọi type. Nó vẫn là subtype của các nullable type
 như `String?`, nhưng không phải subtype của non-nullable type như `String`.
@@ -139,7 +157,7 @@ Never fail(String message) {
 Nhờ đó, type hierarchy vẫn có một bottom type phục vụ type inference và flow analysis. Các non-nullable type không vì
 thế mà phải chấp nhận `null`.
 
-## 💠 So sánh với một số ngôn ngữ khác
+## 💠 4. So sánh với một số ngôn ngữ khác
 
 `null` trong Dart có nét tương đồng với `nil` của Ruby và `None` của Python: `nil` là instance duy nhất của `NilClass`,
 còn `None` là instance duy nhất của `NoneType`. Tuy nhiên, Ruby và Python là dynamically typed, nên việc handle `nil` và
@@ -155,7 +173,7 @@ Các functional languages thường model absence of value bằng một _algebra
 `Option` và `Maybe` encode absence of value ngay trong type, đồng thời buộc caller handle từng case bằng pattern
 matching, `fold` hoặc combinator phù hợp. Nullable type cũng theo đuổi mục tiêu đó, dù model và API cụ thể khác nhau.
 
-## Kết luận
+## 💠 5. Kết luận
 
 Lịch sử của `Null` phản ánh khá rõ quá trình Dart siết chặt type system:
 
@@ -176,4 +194,6 @@ Nhưng phía sau nó là cả một design choice quan trọng về nullability:
 > Absence of value phải được encode trong type và được handle explicitly, thay vì trở thành một runtime error bất ngờ.
 
 [object-no-such-method]: https://api.dart.dev/dart-core/Object/noSuchMethod.html
+[null-class]: https://api.dart.dev/dart-core/Null-class.html
+[dart-equality]: https://spec.dart.dev/DartLangSpecDraft.pdf
 [understanding-null-safety]: https://dart.dev/null-safety/understanding-null-safety
