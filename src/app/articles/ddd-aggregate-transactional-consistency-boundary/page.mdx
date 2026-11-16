@@ -4,7 +4,7 @@ import articleDiagram from './03.aggregate-transactional-consistency-boundary.pn
 export const article = {
   author: 'hoc081098',
   createdAt: '2026-11-16',
-  lastUpdatedAt: '2026-11-16T16:29:51Z',
+  lastUpdatedAt: '2026-11-16T19:27:33Z',
   title: 'DDD: Aggregate Transactional Consistency Boundary',
   description:
     'Phân biệt Aggregate consistency boundary, transaction atomicity và concurrency control qua lost update, OCC và EF Core concurrency token.',
@@ -63,23 +63,24 @@ _Tổng quan vai trò của Aggregate, transaction và concurrency control trong
 
 ## 💠 Aggregate and transaction
 
-Nhắc lại về **Aggregate**, đây là boundary của state và các _invariants_ cần giữ **nhất quán** (_consistency_) cùng nhau.
-Dù domain code đã bảo vệ các invariants trên model trong memory, nhưng khi persist các thay đổi xuống database,
-một _partial failure_ có thể khiến cho một phần thay đổi được ghi, điều đó có thể làm cho state đã lưu bị vi phạm invariant.
+Nhắc lại về **Aggregate**, đây là boundary của state và các _invariants_ cần giữ **nhất quán** (_consistency_) cùng
+nhau. Dù domain code đã bảo vệ các invariants trên model trong memory, nhưng khi persist các thay đổi xuống database,
+một _partial failure_ có thể khiến cho một phần thay đổi được ghi, điều đó có thể làm cho state đã lưu bị vi phạm
+invariant.
 
 **Database transaction** đảm bảo **atomicity** (tính nguyên tử) theo semantics _all-or-nothing_. Các thay đổi trong một
-transaction hoặc được commit cùng nhau như một đơn vị, hoặc bị rollback toàn bộ. Thông thường, các thay đổi của một state transition trong
-Aggregate, thông qua _Aggregate Root_, được persist trong cùng một transaction để giữ chúng atomic và đảm bảo
-các invariants được bảo vệ.
+transaction hoặc được commit cùng nhau như một đơn vị, hoặc bị rollback toàn bộ. Thông thường, các thay đổi của một
+state transition trong Aggregate, thông qua _Aggregate Root_, được persist trong cùng một transaction để giữ các thay
+đổi atomic, tránh persist dở dang khi có partial failure.
 
-Ngoài ra, dưới góc nhìn objects trong lập trình, ta thường hình dung Aggregate như một _object graph_.
-Cách hiểu này giúp dễ hình dung, nhưng nếu nhìn đúng bản chất DDD thì cách xác định Aggregate phải dựa trên **consistency boundary**.
+Ngoài ra, dưới góc nhìn objects trong lập trình, ta thường hình dung Aggregate như một _object graph_. Cách hiểu này
+giúp dễ hình dung, nhưng nếu nhìn đúng bản chất DDD thì cách xác định Aggregate phải dựa trên **consistency boundary**.
 Và ở tầng database, boundary này thường tương ứng với một **transactional consistency boundary**.
 
-Cũng cần phải lưu ý rằng **1 database transaction về mặt kỹ thuật vẫn có thể update nhiều Aggregate**. DDD khuyến khích giữ
-transaction boundary nhỏ và thường xoay quanh một Aggregate khi có thể. Hơn nữa, ta còn có thể thêm _database constraints_
-để enforce một số invariants có thể biểu diễn được ở tầng persistence, làm như thế là ta
-đang tuân thủ _Defense in Depth_: Domain → Database Constraints.
+Cũng cần phải lưu ý rằng **1 database transaction về mặt kỹ thuật vẫn có thể update nhiều Aggregate**. DDD khuyến khích
+giữ transaction boundary nhỏ và thường xoay quanh một Aggregate khi có thể. Hơn nữa, ta còn có thể thêm _database
+constraints_ để enforce một số invariants có thể biểu diễn được ở tầng persistence, làm như thế là ta đang tuân thủ
+_Defense in Depth_: Domain → Database Constraints.
 
 ## 💠 Ví dụ
 
@@ -123,15 +124,15 @@ riêng. Chúng không nhất thiết phải thuộc Aggregate của `Order`, mà
 `Order` chỉ cần lưu: `public CustomerId CustomerId { get; private set; }` và mỗi `OrderLine` có thể lưu `ProductId`,
 cùng _snapshot_ giá tại thời điểm đặt hàng.
 
-Và nếu nhìn ở góc nhìn relational database thì những reference đó có thể được map thành khóa ngoại (_foreign key_),
-nhưng chúng ta cũng đừng nhầm lẫn giữa Aggregate boundary với _persistence technology_. **Aggregate boundary được xác
-định bởi consistency requirements**, không phải foreign keys / _navigation properties_.
+Và dưới góc nhìn relational database, những reference đó có thể được map thành khóa ngoại (_foreign key_), nhưng chúng
+ta cũng đừng nhầm lẫn giữa Aggregate boundary với _persistence technology_. **Aggregate boundary được xác định bởi
+consistency requirements**, không phải foreign keys / _navigation properties_.
 
 ## 💠 Concurrency Control
 
-Nhưng với những thứ ta vừa kể thì vẫn chưa đủ!
-Nếu hai state transition chạy đồng thời (_race_) vẫn có thể conflict trong chuỗi `read-check-modify-write` và dẫn tới lost
-update, ngay cả khi domain code đã kiểm tra invariants và transaction đã đảm bảo atomicity.
+Nhưng với những thứ ta vừa kể thì vẫn chưa đủ! Hai state transition chạy đồng thời (_race_) vẫn có thể conflict trong
+chuỗi `read-check-modify-write` và dẫn tới lost update, ngay cả khi domain code đã kiểm tra invariants và transaction đã
+đảm bảo atomicity.
 
 Với `Order` ở trên, xét hai request cùng load Aggregate Root từ database. Mỗi request gọi `AddItem()` để thêm 2 đơn vị
 và tính lại `TotalQuantity`, được lưu trong column `total_quantity`.
@@ -163,13 +164,13 @@ T2 COMMIT
 Final: total_quantity = 10
 ```
 
-Giá trị cuối là `10` thay vì `12`, đây là **lost update** kinh điển. Mỗi request evaluate invariants trong `AddItem()` trên
-snapshot `TotalQuantity = 8` rồi tính giá trị mới là `10`. Khi `T2` ghi xuống database, điều kiện `WHERE id = @id` vẫn
-match row, và câu `UPDATE` ghi đè kết quả mà `T1` đã commit.
+Giá trị cuối là `10` thay vì `12`, đây là **lost update** kinh điển. Mỗi request evaluate invariants trong `AddItem()`
+trên snapshot `TotalQuantity = 8` rồi tính giá trị mới là `10`. Khi `T2` ghi xuống database, điều kiện `WHERE id = @id`
+vẫn match row, và câu `UPDATE` ghi đè kết quả mà `T1` đã commit.
 
-Với những invariant khác, _stale decision_ từ snapshot cũ còn có thể làm cho state đã persist vi phạm _business invariant_.
-Vì vậy, **atomicity không đảm bảo serializability**. Một transaction có atomicity không có nghĩa concurrent execution
-của nhiều transaction sẽ tương đương với việc chúng chạy tuần tự theo một thứ tự nào đó. Chuỗi
+Với những invariant khác, _stale decision_ từ snapshot cũ còn có thể làm cho state đã persist vi phạm _business
+invariant_. Vì vậy, **atomicity không đảm bảo serializability**. Một transaction có atomicity không có nghĩa concurrent
+execution của nhiều transaction sẽ tương đương với việc chúng chạy tuần tự theo một thứ tự nào đó. Chuỗi
 `read → evaluate invariant → modify → write` vẫn cần _isolation/concurrency control_ phù hợp khi có race.
 
 > Thực ra riêng phép cộng trong ví dụ này có thể dùng SQL `UPDATE ... SET total_quantity = total_quantity + 2` chẳng
@@ -188,8 +189,8 @@ vệ trong cùng một consistency boundary. Việc update một row của `Orde
 row `Order` cũng tự thay đổi theo.
 
 Vì vậy, nếu dùng token của `Order` để đại diện cho version của toàn Aggregate, thì _persistence strategy_ phải chủ động
-**kiểm tra token cũ và làm token đó thay đổi trong cùng transaction** với các state change cần được bảo vệ, kể cả khi chỉ sửa
-Entity con.
+**kiểm tra token cũ và làm token đó thay đổi trong cùng transaction** với các state change cần được bảo vệ, kể cả khi
+chỉ sửa Entity con.
 
 Khi đã cấu hình concurrency token trong EF Core, ORM sẽ thêm điều kiện kiểm tra token vào `WHERE` khi update tracked
 Entity qua `SaveChanges()`. Ví dụ SQL với token do application quản lý:
