@@ -1,0 +1,198 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+import articleDiagram from '@/images/articles/ddd-rich-domain-model-invariant-behavior/02.rich-domain-model-invariant-behavior-v2.png'
+
+export const article = {
+  author: 'hoc081098',
+  createdAt: '2026-11-16',
+  lastUpdatedAt: '2026-11-16T06:36:57Z',
+  title: 'DDD: Rich Domain Model, Invariant và Behavior',
+  description:
+    'Rich Domain Model bảo vệ invariant qua behavior và state transition, cùng sự khác biệt với Anemic Domain Model và input validation.',
+  estimatedReadingTime: 9,
+  language: 'vi',
+  tags: ['csharp', 'domain-driven-design', 'domain-modeling', 'invariants', 'encapsulation'],
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+  keywords: article.tags,
+  openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
+    images: [
+      {
+        url: `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Bài hôm trước đã đi qua tổng quan
+[Entity, Value Object và Aggregate Root](/articles/ddd-entity-value-object-aggregate-root) với các keyword được nhấn
+mạnh là _Invariant_, _Behavior_, _Lifecycle_.
+
+Nay ta sẽ focus vào **Invariant và Behavior**, cũng như _Rich Domain Model_ và _Anemic Domain Model_.
+
+<Image
+  src={articleDiagram}
+  alt="Anemic và Rich Domain Model: trách nhiệm bảo vệ invariant"
+  sizes="(min-width: 768px) 42rem, calc(100vw - 3rem)"
+  className="mx-auto h-auto w-full max-w-2xl"
+/>
+
+_Cùng data, khác nơi chịu trách nhiệm bảo vệ invariant._
+
+## 💠 Invariant và trách nhiệm bảo vệ model
+
+**Invariant** là khái niệm chỉ những điều kiện/business rule phải đúng đối với một _Domain Model_ hợp lệ.
+
+Lấy ví dụ C#:
+
+```csharp
+public sealed class Order
+{
+    public Guid Id { get; private set; }
+    public OrderStatus Status { get; private set; }
+    public List<OrderLine> Lines { get; private set; } = [];
+}
+```
+
+Ta mong muốn business rules/invariant cho Aggregate Root này là:
+
+- `Order` phải có ít nhất 1 line để `Submit()` thành công.
+- `Order` chỉ được `AddItem()` khi còn `Draft`, nên `Submitted` Order không được thêm item.
+- `Order` chỉ được `Submit()` khi còn `Draft`, nên `Cancelled` Order không được submit.
+
+Bây giờ tới nơi sử dụng nó, ví dụ _Add Item Command Handler_. Giả sử đã load được một `Order` tồn tại:
+
+```csharp
+var order = await repository.GetAsync(id);
+
+if (order.Status != OrderStatus.Draft)
+    throw new OrderCannotBeModifiedException(order.Id);
+
+order.Lines.Add(line);
+```
+
+Execution path này vẫn giữ được rule của `AddItem()`, rõ ràng là vậy 😂.
+
+Nhưng ta thấy có sự vi phạm nguyên tắc OOP căn bản, đó là **tính đóng gói** (_encapsulation_). Đoạn code trên may thay
+vẫn giữ được rule, nhưng nếu code chỗ khác quên check `Status` thì sao? Hay nói cách khác, ta đã đưa trách nhiệm giữ
+invariant cho caller thay vì để tự thân `Order` chịu trách nhiệm về chính bản thân nó. Điều này dẫn tới sự rời rạc và
+phân mảnh business rules, khiến business rule nằm rải khắp mọi nơi.
+
+Cùng một business operation, nó có thể được kích hoạt từ _Command Handler_, HTTP endpoint, background worker, message
+consumer, scheduled job... Nên invariant không thể phụ thuộc vào việc mỗi caller đều nhớ check đúng rule. Do đó, việc
+centralize từng rule vào behavior tương ứng của Domain Model là điều thiết yếu cho sự nhất quán và đúng đắn.
+
+Lưu ý, một số rule cần thông tin từ database hoặc hệ thống bên ngoài, nên ta có thể gặp trade-off giữa _domain purity_,
+_domain completeness_ và _performance_ vì khó đạt cả 3 cùng lúc trong những tình huống đó. Phần này sẽ nói ở bài khác.
+
+Ví dụ trên chính là một ví dụ của **Anemic Domain Model**, một model chủ yếu chỉ chứa data (“a bag of data”) và không
+define behavior rõ ràng.
+
+## 💠 Đưa rule vào behavior của Order
+
+Ta có thể viết lại `Order` class tốt hơn. Đoạn dưới đây tập trung vào `AddItem()` và `Submit()`, lược bỏ các behavior
+khác cùng các type hỗ trợ:
+
+```csharp
+public sealed class Order
+{
+    private readonly List<OrderLine> _lines = [];
+
+    public Guid Id { get; }
+    public OrderStatus Status { get; private set; } = OrderStatus.Draft;
+    public IReadOnlyCollection<OrderLine> Lines => _lines.AsReadOnly();
+
+    public Order(Guid id)
+    {
+        Id = id;
+    }
+
+    public void AddItem(ProductId productId, Money price)
+    {
+        if (Status != OrderStatus.Draft)
+            throw new OrderCannotBeModifiedException(Id);
+
+        _lines.Add(new OrderLine(productId, price));
+    }
+
+    public void Submit()
+    {
+        if (Status != OrderStatus.Draft)
+            throw new OrderCannotBeSubmittedException(Id);
+
+        if (_lines.Count == 0)
+            throw new EmptyOrderCannotBeSubmittedException(Id);
+
+        Status = OrderStatus.Submitted;
+    }
+}
+```
+
+`AsReadOnly()` tạo _read-only view_ thay vì expose trực tiếp `List` gốc. Lưu ý rằng view này không làm các phần tử
+immutable, nên ví dụ giả định `OrderLine` không cho sửa state từ bên ngoài Aggregate.
+
+Tự thân class `Order` tự bảo vệ chính nó, thay vì convention kiểu “nhớ check trước khi sử dụng”. Các method vừa check
+điều kiện để giữ invariant, vừa thể hiện valid state transition, quan trọng hơn là thể hiện ngôn ngữ nghiệp vụ. Và đây
+chính là **Behavioral Model** hay **Rich Domain Model**: model vừa chứa data vừa có behavior rõ ràng, nhất quán và tường
+minh.
+
+Nhưng không phải cứ có method/setter thì nó tự trở thành Rich Domain Model. Ví dụ
+`order.SetStatus(OrderStatus.Submitted)`, một setter thuần túy không check gì cả, thì với `Order` ở trên, về bản chất
+vẫn rất gần với Anemic Domain Model.
+
+Còn `order.Submit()` ở trên là ví dụ của Rich Domain Model, vì nó vừa diễn đạt business intent, vừa bảo vệ invariant và
+giới hạn state transition.
+
+## 💠 Invariant khác gì validation thuần túy?
+
+Ở đây, _validation thuần túy_ đang nói tới **input validation**. Nó thường focus vào việc check format, length, range,
+pattern của những value đầu vào. Ví dụ:
+
+- `Quantity` phải là số nguyên.
+- `OrderId` phải đúng format.
+- `Name` không quá 500 ký tự.
+
+Những thứ này thường mang tính cơ học và có thể được check trước khi đi vào _domain boundary_. Ví dụ ta thường validate
+Command trong CQRS trước khi nó vào _Command Handler_, hoặc validate HTTP Request Body trước khi nó vào HTTP endpoint
+handler.
+
+Còn **Invariant** thì thuộc về domain business rules, thường gắn chặt với một domain cụ thể. Nó ràng buộc state hợp lệ,
+nên các state transition cũng phải giữ được những điều kiện đó. Ví dụ:
+
+- `Submitted` Order không thể `AddItem()` nữa.
+- `Money.Currency` không được `null`.
+- `OrderLine.Quantity > 0`.
+- `DateRange.Start < DateRange.End`.
+
+Chú ý rằng **Invariant là rule phải luôn được bảo vệ**. Với một Domain Model hợp lệ, trước khi thực hiện state
+transition thì invariant đang đúng. Trong quá trình thực hiện behavior ta có thể thay đổi internal state, nhưng sau khi
+operation hoàn tất thành công thì Domain Model vẫn phải trở về một state hợp lệ, tức là các invariant vẫn được giữ.
+Trong ví dụ `Order`, các guard được check trước khi sửa state, nên operation bị reject bởi các guard đó cũng không để
+lại những thay đổi dở dang.
+
+Có một lưu ý là không phải mọi validation căn bản đều chỉ là input validation. Ví dụ `Quantity > 0`, nhìn qua thì nó có
+vẻ là validation đơn giản, nhưng nếu business rule yêu cầu rằng “`OrderLine` không bao giờ được có `Quantity <= 0`”, thì
+nó vẫn là một invariant.
+
+**Input validation** kiểm tra dữ liệu đi vào một boundary có chấp nhận được hay không. **Invariant** là điều phải luôn
+đúng đối với một Domain Model hợp lệ. **Validation là hoạt động kiểm tra**, và cũng có thể được dùng để bảo vệ invariant
+ngay trong domain behavior.
+
+## 💠 Tóm lại
+
+Rich Domain Model không chỉ là đưa logic từ Service vào Entity. Nó là trao cho Domain Model quyền bảo vệ những invariant
+và chỉ cho phép những state transition mà business cho phép. Behavior không đơn thuần là method thay setter, mà behavior
+phải biểu diễn ngôn ngữ nghiệp vụ và quy tắc của domain.
+
+---
+
+Bài viết có sự cộng tác của ChatGPT ❤

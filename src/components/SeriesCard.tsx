@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import Image from 'next/image'
 
 import { Card } from '@/components/Card'
 import { type ArticleSeries } from '@/data/article-series'
@@ -42,6 +43,16 @@ export function SeriesCard({
           )}
         />
       </span>
+      {isIndexCard && series.cover && (
+        <div className="relative z-10 order-first mb-5 w-full overflow-hidden rounded-xl bg-zinc-950 ring-1 ring-zinc-900/10 dark:ring-white/10">
+          <Image
+            src={series.cover.image}
+            alt={series.cover.alt}
+            sizes="(min-width: 896px) 48rem, (min-width: 640px) calc(100vw - 6rem), calc(100vw - 4rem)"
+            className="h-auto w-full"
+          />
+        </div>
+      )}
       {children}
     </Card>
   )

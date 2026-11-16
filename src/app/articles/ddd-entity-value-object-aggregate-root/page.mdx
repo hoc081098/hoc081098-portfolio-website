@@ -1,0 +1,298 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+import articleDiagram from '@/images/articles/ddd-entity-value-object-aggregate-root/01.entity-vo-aggregate-root-v2.png'
+
+export const article = {
+  author: 'hoc081098',
+  createdAt: '2026-11-16',
+  lastUpdatedAt: '2026-11-16T06:36:57Z',
+  title: 'DDD: Entity, Value Object và Aggregate Root',
+  description:
+    'Giải thích Entity, Value Object và Aggregate Root qua identity, value, invariant, behavior và consistency boundary.',
+  estimatedReadingTime: 9,
+  language: 'vi',
+  tags: ['csharp', 'domain-driven-design', 'domain-modeling', 'entities', 'value-objects', 'aggregates'],
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+  keywords: article.tags,
+  openGraph: {
+    type: 'article',
+    publishedTime: article.createdAt,
+    modifiedTime: article.lastUpdatedAt,
+    images: [
+      {
+        url: `/api/og?type=article&title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`,
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+💠 Chắc hẳn ai mới học DDD cũng đều học thuộc kiểu:
+
+- **Entity** có ID, so sánh theo _identity_ trong cùng loại Entity và phạm vi domain đang xét. Nghĩa là hai Entity đại
+  diện cho cùng một thực thể nếu chúng có cùng identity trong phạm vi đó, dù các state/property còn lại có thể thay đổi
+  theo thời gian.
+
+  Entity thường được biểu diễn bằng `class` và có _lifecycle_: identity dùng để nhận diện nó xuyên suốt vòng đời, còn
+  state có thể thay đổi.
+
+- **Value Object** không có identity riêng cần theo dõi, so sánh theo các thành phần value có ý nghĩa trong domain.
+  Nghĩa là hai Value Object bằng nhau nếu chúng cùng type và cùng value.
+
+  Value Object được thiết kế _immutable_, không theo dõi lifecycle riêng theo identity như Entity. Trong C#, nó có thể
+  được biểu diễn bằng `record`, `record struct`, `readonly struct` hoặc một `class` immutable tùy trường hợp. Chỉ chọn
+  kiểu dữ liệu chưa đủ để có immutability và value equality đúng với semantics của domain. Chẳng hạn, `record struct`
+  vẫn có thể mutable, còn các reference member có thể trỏ tới dữ liệu mutable.
+
+  Entity có thể chứa các Value Object.
+
+- **Aggregate Root** là một Entity đóng vai trò root của một _Aggregate_. Aggregate là 1 boundary có thể chứa các Entity
+  con và Value Object. Từ bên ngoài, việc thay đổi state của các Entity con phải đi qua Aggregate Root. Một Aggregate
+  cũng có thể chỉ gồm root, không cần Entity con hay Value Object.
+
+Nhưng cách hiểu trên mới chỉ là tầng khá bề mặt và thiên về _physical structure_. Còn một khía cạnh quan trọng hơn chưa
+đụng tới: **semantics và domain meaning**.
+
+<Image
+  src={articleDiagram}
+  alt="Entity, Value Object và Aggregate Root"
+  sizes="(min-width: 768px) 42rem, calc(100vw - 3rem)"
+  className="mx-auto h-auto w-full max-w-2xl"
+/>
+
+_Tổng quan identity, value và consistency boundary, cùng vai trò của Aggregate Root._
+
+## 💠 Entity xác định đối tượng đó là ai — “who”
+
+Nó giống như xác định một ngôi vị/person trong triết học hay thần học: identity là thứ làm cho thực thể đó vẫn là chính
+nó, dù các thuộc tính khác có thể thay đổi.
+
+Ví dụ:
+
+```text
+Entity 1:
+Id = 1
+Name = Học
+
+Entity 2:
+Id = 2
+Name = Học
+```
+
+Hai Entity này không bằng nhau về identity trong domain. Dù `Name` giống nhau, chúng vẫn là hai thực thể có identity
+riêng.
+
+Ngược lại:
+
+```text
+Entity:
+Id = 1
+Name = Học
+```
+
+sau này đổi thành:
+
+```text
+Id = 1
+Name = Petrus Học
+```
+
+thì về mặt domain, đó vẫn là cùng một Entity.
+
+**Identity của Entity tồn tại xuyên suốt lifecycle của nó**, còn state có thể thay đổi. Đây là equality theo domain
+identity. Một `class` C# thông thường không tự so sánh theo `Id` qua `Equals()` hay `==` nếu ta chưa implement semantics
+đó.
+
+## 💠 Value Object xác định đối tượng đó có GIÁ TRỊ gì — “what”
+
+Nó mô tả những value mà nhiều Entity khác nhau đều có thể cùng sở hữu.
+
+Ví dụ con người có thể có cùng chiều cao, cân nặng, màu tóc... Những value này không cần một identity riêng để theo dõi.
+
+Hoặc với tiền:
+
+```text
+Value Object 1:
+Amount = 1
+Currency = USD
+
+Value Object 2:
+Amount = 1
+Currency = USD
+```
+
+Hai Value Object này bằng nhau vì chúng biểu diễn cùng một value: `1 USD`.
+
+Với tiền, chúng ta thường chỉ quan tâm nó có giá trị bao nhiêu chứ không quan tâm identity riêng của từng đồng tiền.
+
+Tất nhiên, nếu domain là hệ thống quản lý tiền sưu tập thì một tờ tiền có serial number cụ thể lại có thể trở thành
+Entity 😆
+
+Điều đó cho thấy Entity hay Value Object không hoàn toàn phụ thuộc vào “vật thể ngoài đời là gì”, mà **phụ thuộc vào
+cách domain nhìn nhận và sử dụng nó**.
+
+## 💠 Entity và Value Object thường không chỉ là data
+
+Chúng còn đi cùng:
+
+- **Invariant** — các business rule phải được bảo vệ, để object không rơi vào trạng thái invalid.
+- **Behavior** — các phương thức biểu diễn hành vi và state transition của domain.
+- **Lifecycle** — đặc biệt quan trọng đối với Entity.
+- **Domain meaning** — object biểu diễn một khái niệm có ý nghĩa trong domain, chứ không chỉ là một nhóm field.
+
+Ví dụ thay vì:
+
+```csharp
+order.Status = OrderStatus.Submitted;
+```
+
+Ta có:
+
+```csharp
+order.Submit();
+```
+
+`Submit()` không chỉ đổi một property. Nó có thể kiểm tra invariant, thay đổi state và phát sinh _Domain Event_.
+
+Tương tự với Value Object:
+
+```csharp
+var total = money.Add(other);
+period.Contains(date);
+period.Overlaps(other);
+```
+
+Với `money` immutable, `Add()` trả về value mới thay vì sửa instance hiện tại. Value Object không chỉ là một wrapper đẹp
+hơn cho _primitive type_ mà có thể chứa cả invariant và behavior của value đó.
+
+## 💠 Aggregate thì xác định Domain Consistency Boundary — ranh giới của sự nhất quán
+
+Đây mới là semantic quan trọng nhất của Aggregate. Một Aggregate chứa một tập state và business invariant cần được giữ
+nhất quán cùng nhau trong cùng một _transactional boundary_.
+
+**Aggregate Root là entry point duy nhất từ bên ngoài để thay đổi state của Aggregate**. Các Entity con không nên bị
+thay đổi trực tiếp từ bên ngoài. Một flow minh họa:
+
+```text
+Outside
+↓
+Aggregate Root
+↓
+Internal Entity
+↓
+Value Object
+```
+
+Lý do không đơn thuần là _encapsulation_ cho đẹp, mà vì Aggregate Root phải có quyền kiểm soát mọi state transition có
+thể ảnh hưởng đến invariant của toàn Aggregate.
+
+Ví dụ _Order Aggregate_:
+
+```text
+Order
+├── OrderLine
+├── OrderLine
+└── OrderLine
+```
+
+Có thể có các invariant như:
+
+- `Order` phải có ít nhất một `OrderLine` để `Submit()` thành công.
+- `Order` đã `Submitted` thì không được thêm hoặc xóa `OrderLine`.
+- `Order.Total` phải phản ánh chính xác tổng giá trị các `OrderLine` theo pricing rules của domain.
+
+Vì vậy, với pseudo-code minh họa, caller không nên làm:
+
+```text
+order.Lines.Add(...);
+order.Lines[0].Quantity = -10;
+```
+
+mà phải đi qua behavior của Aggregate Root:
+
+```text
+order.AddItem(...);
+order.ChangeQuantity(...);
+order.Submit();
+```
+
+Sau mỗi business operation thành công, **Aggregate phải trở lại một state hợp lệ theo các invariant của nó**, và các
+invariants trong nó vẫn giữ được sự nhất quán cùng nhau.
+
+## 💠 Aggregate boundary cũng không được xác định chỉ dựa vào database relationship
+
+Ví dụ:
+
+```text
+Order
+Customer
+Product
+Inventory
+```
+
+`Order` có `CustomerId` không có nghĩa `Customer` phải nằm trong _Order Aggregate_. `OrderLine` có `ProductId` cũng
+không có nghĩa `Product` là Entity con của `Order`.
+
+Aggregate boundary nên được suy ra từ câu hỏi:
+
+> “Những invariant nào thực sự cần được giữ consistent và atomic với nhau?”
+
+Chứ không phải:
+
+> “Table này có foreign key tới table kia nên chúng thuộc cùng Aggregate.”
+
+Đây là một trong những khác biệt lớn giữa **domain modeling** và **database modeling**.
+
+## 💠 Aggregate cũng thường là nơi phát sinh Domain Events
+
+Ví dụ:
+
+```csharp
+order.Submit();
+```
+
+có thể raise: `OrderSubmitted`.
+
+Đây là một fact đã xảy ra trong domain, chưa tự có nghĩa state đã commit xuống database. Domain Event đó có thể được các
+handler trong cùng _bounded context_ xử lý, có thể dẫn đến thay đổi ở một Aggregate khác thông qua _Application Layer_,
+cập nhật _projection_, hoặc được map thành _Integration Event_ để đi ra bên ngoài bounded context. Với Integration Event
+thông báo thay đổi đã persist, chỉ publish nó sau khi transaction tương ứng commit thành công.
+
+Điểm quan trọng là **Aggregate chỉ ghi nhận fact**:
+
+> “Order đã được Submit.”
+
+Nó không cần biết ai sẽ xử lý fact đó hay xử lý bằng cách nào.
+
+## 💠💠💠 Tóm lại
+
+Nếu tóm lại theo _semantic meaning_:
+
+```text
+ENTITY - "Who / Which one is it?"
+Identity + Invariant + Lifecycle + State + Behavior
+
+VALUE OBJECT - "What value is it?"
+Value + Invariant + Behavior + No identity worth tracking
+
+AGGREGATE - "What must stay consistent together?"
+Aggregate Root + Internal Entities / Value Objects (nếu cần)
++ Invariants
++ Transactional Consistency Boundary
+```
+
+Hiểu ở tầng này thì Entity không còn đơn giản là “class có ID”, Value Object không còn chỉ là “object không có ID”, và
+Aggregate cũng không còn là “một object chứa nhiều object khác”.
+
+**Entity và Value Object mô hình hóa ý nghĩa của các khái niệm trong domain**. **Aggregate mô hình hóa ranh giới mà
+trong đó các state và invariant của những khái niệm ấy phải được giữ nhất quán**.
+
+---
+
+Bài viết có sự cộng tác của ChatGPT ❤

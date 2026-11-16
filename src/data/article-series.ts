@@ -1,3 +1,7 @@
+import { type StaticImageData } from 'next/image'
+
+import domainToProductionCover from '@/images/series/from-domain-to-production/cover.png'
+
 export interface ArticleSeriesTheme {
   from: `#${string}`
   via: `#${string}`
@@ -9,6 +13,10 @@ export interface ArticleSeries {
   title: string
   description: string
   theme: ArticleSeriesTheme
+  cover?: {
+    image: StaticImageData
+    alt: string
+  }
   /**
    * The array order defines Part 1, Part 2, and so on.
    * An article slug may appear in only one series.
@@ -18,16 +26,24 @@ export interface ArticleSeries {
 
 export const articleSeries: readonly ArticleSeries[] = [
   {
-    slug: 'from-kotlin-to-dotnet-backend',
-    title: 'From Kotlin to .NET Backend',
+    slug: 'from-domain-to-production',
+    title: 'From Domain to Production',
     description:
-      'Practice-driven lessons on DDD, Clean Architecture, CQRS, event-driven design, and PostgreSQL for experienced Kotlin engineers growing toward backend and Tech Lead depth.',
+      'Practical .NET Backend Architecture — DDD · Clean Architecture · CQRS · Event-Driven · PostgreSQL',
     theme: {
       from: '#8B5CF6',
       via: '#60A5FA',
       to: '#34D399',
     },
-    articleSlugs: ['from-kotlin-to-dotnet-backend-01-entities'],
+    cover: {
+      image: domainToProductionCover,
+      alt: 'From Domain to Production — Practical .NET Backend Architecture, with DDD, Clean Architecture, CQRS, event-driven design, and PostgreSQL',
+    },
+    articleSlugs: [
+      'ddd-entity-value-object-aggregate-root',
+      'ddd-rich-domain-model-invariant-behavior',
+      'ddd-aggregate-transactional-consistency-boundary',
+    ],
   },
   {
     slug: 'type-constructor-hkt-typeclasses',
