@@ -4,7 +4,7 @@ import articleDiagram from './03.aggregate-transactional-consistency-boundary.pn
 export const article = {
   author: 'hoc081098',
   createdAt: '2026-11-16',
-  lastUpdatedAt: '2026-11-16T07:29:24Z',
+  lastUpdatedAt: '2026-11-16T16:29:51Z',
   title: 'DDD: Aggregate Transactional Consistency Boundary',
   description:
     'Phân biệt Aggregate consistency boundary, transaction atomicity và concurrency control qua lost update, OCC và EF Core concurrency token.',
@@ -63,22 +63,23 @@ _Tổng quan vai trò của Aggregate, transaction và concurrency control trong
 
 ## 💠 Aggregate and transaction
 
-Nhắc lại về **Aggregate**, nó là boundary của những thứ cần giữ **nhất quán** (_consistency_) cùng nhau, và việc bảo vệ
-invariants đó ta dựa vào domain code và logic, nhưng chưa chắc khi persisted xuống database chúng vẫn được giữ vững. Do
-đó, khi persist các thay đổi này, ta phải dùng tới **database transaction**.
+Nhắc lại về **Aggregate**, đây là boundary của state và các _invariants_ cần giữ **nhất quán** (_consistency_) cùng nhau.
+Dù domain code đã bảo vệ các invariants trên model trong memory, nhưng khi persist các thay đổi xuống database,
+một _partial failure_ có thể khiến cho một phần thay đổi được ghi, điều đó có thể làm cho state đã lưu bị vi phạm invariant.
 
-Còn transaction trong database đảm bảo **atomicity** (tính nguyên tử) theo semantics _all-or-nothing_, nghĩa là các thay
-đổi thuộc 1 transaction được commit như một đơn vị, hoặc không thay đổi nào của transaction được commit. Thông thường,
-các thay đổi của 1 state transition trong Aggregate, thông qua _Aggregate Root_, sẽ được persisted trong cùng 1
-transaction, bởi vì ta mong muốn _invariants_ của Aggregate được giữ vững, tránh chuyện _partial failure_ làm invariant
-bị broken.
+**Database transaction** đảm bảo **atomicity** (tính nguyên tử) theo semantics _all-or-nothing_. Các thay đổi trong một
+transaction hoặc được commit cùng nhau như một đơn vị, hoặc bị rollback toàn bộ. Thông thường, các thay đổi của một state transition trong
+Aggregate, thông qua _Aggregate Root_, được persist trong cùng một transaction để giữ chúng atomic và đảm bảo
+các invariants được bảo vệ.
 
-Thêm 1 điều nữa, nếu theo góc nhìn objects trong lập trình, ta thường nhìn Aggregate như 1 _object graph_, đó chỉ là sự
-liên tưởng dễ hiểu nhưng theo góc nhìn DDD thì ta phải nhìn đúng Aggregate là **consistency boundary**, và theo góc nhìn
-database thì nó thường tương ứng với 1 **transactional consistency boundary**.
+Ngoài ra, dưới góc nhìn objects trong lập trình, ta thường hình dung Aggregate như một _object graph_.
+Cách hiểu này giúp dễ hình dung, nhưng nếu nhìn đúng bản chất DDD thì cách xác định Aggregate phải dựa trên **consistency boundary**.
+Và ở tầng database, boundary này thường tương ứng với một **transactional consistency boundary**.
 
-Lưu ý rằng **1 database transaction về mặt kỹ thuật vẫn có thể update nhiều Aggregate**. DDD khuyến khích giữ
-transaction boundary nhỏ và thường xoay quanh một Aggregate khi có thể.
+Cũng cần phải lưu ý rằng **1 database transaction về mặt kỹ thuật vẫn có thể update nhiều Aggregate**. DDD khuyến khích giữ
+transaction boundary nhỏ và thường xoay quanh một Aggregate khi có thể. Hơn nữa, ta còn có thể thêm _database constraints_
+để enforce một số invariants có thể biểu diễn được ở tầng persistence, làm như thế là ta
+đang tuân thủ _Defense in Depth_: Domain → Database Constraints.
 
 ## 💠 Ví dụ
 
@@ -106,6 +107,7 @@ Order Aggregate
 │   ├── Id
 │   ├── Status
 │   ├── Total
+│   ├── TotalQuantity
 │   └── OrderLines
 │       ├── OrderLine #1
 │       └── OrderLine #2
@@ -127,18 +129,16 @@ nhưng chúng ta cũng đừng nhầm lẫn giữa Aggregate boundary với _per
 
 ## 💠 Concurrency Control
 
-Nhưng với những thứ ta vừa kể thì vẫn chưa đủ! Aggregate ở tầng _Domain_ (code) định nghĩa consistency boundary và bảo
-vệ invariants, còn transaction ở tầng _Persistence_ đảm bảo các thay đổi trong transaction đó được commit atomically.
-Ngoài ra, ta còn có thể thêm _database constraints_ để enforce một số invariants có thể biểu diễn được ở tầng
-persistence. Nhưng nếu 2 state transition xảy ra đồng thời (_race_) thì việc `read-check-modify-write` vẫn có thể
-conflict với nhau và chồng lấn nhau, dẫn tới lost updates.
+Nhưng với những thứ ta vừa kể thì vẫn chưa đủ!
+Nếu hai state transition chạy đồng thời (_race_) vẫn có thể conflict trong chuỗi `read-check-modify-write` và dẫn tới lost
+update, ngay cả khi domain code đã kiểm tra invariants và transaction đã đảm bảo atomicity.
 
-Với ví dụ `Order` ở trên, giả sử ta có property `TotalQuantity`, và có 2 request cùng load `Order` Aggregate Root từ
-database, mỗi request gọi `AddItem()` để thêm 2 đơn vị.
+Với `Order` ở trên, xét hai request cùng load Aggregate Root từ database. Mỗi request gọi `AddItem()` để thêm 2 đơn vị
+và tính lại `TotalQuantity`, được lưu trong column `total_quantity`.
 
 Trong PostgreSQL với isolation level mặc định `READ COMMITTED`, giả sử cả hai transaction dùng `SELECT` thông thường,
 không dùng `FOR UPDATE` hay concurrency token, rồi ghi giá trị mới đã tính ở application. Cả hai đều có thể đọc
-`TotalQuantity = 8` trước khi thực hiện update. Timeline dưới đây chỉ xét phần update `TotalQuantity`:
+`TotalQuantity = 8` trước khi thực hiện update. Timeline dưới đây chỉ xét phần update `TotalQuantity`.
 
 ```text
 Initial: total_quantity = 8
@@ -163,17 +163,14 @@ T2 COMMIT
 Final: total_quantity = 10
 ```
 
-Kết quả sau cùng thì ra `10`, đáng lẽ theo semantics thì `12` mới đúng, đây là việc state bị ghi đè, và đây chính là
-**lost update** kinh điển. Ở đây, mỗi request evaluate invariants trong `AddItem()` rồi tính state mới trên bản `Order`
-đã load với `TotalQuantity = 8`, nên mỗi bên đều ra `10`. Khi `T2` ghi xuống database, câu `UPDATE` không hề kiểm tra
-bản `Order` dùng để evaluate đã bị outdated hay chưa.
+Giá trị cuối là `10` thay vì `12`, đây là **lost update** kinh điển. Mỗi request evaluate invariants trong `AddItem()` trên
+snapshot `TotalQuantity = 8` rồi tính giá trị mới là `10`. Khi `T2` ghi xuống database, điều kiện `WHERE id = @id` vẫn
+match row, và câu `UPDATE` ghi đè kết quả mà `T1` đã commit.
 
-Với ví dụ trên, mỗi bản `Order` trong memory có thể thỏa mãn invariants dựa trên snapshot riêng, nhưng khi 2 request
-cùng sửa một Aggregate thì vẫn có thể xảy ra **lost update** (ghi đè). Với những invariant khác, _stale decision_ kiểu
-này còn có thể làm persisted state vi phạm _business invariant_. Vì vậy, **atomicity không đảm bảo serializability**.
-Một transaction có atomicity không có nghĩa concurrent execution của nhiều transaction sẽ tương đương với việc chúng
-chạy tuần tự theo một thứ tự nào đó. Chuỗi `read → evaluate invariant → modify → write` vẫn cần _isolation/concurrency
-control_ phù hợp khi có race.
+Với những invariant khác, _stale decision_ từ snapshot cũ còn có thể làm cho state đã persist vi phạm _business invariant_.
+Vì vậy, **atomicity không đảm bảo serializability**. Một transaction có atomicity không có nghĩa concurrent execution
+của nhiều transaction sẽ tương đương với việc chúng chạy tuần tự theo một thứ tự nào đó. Chuỗi
+`read → evaluate invariant → modify → write` vẫn cần _isolation/concurrency control_ phù hợp khi có race.
 
 > Thực ra riêng phép cộng trong ví dụ này có thể dùng SQL `UPDATE ... SET total_quantity = total_quantity + 2` chẳng
 > hạn, nhưng ta đang ví dụ cho trường hợp Aggregate có nhiều invariant, nhiều Entity con, và invariants có thể phức tạp
@@ -185,11 +182,14 @@ _concurrency token_.
 - Trong SQL Server, ta thường dùng `rowversion` column.
 - Trong PostgreSQL, có thể dùng `xmin` system column làm concurrency token ở cấp row.
 - Hoặc application có thể tự quản lý một property `Version` làm concurrency token.
-- Nếu Aggregate trải trên nhiều Entity con, thì _concurrency control_ phải bao phủ toàn bộ những mutation mà ta muốn bảo
-  vệ trong cùng một consistency boundary. Việc update một row của `OrderLine` không đồng nghĩa _concurrency token_ trên
-  row `Order` cũng tự thay đổi. Vì vậy, nếu dùng token của `Order` để đại diện cho version của toàn Aggregate, thì
-  _persistence strategy_ phải chủ động **kiểm tra token cũ và làm token đó thay đổi** trong cùng transaction với các
-  state change cần bảo vệ, kể cả khi chỉ sửa Entity con.
+
+Nếu Aggregate trải trên nhiều Entity con, thì _concurrency control_ phải bao phủ toàn bộ những mutation mà ta muốn bảo
+vệ trong cùng một consistency boundary. Việc update một row của `OrderLine` không đồng nghĩa _concurrency token_ trên
+row `Order` cũng tự thay đổi theo.
+
+Vì vậy, nếu dùng token của `Order` để đại diện cho version của toàn Aggregate, thì _persistence strategy_ phải chủ động
+**kiểm tra token cũ và làm token đó thay đổi trong cùng transaction** với các state change cần được bảo vệ, kể cả khi chỉ sửa
+Entity con.
 
 Khi đã cấu hình concurrency token trong EF Core, ORM sẽ thêm điều kiện kiểm tra token vào `WHERE` khi update tracked
 Entity qua `SaveChanges()`. Ví dụ SQL với token do application quản lý:
@@ -207,19 +207,23 @@ token cũ.
 
 Còn nếu dùng `rowversion` của SQL Server hoặc `xmin` của PostgreSQL thì database tự sinh token khi row được update.
 Application vẫn dùng token cũ trong `WHERE` clause để kiểm tra conflict, nhưng phần `SET` chỉ ghi các field dữ liệu như
-`total_quantity`, chứ không gán token mới vì database sẽ làm việc đó thay cho application.
+`total_quantity`, còn database tự cập nhật token.
 
-Nếu áp dụng cơ chế này cho ví dụ trên, sau khi `T1` commit với token mới, câu `UPDATE` của `T2` dùng token cũ sẽ không
-match row nào. Nếu câu `UPDATE` có `affected rows = 0` do concurrency token không còn match hoặc row đã bị xóa, ORM có
-thể báo concurrency conflict, ví dụ EF Core ném `DbUpdateConcurrencyException` (framework/library khác có thể dùng lỗi
-tương đương). Sau đó application có thể reload state mới nhất, re-evaluate invariants rồi quyết định retry,
-merge/reconcile hoặc report conflict cho client, ví dụ `409 Conflict` tùy API semantics.
+Khi áp dụng cơ chế này, sau khi `T1` commit với token mới, câu `UPDATE` của `T2` dùng token cũ sẽ không match row nào.
+Nếu câu `UPDATE` có `affected rows = 0` do concurrency token không còn match hoặc row đã bị xóa, ORM có thể báo
+concurrency conflict. Với EF Core, `SaveChanges()` ném `DbUpdateConcurrencyException` trong trường hợp này
+(framework/library khác có thể dùng lỗi tương đương).
+
+Sau đó application có thể reload state mới nhất, re-evaluate invariants rồi quyết định retry, merge/reconcile hoặc
+report conflict cho client tùy API semantics (`409 Conflict` chẳng hạn).
 
 ## Tóm gọn
 
-- **Aggregate** defines what must stay consistent together.
-- **Transaction** makes the persisted changes of one state transition atomic.
-- **Concurrency control** protects that consistency when multiple transactions race.
+- **Aggregate** xác định state và invariants cần phải được giữ nhất quán cùng nhau.
+- **Transaction** đảm bảo các thay đổi được persist của một state transition có tính atomic.
+- **Concurrency control** bảo vệ consistency khi nhiều transaction cùng sửa state của Aggregate.
+
+## Tiếp theo
 
 Bài sau sẽ tập trung vào các trade-offs về performance như Aggregate lớn có xu hướng load nhiều state hơn từ database,
 tăng _lock contention/concurrency conflicts_ và làm transactional work nặng hơn. Aggregate quá nhỏ thì có thể cần tới
